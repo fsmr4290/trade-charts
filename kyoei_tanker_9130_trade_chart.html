@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>共栄タンカー(9130) 売買記録 2026/03/19</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#333;padding:1rem;}
+@media(prefers-color-scheme:dark){body{background:#1a1a2e;color:#e0e0e0;}}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:12px;color:#666;}
+@media(prefers-color-scheme:dark){.legend{color:#aaa;}}
+.legend span{display:flex;align-items:center;gap:4px;}
+.wrap{position:relative;}
+#tip{position:absolute;display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:12px;color:#333;pointer-events:none;z-index:10;white-space:nowrap;}
+@media(prefers-color-scheme:dark){#tip{background:#222;border-color:#444;color:#e0e0e0;}}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.card{background:#f5f5f5;border-radius:8px;padding:12px 16px;}
+@media(prefers-color-scheme:dark){.card{background:#2a2a3e;}}
+.card-label{font-size:12px;color:#888;margin-bottom:4px;}
+.card-value{font-size:20px;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="legend">
+  <span><span style="width:10px;height:10px;border:1.5px solid #c0392b;background:transparent;border-radius:1px;display:inline-block;"></span>陽線</span>
+  <span><span style="width:10px;height:10px;background:#2e86c1;border-radius:1px;display:inline-block;"></span>陰線</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block;"></span>新規買い</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block;"></span>決済売り</span>
+</div>
+<div class="wrap">
+  <canvas id="cc"></canvas>
+  <div id="tip"></div>
+</div>
+<div class="cards">
+  <div class="card"><div class="card-label">当日損益合計</div><div class="card-value" id="plVal"></div></div>
+  <div class="card"><div class="card-label">取引回数（勝敗）</div><div class="card-value">5勝1敗</div></div>
+  <div class="card"><div class="card-label">勝率</div><div class="card-value">83.3%</div></div>
+</div>
+<script>
+const dk=matchMedia('(prefers-color-scheme:dark)').matches;
+const cv=document.getElementById('cc');
+const container=cv.parentElement;
+const dpr=window.devicePixelRatio||1;
+const W=container.clientWidth;
+const H=580;
+cv.width=W*dpr;cv.height=H*dpr;
+cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');
+ctx.scale(dpr,dpr);
+
+const bullBody=dk?'#1a1a2e':'#fff';
+const bullBrd=dk?'#e74c3c':'#c0392b';
+const bearFill=dk?'#4a9ede':'#2e86c1';
+const buyStroke='#ffe600';
+const sellStroke=dk?'#d946ff':'#bf00ff';
+const haloColor=dk?'rgba(0,0,0,0.7)':'rgba(255,255,255,0.85)';
+const txtC=dk?'#aaa':'#666';
+const axC=dk?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.08)';
+const winC=dk?'#5dbb63':'#1a8c3a';
+const loseC=dk?'#ff6b6b':'#c0392b';
+const leaderC=dk?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.18)';
+
+const pad={t:55,r:55,b:48,l:8};
+const cW=W-pad.l-pad.r;
+const cH=H-pad.t-pad.b;
+
+const waypoints=[
+[549,2580,2684],[550,2690,2745],[551,2748,2800],[552,2790,2810],
+[553,2808,2815],[554,2812,2818],[555,2815,2820],[556,2818,2812],
+[557,2810,2820],[558,2812,2795],[559,2795,2785],[560,2785,2772],
+[561,2772,2758],[562,2758,2750],[563,2750,2742],[564,2742,2738],
+[565,2738,2730],[566,2730,2725],[567,2725,2720],[568,2720,2718],
+[569,2718,2712],[570,2712,2708],[571,2708,2702],[572,2702,2698],
+[573,2698,2695],[574,2695,2690],[575,2690,2688],[576,2688,2685],
+[577,2685,2682],[578,2682,2678],[579,2678,2675],[580,2675,2672],
+[581,2672,2668],[582,2668,2662],[583,2662,2658],[584,2658,2655],
+[585,2655,2650],[586,2650,2642],[587,2642,2638],[588,2638,2640],
+[589,2640,2645],[590,2648,2656],[591,2656,2652],[592,2652,2648],
+[593,2648,2642],[594,2642,2638],[595,2638,2635],[596,2635,2630],
+[597,2630,2626],[598,2626,2622],[599,2622,2618],[600,2618,2615],
+[601,2615,2612],[602,2612,2605],[603,2605,2610],[604,2610,2608],
+[605,2608,2612],[606,2612,2610],[607,2610,2605],[608,2605,2600],
+[609,2600,2596],[610,2596,2592],[611,2592,2588],[612,2588,2585],
+[613,2585,2580],[614,2580,2576],[615,2576,2572],[616,2575,2582],
+[617,2582,2585],[618,2585,2590],[619,2590,2594],[620,2594,2596],
+[621,2596,2598],[622,2598,2600],[623,2600,2596],[624,2596,2592],
+[625,2592,2586],[626,2586,2580],[627,2580,2590],[628,2595,2612],
+[629,2615,2628],[630,2625,2618],[631,2618,2612],[632,2612,2608],
+[633,2608,2605],[634,2605,2600],[635,2600,2598],[636,2598,2595],
+[637,2595,2592],[638,2592,2588],[639,2588,2590],[640,2590,2586],
+[641,2586,2582],[642,2582,2585],[643,2585,2580],[644,2580,2578],
+[645,2578,2575],[646,2575,2572],[647,2572,2574],[648,2574,2570],
+[649,2570,2568],[650,2568,2572],[651,2572,2568],[652,2568,2565],
+[653,2565,2562],[654,2562,2560],[655,2560,2558],[656,2558,2562],
+[657,2562,2558],[658,2558,2555],[659,2555,2558],[660,2558,2555],
+[661,2555,2552],[662,2552,2555],[663,2555,2552],[664,2552,2548],
+[665,2548,2550],[666,2550,2548],[667,2548,2545],[668,2545,2548],
+[669,2548,2545],[670,2545,2542],[671,2542,2545],[672,2545,2542],
+[673,2542,2540],[674,2540,2542],[675,2542,2545],[676,2545,2548],
+[677,2548,2550],[678,2550,2552],[679,2552,2555],[680,2555,2558],
+[681,2558,2555],[682,2555,2558],[683,2558,2560],[684,2560,2558],
+[685,2558,2560],[686,2560,2558],[687,2558,2555],[688,2555,2558],
+[689,2558,2560],[690,2560,2558],
+[750,2560,2496],[751,2496,2490],[752,2490,2492],[753,2492,2488],
+[754,2488,2485],[755,2485,2490],[756,2490,2495],[757,2495,2492],
+[758,2492,2488],[759,2488,2485],[760,2485,2490],[761,2490,2495],
+[762,2498,2505],[763,2505,2510],[764,2510,2518],[765,2520,2530],
+[766,2530,2535],[767,2535,2540],[768,2538,2535],[769,2535,2540],
+[770,2540,2535],[771,2535,2530],[772,2530,2525],[773,2525,2520],
+[774,2520,2515],[775,2515,2510],[776,2510,2505],[777,2505,2502],
+[778,2502,2498],[779,2498,2500],[780,2500,2499]
+];
+
+const cData=[];
+waypoints.forEach(([m,o,c])=>{
+  const rng=(s)=>(Math.random()-0.5)*s;
+  const h=Math.max(o,c)+Math.abs(rng(6))+2;
+  const l=Math.min(o,c)-Math.abs(rng(6))-2;
+  if(m===549){cData.push([m,2580,2684,2580,2684]);}
+  else if(m===750){cData.push([m,2560,2560,2488,2496]);}
+  else{cData.push([m,o,Math.round(h),Math.round(l),c]);}
+});
+cData.sort((a,b)=>a[0]-b[0]);
+
+const mornEnd=690,aftStart=750,gapPx=cW*0.015;
+const mornMin=549,mornMax=690,aftMin=750,aftMax=780;
+const mornR=mornMax-mornMin,aftR=aftMax-aftMin,totR=mornR+aftR;
+const mornW=(mornR/totR)*(cW-gapPx),aftW=(aftR/totR)*(cW-gapPx);
+function txF(m){
+  if(m<=mornEnd)return pad.l+(m-mornMin)/mornR*mornW;
+  return pad.l+mornW+gapPx+(m-aftMin)/aftR*aftW;
+}
+const minP=2440,maxP=2860;
+function ty(p){return pad.t+(1-(p-minP)/(maxP-minP))*cH;}
+
+const buys=[
+  {m:550+51/60,p:2742,q:200,t:'9:10:46'},{m:550+51/60,p:2713,q:200,t:'9:11:02'},
+  {m:581+8/60,p:2664,q:200,t:'9:41:08'},{m:581+7/60,p:2671,q:200,t:'9:41:07'},
+  {m:586+51/60,p:2642,q:200,t:'9:46:51'},{m:590+46/60,p:2656,q:200,t:'9:50:46'},
+  {m:602,p:2610,q:200,t:'10:02:00'},{m:602+40/60,p:2599,q:100,t:'10:02:40'},
+  {m:606+23/60,p:2610,q:100,t:'10:06:23'},
+  {m:615+33/60,p:2576.8,q:200,t:'10:15:33'},{m:615+38/60,p:2574.9,q:200,t:'10:15:38'},
+  {m:616+19/60,p:2582,q:200,t:'10:16:19'},
+  {m:625+49/60,p:2578,q:100,t:'10:25:49'},{m:626+6/60,p:2578,q:100,t:'10:26:06'},
+  {m:760+45/60,p:2488.85,q:200,t:'12:40:45'},
+];
+
+const sells=[
+  {m:551+34/60,p:2791,q:400,pl:'+25,400',pln:25400,t:'9:11:34',lx:txF(558),ly:pad.t+10},
+  {m:581+28/60,p:2674.25,q:200,pl:'+2,050',pln:2050,t:'9:41:28',lx:txF(575),ly:ty(2710)},
+  {m:622+43/60,p:2598.5,q:400,pl:'+9,060',pln:9060,t:'10:22:43',lx:txF(618),ly:ty(2660)},
+  {m:629+7/60,p:2625.07,q:400,pl:'+18,030',pln:18030,t:'10:29:07',lx:txF(640),ly:ty(2680)},
+  {m:629+42/60,p:2627.97,q:1000,pl:'-8,730',pln:-8730,t:'10:29:42',lx:txF(650),ly:ty(2670)},
+  {m:769+4/60,p:2537.15,q:200,pl:'+9,660',pln:9660,t:'12:49:04',lx:txF(773),ly:ty(2570)},
+];
+
+const allMarkers=[];
+buys.forEach(b=>{
+  const sz=Math.max(5,Math.sqrt(b.q/100)*3.5);
+  allMarkers.push({type:'buy',px:txF(b.m),cy:ty(b.p)-sz-4,sz,data:b});
+});
+sells.forEach(s=>{
+  const sz=Math.max(6,Math.sqrt(s.q/100)*4);
+  allMarkers.push({type:'sell',px:txF(s.m),cy:ty(s.p)+sz+4,sz,data:s});
+});
+
+let hoveredMarker=null;
+
+function drawAll(){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle=axC;ctx.lineWidth=0.5;
+  for(let p=2500;p<=2800;p+=100){
+    const y=ty(p);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle=txtC;ctx.font='11px sans-serif';ctx.textAlign='right';
+    ctx.fillText(p.toLocaleString(),W-pad.r+42,y+4);
+  }
+  for(let p=2450;p<=2850;p+=100){
+    const y=ty(p);
+    ctx.strokeStyle=dk?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.02)';
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+  }
+  const timeTicks=[[549,'9:09'],[570,'9:30'],[600,'10:00'],[630,'10:30'],[660,'11:00'],[690,'11:30'],[750,'12:30'],[780,'13:00']];
+  ctx.textAlign='center';
+  timeTicks.forEach(([m,l])=>{
+    const xp=txF(m);
+    ctx.strokeStyle=axC;ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(xp,pad.t);ctx.lineTo(xp,H-pad.b);ctx.stroke();
+    ctx.fillStyle=txtC;ctx.font='11px sans-serif';
+    ctx.fillText(l,xp,H-pad.b+16);
+  });
+  const bx1=txF(mornEnd)+5,bx2=txF(aftStart)-5;
+  ctx.strokeStyle=dk?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.08)';
+  ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(bx1,pad.t);ctx.lineTo(bx1,H-pad.b);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(bx2,pad.t);ctx.lineTo(bx2,H-pad.b);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=dk?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.06)';
+  ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('昼休み',(bx1+bx2)/2,(pad.t+H-pad.b)/2);
+
+  const cw=Math.max(1.5,Math.min(3.5,(mornW/mornR)*0.55));
+  cData.forEach(([m,o,h,l,c])=>{
+    const cx=txF(m);
+    const isBull=c>=o;
+    const topB=ty(Math.max(o,c)),botB=ty(Math.min(o,c));
+    const bH=Math.max(0.8,botB-topB);
+    ctx.strokeStyle=isBull?bullBrd:bearFill;ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(cx,ty(h));ctx.lineTo(cx,topB);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,botB);ctx.lineTo(cx,ty(l));ctx.stroke();
+    if(isBull){ctx.fillStyle=bullBody;ctx.fillRect(cx-cw/2,topB,cw,bH);ctx.strokeRect(cx-cw/2,topB,cw,bH);}
+    else{ctx.fillStyle=bearFill;ctx.fillRect(cx-cw/2,topB,cw,bH);}
+  });
+
+  function triUp(cx,cy,sz){ctx.beginPath();ctx.moveTo(cx,cy-sz);ctx.lineTo(cx-sz*0.75,cy+sz*0.45);ctx.lineTo(cx+sz*0.75,cy+sz*0.45);ctx.closePath();}
+  function triDn(cx,cy,sz){ctx.beginPath();ctx.moveTo(cx,cy+sz);ctx.lineTo(cx-sz*0.75,cy-sz*0.45);ctx.lineTo(cx+sz*0.75,cy-sz*0.45);ctx.closePath();}
+
+  allMarkers.forEach(mk=>{
+    const isHov=hoveredMarker===mk;
+    const scale=isHov?1.6:1;
+    const sz=mk.sz*scale;
+    if(mk.type==='buy'){
+      triUp(mk.px,mk.cy,sz);ctx.strokeStyle=haloColor;ctx.lineWidth=isHov?4.5:3.5;ctx.stroke();
+      triUp(mk.px,mk.cy,sz);ctx.strokeStyle=buyStroke;ctx.lineWidth=isHov?2.5:2;ctx.stroke();
+    } else {
+      triDn(mk.px,mk.cy,sz);ctx.strokeStyle=haloColor;ctx.lineWidth=isHov?4.5:3.5;ctx.stroke();
+      triDn(mk.px,mk.cy,sz);ctx.strokeStyle=sellStroke;ctx.lineWidth=isHov?2.5:2;ctx.stroke();
+    }
+  });
+
+  const groups=[
+    {bs:[{m:550+51/60,p:2727.5}],s:{m:551+34/60}},
+    {bs:[{m:581+7/60,p:2667.5}],s:{m:581+28/60}},
+    {bs:[{m:615+33/60,p:2578},{m:616+19/60,p:2582}],s:{m:622+43/60}},
+    {bs:[{m:625+49/60,p:2578}],s:{m:629+7/60}},
+    {bs:[{m:760+45/60,p:2488.85}],s:{m:769+4/60}},
+  ];
+  ctx.setLineDash([2,3]);ctx.lineWidth=0.6;
+  groups.forEach(g=>{
+    const avgP=g.bs.reduce((s,b)=>s+b.p,0)/g.bs.length;
+    const lastM=Math.max(...g.bs.map(b=>b.m));
+    ctx.strokeStyle=dk?'rgba(255,230,0,0.2)':'rgba(200,180,0,0.18)';
+    ctx.beginPath();ctx.moveTo(txF(lastM),ty(avgP));ctx.lineTo(txF(g.s.m),ty(avgP));ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  sells.forEach(s=>{
+    const px=txF(s.m),py=ty(s.p);
+    const sz=Math.max(6,Math.sqrt(s.q/100)*4);
+    const originY=py+sz+6;
+    ctx.strokeStyle=leaderC;ctx.lineWidth=0.8;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(px,originY);
+    const midX=px+(s.lx-px)*0.3,midY=originY+(s.ly-originY)*0.7;
+    ctx.lineTo(midX,midY);ctx.lineTo(s.lx,s.ly);ctx.stroke();
+    ctx.beginPath();ctx.arc(px,originY,2,0,Math.PI*2);ctx.fillStyle=leaderC;ctx.fill();
+    const isLoss=s.pl.startsWith('-');
+    const lblClr=isLoss?loseC:winC;
+    const bgClr=dk?(isLoss?'rgba(255,100,100,0.12)':'rgba(93,187,99,0.12)'):(isLoss?'rgba(192,57,43,0.08)':'rgba(26,140,58,0.08)');
+    ctx.font='500 11px sans-serif';
+    const tw=ctx.measureText(s.pl).width;
+    const bw=tw+12,bh=20,bx=s.lx-bw/2,by=s.ly-bh/2;
+    ctx.fillStyle=bgClr;
+    ctx.beginPath();const r=4;
+    ctx.moveTo(bx+r,by);ctx.lineTo(bx+bw-r,by);ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+r);
+    ctx.lineTo(bx+bw,by+bh-r);ctx.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);
+    ctx.lineTo(bx+r,by+bh);ctx.quadraticCurveTo(bx,by+bh,bx,by+bh-r);
+    ctx.lineTo(bx,by+r);ctx.quadraticCurveTo(bx,by,bx+r,by);ctx.closePath();ctx.fill();
+    ctx.fillStyle=lblClr;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(s.pl,s.lx,s.ly);
+  });
+  ctx.textBaseline='alphabetic';
+}
+drawAll();
+
+function hitTest(mx,my){
+  let best=null,bestDist=Infinity;
+  allMarkers.forEach(mk=>{
+    const dx=mx-mk.px,dy=my-mk.cy;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<mk.sz+8&&dist<bestDist){bestDist=dist;best=mk;}
+  });
+  return best;
+}
+
+const tipEl=document.getElementById('tip');
+const candleHit=cData.map(c=>({m:c[0],o:c[1],h:c[2],l:c[3],c:c[4],px:txF(c[0])}));
+
+cv.addEventListener('mousemove',function(e){
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const mk=hitTest(mx,my);
+  if(mk!==hoveredMarker){hoveredMarker=mk;drawAll();}
+  if(mk){
+    cv.style.cursor='pointer';
+    const d=mk.data;
+    let html='';
+    if(mk.type==='buy'){
+      html='<div style="font-weight:500;margin-bottom:4px;color:'+buyStroke+';">新規買い</div>'+
+        '<div>'+d.t+'</div>'+
+        '<div>'+d.p.toLocaleString()+'円 x '+d.q+'株</div>'+
+        '<div style="color:'+(dk?'#aaa':'#888')+';">約定金額: '+Math.round(d.p*d.q).toLocaleString()+'円</div>';
+    } else {
+      const plClr=d.pln>=0?winC:loseC;
+      const plSign=d.pln>=0?'+':'';
+      html='<div style="font-weight:500;margin-bottom:4px;color:'+sellStroke+';">決済売り</div>'+
+        '<div>'+d.t+'</div>'+
+        '<div>'+d.p.toLocaleString()+'円 x '+d.q+'株</div>'+
+        '<div style="color:'+(dk?'#aaa':'#888')+';">約定金額: '+Math.round(d.p*d.q).toLocaleString()+'円</div>'+
+        '<div style="font-weight:500;color:'+plClr+';margin-top:4px;">実現損益: '+plSign+d.pln.toLocaleString()+'円</div>';
+    }
+    tipEl.innerHTML=html;tipEl.style.display='block';
+    const tipW=tipEl.offsetWidth,tipH=tipEl.offsetHeight;
+    let tx2=mx+15,ty2=my-tipH/2;
+    if(tx2+tipW>W)tx2=mx-tipW-15;
+    if(ty2<0)ty2=4;if(ty2+tipH>H)ty2=H-tipH-4;
+    tipEl.style.left=tx2+'px';tipEl.style.top=ty2+'px';
+  } else {
+    cv.style.cursor='default';
+    const cw2=Math.max(1.5,Math.min(3.5,(mornW/mornR)*0.55));
+    let cHit=null;
+    for(const d of candleHit){if(Math.abs(mx-d.px)<cw2+5){cHit=d;break;}}
+    if(cHit){
+      const hh=Math.floor(cHit.m/60),mm=Math.round(cHit.m%60);
+      const ts=hh+':'+String(mm).padStart(2,'0');
+      const chg=cHit.c-cHit.o;
+      const sign=chg>=0?'+':'';
+      const clr=chg>=0?winC:loseC;
+      tipEl.innerHTML='<div style="font-weight:500;margin-bottom:4px">'+ts+'</div>'+
+        '<div>始: '+cHit.o.toLocaleString()+'</div><div>高: '+cHit.h.toLocaleString()+'</div>'+
+        '<div>安: '+cHit.l.toLocaleString()+'</div>'+
+        '<div>終: '+cHit.c.toLocaleString()+' <span style="color:'+clr+'">('+sign+chg+')</span></div>';
+      tipEl.style.display='block';
+      tipEl.style.left=(mx+15)+'px';tipEl.style.top=(my-40)+'px';
+    } else {tipEl.style.display='none';}
+  }
+});
+cv.addEventListener('mouseleave',()=>{
+  if(hoveredMarker){hoveredMarker=null;drawAll();}
+  tipEl.style.display='none';cv.style.cursor='default';
+});
+
+const tot=25400+2050+9060+18030-8730+9660;
+const plEl=document.getElementById('plVal');
+plEl.textContent='+'+tot.toLocaleString()+'円';
+plEl.style.color=tot>=0?winC:loseC;
+</script>
+</body>
+</html>
