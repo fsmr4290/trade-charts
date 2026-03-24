@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>トレード売買記録 チャート一覧</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#333;padding:2rem;max-width:800px;margin:0 auto;}
+h1{font-size:22px;font-weight:500;margin-bottom:0.5rem;color:#222;}
+.sub{font-size:13px;color:#888;margin-bottom:2rem;}
+.month-list{list-style:none;}
+.month-list li{margin-bottom:8px;}
+.month-list a{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;font-size:15px;color:#333;text-decoration:none;background:#fff;border:1px solid #eee;border-radius:10px;transition:border-color 0.15s,background 0.15s;}
+.month-list a:hover{border-color:#ccc;background:#f8f8f8;}
+.month-label{font-weight:500;}
+.month-arrow{color:#bbb;font-size:18px;}
+</style>
+</head>
+<body>
+<h1>トレード売買記録 チャート一覧</h1>
+<p class="sub">月を選択してください</p>
+
+<!--
+新しい月を追加する手順：
+1. 月別HTMLファイル（例：2026-04.html）を作成してリポジトリにアップロード
+2. 以下の<li>をリストの先頭（最新が上）に追加：
+<li><a href="2026-04.html"><span class="month-label">2026年4月</span><span class="month-arrow">→</span></a></li>
+-->
+
+<ul class="month-list">
+  <li><a href="2026-03.html"><span class="month-label">2026年3月</span><span class="month-arrow">→</span></a></li>
+</ul>
+
+</body>
+</html>
