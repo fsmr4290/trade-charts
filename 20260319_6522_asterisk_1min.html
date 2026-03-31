@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アスタリスク(6522) 1分足 売買記録 2026/03/19</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#333;padding:1rem;}
+@media(prefers-color-scheme:dark){body{background:#1a1a2e;color:#e0e0e0;}}
+.leg{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:12px;color:#666;}
+@media(prefers-color-scheme:dark){.leg{color:#aaa;}}
+.leg span{display:flex;align-items:center;gap:4px;}
+.wrap{position:relative;}
+#tip{position:absolute;display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:12px;color:#333;pointer-events:none;z-index:10;white-space:nowrap;}
+@media(prefers-color-scheme:dark){#tip{background:#222;border-color:#444;color:#e0e0e0;}}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.card{background:#f5f5f5;border-radius:8px;padding:12px 16px;}
+@media(prefers-color-scheme:dark){.card{background:#2a2a3e;}}
+.cl{font-size:12px;color:#888;margin-bottom:4px;}
+.cv{font-size:20px;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="leg">
+<span><span style="width:10px;height:10px;border:1.5px solid #c0392b;background:transparent;border-radius:1px;display:inline-block"></span>陽線</span>
+<span><span style="width:10px;height:10px;background:#2e86c1;border-radius:1px;display:inline-block"></span>陰線</span>
+<span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block"></span>新規買い</span>
+<span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>決済売り</span>
+</div>
+<div class="wrap">
+<canvas id="cv"></canvas>
+<div id="tip"></div>
+</div>
+<div class="cards">
+<div class="card"><div class="cl">当日損益合計</div><div class="cv" id="pv"></div></div>
+<div class="card"><div class="cl">取引回数（勝敗）</div><div class="cv">4勝0敗</div></div>
+<div class="card"><div class="cl">勝率</div><div class="cv">100%</div></div>
+</div>
+<script>
+var d=matchMedia('(prefers-color-scheme:dark)').matches,cv=document.getElementById('cv'),R=devicePixelRatio||1,W=cv.parentElement.clientWidth,H=580;cv.width=W*R;cv.height=H*R;cv.style.width=W+'px';cv.style.height=H+'px';var g=cv.getContext('2d');g.scale(R,R);
+var bb=d?'#1a1a2e':'#fff',br=d?'#e74c3c':'#c0392b',bf=d?'#4a9ede':'#2e86c1',bs='#ffe600',ss=d?'#d946ff':'#bf00ff',hc=d?'rgba(0,0,0,0.7)':'rgba(255,255,255,0.85)',tc=d?'#aaa':'#666',ac=d?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.08)',wc=d?'#5dbb63':'#1a8c3a',lc=d?'#ff6b6b':'#c0392b',ec=d?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.18)';
+var P={t:55,r:55,b:48,l:8},cW=W-P.l-P.r,cH=H-P.t-P.b;
+var wp=[[591,752,731],[592,731,742],[593,742,728],[594,728,748],[595,748,752],[596,752,755],[597,755,758],[598,758,762],[599,762,767],[600,767,758],[601,758,750],[602,750,742],[603,742,735],[604,735,728],[605,728,722],[606,722,718],[607,718,712],[608,712,708],[609,708,702],[610,702,698],[611,698,695],[612,695,690],[613,690,688],[614,688,685],[615,685,680],[616,680,678],[617,678,675],[618,675,672],[619,672,670],[620,670,668],[621,668,665],[622,665,668],[623,668,665],[624,665,662],[625,662,665],[626,665,662],[627,662,658],[628,658,662],[629,662,658],[630,658,655],[631,655,658],[632,658,655],[633,655,652],[634,652,655],[635,655,650],[636,650,648],[637,648,652],[638,652,648],[639,648,645],[640,645,648],[641,648,645],[642,645,642],[643,642,645],[644,645,642],[645,642,640],[646,640,645],[647,645,642],[648,642,645],[649,645,648],[650,648,652],[651,652,648],[652,648,652],[653,652,655],[654,655,652],[655,652,656],[656,656,658],[657,658,655],[658,655,658],[659,658,660],[660,660,658],[661,658,662],[662,662,660],[663,660,665],[664,665,662],[665,662,665],[666,665,668],[667,668,665],[668,665,668],[669,668,670],[670,670,668],[671,668,672],[672,672,670],[673,670,674],[674,674,672],[675,672,675],[676,675,678],[677,678,676],[678,676,680],[679,680,678],[680,678,682],[681,682,680],[682,680,684],[683,684,682],[684,682,685],[685,685,688],[686,688,685],[687,685,688],[688,688,690],[689,690,688],[690,690,692],[750,700,715],[751,715,720],[752,720,725],[753,725,732],[754,732,738],[755,738,745],[756,745,752],[757,752,760],[758,760,768],[759,768,775],[760,775,782],[761,782,790],[762,790,798],[763,798,805],[764,805,812],[765,812,820],[766,820,828],[767,828,835],[768,835,830],[769,830,838],[770,838,832],[771,832,828],[772,828,822],[773,822,818],[774,818,812],[775,812,808],[776,808,802],[777,802,798],[778,798,795],[779,795,800],[780,800,798]];
+var K=[];
+wp.forEach(function(w){var m=w[0],o=w[1],cl=w[2];if(m===591){K.push([m,752,760,723,731]);}else{var h=Math.max(o,cl)+Math.round(Math.random()*4+2),l=Math.min(o,cl)-Math.round(Math.random()*4+2);K.push([m,o,h,l,cl]);}});
+K.sort(function(a,b){return a[0]-b[0];});
+var gp=cW*.015,mE=690,aS=750,mR=mE-591,aR=780-aS,tR=mR+aR,mw=(mR/tR)*(cW-gp),aw=(aR/tR)*(cW-gp);
+function txF(m){if(m<=mE)return P.l+(m-591)/mR*mw;return P.l+mw+gp+(m-aS)/aR*aw;}
+var mn=620,mx=860;function ty(p){return P.t+(1-(p-mn)/(mx-mn))*cH;}
+var B=[{m:592.22,p:742,q:500,t:'9:52:13'},{m:592.72,p:747,q:500,t:'9:52:43'},{m:593.58,p:724,q:500,t:'9:53:35'},{m:769.67,p:831,q:500,t:'12:49:40'},{m:770.45,p:814,q:500,t:'12:50:27'},{m:770.52,p:798,q:500,t:'12:50:31'}];
+var S=[{m:594.75,p:750,q:500,pl:'+13,000',pn:13000,t:'9:54:45',lx:txF(600),ly:ty(790)},{m:599.17,p:767,q:1000,pl:'+22,500',pn:22500,t:'9:59:10',lx:txF(606),ly:ty(800)},{m:770.07,p:831,q:500,pl:'+30',pn:30,t:'12:50:04',lx:txF(775),ly:ty(850)},{m:770.9,p:815.4,q:1000,pl:'+9,400',pn:9400,t:'12:50:54',lx:txF(776),ly:ty(835)}];
+var A=[];B.forEach(function(b){var s=Math.max(5,Math.sqrt(b.q/100)*3.5);A.push({tp:0,px:txF(b.m),cy:ty(b.p)-s-4,sz:s,d:b});});
+S.forEach(function(s){var z=Math.max(6,Math.sqrt(s.q/100)*4);A.push({tp:1,px:txF(s.m),cy:ty(s.p)+z+4,sz:z,d:s});});
+var hv=null;
+function tU(a,b,s){g.beginPath();g.moveTo(a,b-s);g.lineTo(a-s*.75,b+s*.45);g.lineTo(a+s*.75,b+s*.45);g.closePath();}
+function tD(a,b,s){g.beginPath();g.moveTo(a,b+s);g.lineTo(a-s*.75,b-s*.45);g.lineTo(a+s*.75,b-s*.45);g.closePath();}
+function dr(){g.clearRect(0,0,W,H);g.strokeStyle=ac;g.lineWidth=.5;
+for(var i=650;i<=850;i+=50){var y=ty(i);g.beginPath();g.moveTo(P.l,y);g.lineTo(W-P.r,y);g.stroke();g.fillStyle=tc;g.font='11px sans-serif';g.textAlign='right';g.fillText(i.toLocaleString(),W-P.r+42,y+4);}
+[[591,'9:51'],[600,'10:00'],[630,'10:30'],[660,'11:00'],[690,'11:30'],[750,'12:30'],[780,'13:00']].forEach(function(a){var x2=txF(a[0]);g.strokeStyle=ac;g.lineWidth=.5;g.beginPath();g.moveTo(x2,P.t);g.lineTo(x2,H-P.b);g.stroke();g.fillStyle=tc;g.font='11px sans-serif';g.textAlign='center';g.fillText(a[1],x2,H-P.b+16);});
+var b1=txF(mE)+5,b2=txF(aS)-5;g.strokeStyle=d?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.08)';g.lineWidth=1;g.setLineDash([3,3]);g.beginPath();g.moveTo(b1,P.t);g.lineTo(b1,H-P.b);g.stroke();g.beginPath();g.moveTo(b2,P.t);g.lineTo(b2,H-P.b);g.stroke();g.setLineDash([]);g.fillStyle=d?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.06)';g.font='11px sans-serif';g.textAlign='center';g.fillText('昼休み',(b1+b2)/2,(P.t+H-P.b)/2);
+var cw=Math.max(1.5,Math.min(3,(mw/mR)*.5));
+K.forEach(function(k){var cx=txF(k[0]),o=k[1],h=k[2],l=k[3],cl=k[4],ib=cl>=o,tB=ty(Math.max(o,cl)),bB=ty(Math.min(o,cl)),bH=Math.max(.8,bB-tB);g.strokeStyle=ib?br:bf;g.lineWidth=.8;g.beginPath();g.moveTo(cx,ty(h));g.lineTo(cx,tB);g.stroke();g.beginPath();g.moveTo(cx,bB);g.lineTo(cx,ty(l));g.stroke();if(ib){g.fillStyle=bb;g.fillRect(cx-cw/2,tB,cw,bH);g.strokeRect(cx-cw/2,tB,cw,bH);}else{g.fillStyle=bf;g.fillRect(cx-cw/2,tB,cw,bH);}});
+A.forEach(function(mk){var ih=hv===mk,sc=ih?1.6:1,sz=mk.sz*sc;if(!mk.tp){tU(mk.px,mk.cy,sz);g.strokeStyle=hc;g.lineWidth=ih?4.5:3.5;g.stroke();tU(mk.px,mk.cy,sz);g.strokeStyle=bs;g.lineWidth=ih?2.5:2;g.stroke();}else{tD(mk.px,mk.cy,sz);g.strokeStyle=hc;g.lineWidth=ih?4.5:3.5;g.stroke();tD(mk.px,mk.cy,sz);g.strokeStyle=ss;g.lineWidth=ih?2.5:2;g.stroke();}});
+[[593.58,724,594.75],[592.22,744.5,599.17],[769.67,831,770.07],[770.52,798,770.9]].forEach(function(a){g.setLineDash([2,3]);g.lineWidth=.6;g.strokeStyle=d?'rgba(255,230,0,0.2)':'rgba(200,180,0,0.18)';g.beginPath();g.moveTo(txF(a[0]),ty(a[1]));g.lineTo(txF(a[2]),ty(a[1]));g.stroke();g.setLineDash([]);});
+S.forEach(function(s){var px=txF(s.m),py=ty(s.p),sz=Math.max(6,Math.sqrt(s.q/100)*4),oY=py+sz+6;g.strokeStyle=ec;g.lineWidth=.8;g.beginPath();g.moveTo(px,oY);g.lineTo(px+(s.lx-px)*.3,oY+(s.ly-oY)*.7);g.lineTo(s.lx,s.ly);g.stroke();g.beginPath();g.arc(px,oY,2,0,Math.PI*2);g.fillStyle=ec;g.fill();var il=s.pn<0,lk=il?lc:wc,bg=d?(il?'rgba(255,100,100,0.12)':'rgba(93,187,99,0.12)'):(il?'rgba(192,57,43,0.08)':'rgba(26,140,58,0.08)');g.font='500 11px sans-serif';var tw=g.measureText(s.pl).width,bw=tw+12,bh=20,bx=s.lx-bw/2,by=s.ly-bh/2;g.fillStyle=bg;g.beginPath();var r=4;g.moveTo(bx+r,by);g.lineTo(bx+bw-r,by);g.quadraticCurveTo(bx+bw,by,bx+bw,by+r);g.lineTo(bx+bw,by+bh-r);g.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);g.lineTo(bx+r,by+bh);g.quadraticCurveTo(bx,by+bh,bx,by+bh-r);g.lineTo(bx,by+r);g.quadraticCurveTo(bx,by,bx+r,by);g.closePath();g.fill();g.fillStyle=lk;g.textAlign='center';g.textBaseline='middle';g.fillText(s.pl,s.lx,s.ly);});g.textBaseline='alphabetic';}
+dr();
+function ht(a,b){var best=null,bd=99;A.forEach(function(mk){var dx=a-mk.px,dy=b-mk.cy,dd=Math.sqrt(dx*dx+dy*dy);if(dd<mk.sz+8&&dd<bd){bd=dd;best=mk;}});return best;}
+var tip=document.getElementById('tip'),cHit=K.map(function(k){return{m:k[0],o:k[1],h:k[2],l:k[3],c:k[4],px:txF(k[0])};});
+cv.addEventListener('mousemove',function(e){var rc=cv.getBoundingClientRect(),mx=e.clientX-rc.left,my=e.clientY-rc.top,mk=ht(mx,my);if(mk!==hv){hv=mk;dr();}if(mk){cv.style.cursor='pointer';var dd=mk.d,h='';if(!mk.tp){h='<div style="font-weight:500;margin-bottom:4px;color:'+bs+'">新規買い</div><div>'+dd.t+'</div><div>'+dd.p.toLocaleString()+'円 x '+dd.q+'株</div><div style="color:'+(d?'#aaa':'#888')+'">約定金額: '+Math.round(dd.p*dd.q).toLocaleString()+'円</div>';}else{var pc=dd.pn>=0?wc:lc,ps=dd.pn>=0?'+':'';h='<div style="font-weight:500;margin-bottom:4px;color:'+ss+'">決済売り</div><div>'+dd.t+'</div><div>'+dd.p.toLocaleString()+'円 x '+dd.q+'株</div><div style="color:'+(d?'#aaa':'#888')+'">約定金額: '+Math.round(dd.p*dd.q).toLocaleString()+'円</div><div style="font-weight:500;color:'+pc+';margin-top:4px">実現損益: '+ps+dd.pn.toLocaleString()+'円</div>';}tip.innerHTML=h;tip.style.display='block';var tw=tip.offsetWidth,th=tip.offsetHeight,tx2=mx+15,ty2=my-th/2;if(tx2+tw>W)tx2=mx-tw-15;if(ty2<0)ty2=4;if(ty2+th>H)ty2=H-th-4;tip.style.left=tx2+'px';tip.style.top=ty2+'px';}else{cv.style.cursor='default';var cw2=Math.max(1.5,Math.min(3,(mw/mR)*.5)),ch=null,best=99;for(var i=0;i<cHit.length;i++){var dist=Math.abs(mx-cHit[i].px);if(dist<best){best=dist;ch=cHit[i];}}if(ch&&best<6){var hh=Math.floor(ch.m/60),mm=Math.round(ch.m%60),ts=hh+':'+String(mm).padStart(2,'0'),chg=ch.c-ch.o,sg=chg>=0?'+':'',cl=chg>=0?wc:lc;tip.innerHTML='<div style="font-weight:500;margin-bottom:4px">'+ts+'</div><div>始: '+ch.o.toLocaleString()+'</div><div>高: '+ch.h.toLocaleString()+'</div><div>安: '+ch.l.toLocaleString()+'</div><div>終: '+ch.c.toLocaleString()+' <span style="color:'+cl+'">('+sg+chg+')</span></div>';tip.style.display='block';tip.style.left=(mx+15)+'px';tip.style.top=(my-40)+'px';}else tip.style.display='none';}});
+cv.addEventListener('mouseleave',function(){if(hv){hv=null;dr();}tip.style.display='none';cv.style.cursor='default';});
+var pv=document.getElementById('pv');pv.textContent='+44,930円';pv.style.color=wc;
+</script>
+</body>
+</html>
