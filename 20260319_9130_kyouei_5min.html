@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>共栄タンカー(9130) 5分足 売買記録 2026/03/19</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:#333;padding:1rem;}
+@media(prefers-color-scheme:dark){body{background:#1a1a2e;color:#e0e0e0;}}
+.leg{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:12px;color:#666;}
+@media(prefers-color-scheme:dark){.leg{color:#aaa;}}
+.leg span{display:flex;align-items:center;gap:4px;}
+.wrap{position:relative;}
+#tip{position:absolute;display:none;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:12px;color:#333;pointer-events:none;z-index:10;white-space:nowrap;}
+@media(prefers-color-scheme:dark){#tip{background:#222;border-color:#444;color:#e0e0e0;}}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.card{background:#f5f5f5;border-radius:8px;padding:12px 16px;}
+@media(prefers-color-scheme:dark){.card{background:#2a2a3e;}}
+.cl{font-size:12px;color:#888;margin-bottom:4px;}
+.cv{font-size:20px;font-weight:500;}
+</style>
+</head>
+<body>
+<div class="leg">
+<span><span style="width:10px;height:10px;border:1.5px solid #c0392b;background:transparent;border-radius:1px;display:inline-block;"></span>陽線</span>
+<span><span style="width:10px;height:10px;background:#2e86c1;border-radius:1px;display:inline-block;"></span>陰線</span>
+<span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block;"></span>新規買い</span>
+<span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block;"></span>決済売り</span>
+</div>
+<div class="wrap">
+<canvas id="cv"></canvas>
+<div id="tip"></div>
+</div>
+<div class="cards">
+<div class="card"><div class="cl">当日損益合計</div><div class="cv" id="pv"></div></div>
+<div class="card"><div class="cl">取引回数（勝敗）</div><div class="cv">5勝1敗</div></div>
+<div class="card"><div class="cl">勝率</div><div class="cv">83.3%</div></div>
+</div>
+<script>
+var dk=matchMedia('(prefers-color-scheme:dark)').matches;
+var cv=document.getElementById('cv'),dpr=window.devicePixelRatio||1;
+var W=cv.parentElement.clientWidth,H=580;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+var x=cv.getContext('2d');x.scale(dpr,dpr);
+var bb=dk?'#1a1a2e':'#fff',br=dk?'#e74c3c':'#c0392b',bf=dk?'#4a9ede':'#2e86c1';
+var bs='#ffe600',ss=dk?'#d946ff':'#bf00ff',hc=dk?'rgba(0,0,0,0.7)':'rgba(255,255,255,0.85)';
+var tc=dk?'#aaa':'#666',ac=dk?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.08)';
+var wc=dk?'#5dbb63':'#1a8c3a',lc=dk?'#ff6b6b':'#c0392b',ec=dk?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.18)';
+var p={t:55,r:55,b:48,l:8},cw_=W-p.l-p.r,ch_=H-p.t-p.b;
+var D=[[545,2580,2684,2580,2684],[550,2695,2798,2690,2780],[555,2780,2820,2725,2738],[560,2738,2748,2702,2712],[565,2712,2720,2692,2698],[570,2698,2702,2678,2682],[575,2682,2688,2668,2672],[580,2672,2680,2662,2670],[585,2670,2678,2655,2660],[590,2660,2665,2638,2648],[595,2648,2660,2645,2658],[600,2658,2660,2620,2625],[605,2625,2630,2596,2612],[610,2610,2620,2595,2595],[615,2595,2598,2572,2580],[620,2580,2602,2575,2598],[625,2598,2632,2575,2628],[630,2628,2632,2608,2612],[635,2612,2618,2595,2600],[640,2600,2605,2588,2592],[645,2592,2598,2580,2585],[650,2585,2590,2575,2578],[655,2578,2584,2568,2572],[660,2572,2578,2562,2568],[665,2568,2574,2558,2562],[670,2562,2568,2552,2558],[675,2558,2565,2548,2555],[680,2555,2560,2545,2552],[685,2552,2558,2542,2558],[750,2560,2560,2448,2474],[755,2474,2498,2470,2492],[760,2492,2500,2482,2490],[765,2490,2542,2486,2538],[770,2538,2552,2525,2530],[775,2530,2535,2510,2515],[780,2515,2522,2495,2500],[785,2500,2505,2482,2488],[790,2488,2495,2472,2478],[795,2478,2485,2462,2468],[800,2468,2475,2452,2458],[805,2458,2465,2445,2450],[810,2450,2458,2438,2442],[815,2442,2450,2432,2438],[820,2438,2445,2428,2435],[825,2435,2440,2422,2428],[830,2428,2435,2418,2422],[835,2422,2430,2412,2418],[840,2418,2425,2408,2415],[845,2415,2422,2405,2412],[850,2412,2418,2400,2405],[855,2405,2412,2395,2400],[860,2400,2408,2390,2395],[865,2395,2402,2385,2392],[870,2392,2398,2382,2388],[875,2388,2395,2380,2385],[880,2385,2392,2378,2382],[885,2382,2388,2375,2380],[890,2380,2385,2374,2378],[895,2378,2382,2372,2376],[900,2376,2380,2370,2376],[905,2376,2380,2372,2378],[910,2378,2382,2374,2376],[915,2376,2380,2372,2376],[920,2376,2378,2374,2376],[925,2376,2378,2376,2376]];
+var gp=cw_*0.02,mr=685-545,ar=925-750,tr=mr+ar,mw=(mr/tr)*(cw_-gp),aw=(ar/tr)*(cw_-gp);
+function tx(m){if(m<=685)return p.l+(m-545)/mr*mw;return p.l+mw+gp+(m-750)/ar*aw;}
+var mn=2340,mx_=2860;
+function ty(v){return p.t+(1-(v-mn)/(mx_-mn))*ch_;}
+var B=[{m:550.85,p:2742,q:200,t:'9:10:46'},{m:550.85,p:2713,q:200,t:'9:11:02'},{m:581.13,p:2664,q:200,t:'9:41:08'},{m:581.12,p:2671,q:200,t:'9:41:07'},{m:586.85,p:2642,q:200,t:'9:46:51'},{m:590.77,p:2656,q:200,t:'9:50:46'},{m:602,p:2610,q:200,t:'10:02:00'},{m:602.67,p:2599,q:100,t:'10:02:40'},{m:606.38,p:2610,q:100,t:'10:06:23'},{m:615.55,p:2576.8,q:200,t:'10:15:33'},{m:615.63,p:2574.9,q:200,t:'10:15:38'},{m:616.32,p:2582,q:200,t:'10:16:19'},{m:625.82,p:2578,q:100,t:'10:25:49'},{m:626.1,p:2578,q:100,t:'10:26:06'},{m:760.75,p:2488.85,q:200,t:'12:40:45'}];
+var S=[{m:551.57,p:2791,q:400,pl:'+25,400',pn:25400,t:'9:11:34',lx:tx(560),ly:p.t+12},{m:581.47,p:2674.25,q:200,pl:'+2,050',pn:2050,t:'9:41:28',lx:tx(575),ly:ty(2730)},{m:622.72,p:2598.5,q:400,pl:'+9,060',pn:9060,t:'10:22:43',lx:tx(612),ly:ty(2680)},{m:629.12,p:2625.07,q:400,pl:'+18,030',pn:18030,t:'10:29:07',lx:tx(645),ly:ty(2690)},{m:629.7,p:2627.97,q:1000,pl:'-8,730',pn:-8730,t:'10:29:42',lx:tx(660),ly:ty(2680)},{m:769.07,p:2537.15,q:200,pl:'+9,660',pn:9660,t:'12:49:04',lx:tx(785),ly:ty(2575)}];
+var AM=[];
+B.forEach(function(b){var sz=Math.max(5,Math.sqrt(b.q/100)*3.5);AM.push({tp:'b',px:tx(b.m),cy:ty(b.p)-sz-4,sz:sz,d:b});});
+S.forEach(function(s){var sz=Math.max(6,Math.sqrt(s.q/100)*4);AM.push({tp:'s',px:tx(s.m),cy:ty(s.p)+sz+4,sz:sz,d:s});});
+var hM=null;
+function tU(cx,cy,sz){x.beginPath();x.moveTo(cx,cy-sz);x.lineTo(cx-sz*0.75,cy+sz*0.45);x.lineTo(cx+sz*0.75,cy+sz*0.45);x.closePath();}
+function tD(cx,cy,sz){x.beginPath();x.moveTo(cx,cy+sz);x.lineTo(cx-sz*0.75,cy-sz*0.45);x.lineTo(cx+sz*0.75,cy-sz*0.45);x.closePath();}
+function dr(){
+x.clearRect(0,0,W,H);
+x.strokeStyle=ac;x.lineWidth=0.5;
+for(var i=2400;i<=2800;i+=100){var y=ty(i);x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();x.fillStyle=tc;x.font='11px sans-serif';x.textAlign='right';x.fillText(i.toLocaleString(),W-p.r+42,y+4);}
+for(var i=2350;i<=2850;i+=100){var y=ty(i);x.strokeStyle=dk?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.02)';x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();}
+var tt=[[545,'9:05'],[570,'9:30'],[600,'10:00'],[630,'10:30'],[660,'11:00'],[685,'11:25'],[750,'12:30'],[780,'13:00'],[810,'13:30'],[840,'14:00'],[870,'14:30'],[900,'15:00'],[925,'15:25']];
+x.textAlign='center';tt.forEach(function(a){var xp=tx(a[0]);x.strokeStyle=ac;x.lineWidth=0.5;x.beginPath();x.moveTo(xp,p.t);x.lineTo(xp,H-p.b);x.stroke();x.fillStyle=tc;x.font='11px sans-serif';x.fillText(a[1],xp,H-p.b+16);});
+var b1=tx(685)+5,b2=tx(750)-5;
+x.strokeStyle=dk?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.08)';x.lineWidth=1;x.setLineDash([3,3]);x.beginPath();x.moveTo(b1,p.t);x.lineTo(b1,H-p.b);x.stroke();x.beginPath();x.moveTo(b2,p.t);x.lineTo(b2,H-p.b);x.stroke();x.setLineDash([]);
+x.fillStyle=dk?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.06)';x.font='11px sans-serif';x.textAlign='center';x.fillText('昼休み',(b1+b2)/2,(p.t+H-p.b)/2);
+var cw=Math.max(3,Math.min(7,(mw/(mr/5))*0.6));
+D.forEach(function(d){var cx=tx(d[0]),o=d[1],h=d[2],l=d[3],cl=d[4],ib=cl>=o;var tB=ty(Math.max(o,cl)),bB=ty(Math.min(o,cl)),bH=Math.max(1,bB-tB);x.strokeStyle=ib?br:bf;x.lineWidth=1;x.beginPath();x.moveTo(cx,ty(h));x.lineTo(cx,tB);x.stroke();x.beginPath();x.moveTo(cx,bB);x.lineTo(cx,ty(l));x.stroke();if(ib){x.fillStyle=bb;x.fillRect(cx-cw/2,tB,cw,bH);x.strokeRect(cx-cw/2,tB,cw,bH);}else{x.fillStyle=bf;x.fillRect(cx-cw/2,tB,cw,bH);}});
+AM.forEach(function(mk){var ih=hM===mk,sc=ih?1.6:1,sz=mk.sz*sc;if(mk.tp==='b'){tU(mk.px,mk.cy,sz);x.strokeStyle=hc;x.lineWidth=ih?4.5:3.5;x.stroke();tU(mk.px,mk.cy,sz);x.strokeStyle=bs;x.lineWidth=ih?2.5:2;x.stroke();}else{tD(mk.px,mk.cy,sz);x.strokeStyle=hc;x.lineWidth=ih?4.5:3.5;x.stroke();tD(mk.px,mk.cy,sz);x.strokeStyle=ss;x.lineWidth=ih?2.5:2;x.stroke();}});
+var gs=[{b:[{m:550.85,p:2727.5}],s:551.57},{b:[{m:581.12,p:2667.5}],s:581.47},{b:[{m:615.55,p:2578},{m:616.32,p:2582}],s:622.72},{b:[{m:625.82,p:2578}],s:629.12},{b:[{m:760.75,p:2488.85}],s:769.07}];
+x.setLineDash([2,3]);x.lineWidth=0.6;gs.forEach(function(g){var ap=g.b.reduce(function(s,b){return s+b.p;},0)/g.b.length;var lm=Math.max.apply(null,g.b.map(function(b){return b.m;}));x.strokeStyle=dk?'rgba(255,230,0,0.2)':'rgba(200,180,0,0.18)';x.beginPath();x.moveTo(tx(lm),ty(ap));x.lineTo(tx(g.s),ty(ap));x.stroke();});x.setLineDash([]);
+S.forEach(function(s){var px=tx(s.m),py=ty(s.p),sz=Math.max(6,Math.sqrt(s.q/100)*4),oY=py+sz+6;x.strokeStyle=ec;x.lineWidth=0.8;x.setLineDash([]);x.beginPath();x.moveTo(px,oY);var mmx=px+(s.lx-px)*0.3,mmy=oY+(s.ly-oY)*0.7;x.lineTo(mmx,mmy);x.lineTo(s.lx,s.ly);x.stroke();x.beginPath();x.arc(px,oY,2,0,Math.PI*2);x.fillStyle=ec;x.fill();var il=s.pl.startsWith('-'),lk=il?lc:wc,bg=dk?(il?'rgba(255,100,100,0.12)':'rgba(93,187,99,0.12)'):(il?'rgba(192,57,43,0.08)':'rgba(26,140,58,0.08)');x.font='500 11px sans-serif';var tw=x.measureText(s.pl).width,bw=tw+12,bh=20,bx=s.lx-bw/2,by=s.ly-bh/2;x.fillStyle=bg;x.beginPath();var r=4;x.moveTo(bx+r,by);x.lineTo(bx+bw-r,by);x.quadraticCurveTo(bx+bw,by,bx+bw,by+r);x.lineTo(bx+bw,by+bh-r);x.quadraticCurveTo(bx+bw,by+bh,bx+bw-r,by+bh);x.lineTo(bx+r,by+bh);x.quadraticCurveTo(bx,by+bh,bx,by+bh-r);x.lineTo(bx,by+r);x.quadraticCurveTo(bx,by,bx+r,by);x.closePath();x.fill();x.fillStyle=lk;x.textAlign='center';x.textBaseline='middle';x.fillText(s.pl,s.lx,s.ly);});x.textBaseline='alphabetic';}
+dr();
+function ht(mmx,mmy){var best=null,bd=Infinity;AM.forEach(function(mk){var dx=mmx-mk.px,dy=mmy-mk.cy,d=Math.sqrt(dx*dx+dy*dy);if(d<mk.sz+8&&d<bd){bd=d;best=mk;}});return best;}
+var tip=document.getElementById('tip');
+var cH=D.map(function(d){return{m:d[0],o:d[1],h:d[2],l:d[3],c:d[4],px:tx(d[0])};});
+cv.addEventListener('mousemove',function(e){var r=cv.getBoundingClientRect(),mmx=e.clientX-r.left,mmy=e.clientY-r.top,mk=ht(mmx,mmy);if(mk!==hM){hM=mk;dr();}if(mk){cv.style.cursor='pointer';var d=mk.d,h='';if(mk.tp==='b'){h='<div style="font-weight:500;margin-bottom:4px;color:'+bs+';">新規買い</div><div>'+d.t+'</div><div>'+d.p.toLocaleString()+'円 x '+d.q+'株</div><div style="color:#888;">約定金額: '+Math.round(d.p*d.q).toLocaleString()+'円</div>';}else{var pc=d.pn>=0?wc:lc,ps=d.pn>=0?'+':'';h='<div style="font-weight:500;margin-bottom:4px;color:'+ss+';">決済売り</div><div>'+d.t+'</div><div>'+d.p.toLocaleString()+'円 x '+d.q+'株</div><div style="color:#888;">約定金額: '+Math.round(d.p*d.q).toLocaleString()+'円</div><div style="font-weight:500;color:'+pc+';margin-top:4px;">実現損益: '+ps+d.pn.toLocaleString()+'円</div>';}tip.innerHTML=h;tip.style.display='block';var tw2=tip.offsetWidth,th=tip.offsetHeight,tx2=mmx+15,ty2=mmy-th/2;if(tx2+tw2>W)tx2=mmx-tw2-15;if(ty2<0)ty2=4;if(ty2+th>H)ty2=H-th-4;tip.style.left=tx2+'px';tip.style.top=ty2+'px';}else{cv.style.cursor='default';var cw2=Math.max(3,Math.min(7,(mw/(mr/5))*0.6)),ch=null;for(var i=0;i<cH.length;i++){if(Math.abs(mmx-cH[i].px)<cw2+4){ch=cH[i];break;}}if(ch){var hh=Math.floor(ch.m/60),mm=Math.round(ch.m%60),ts=hh+':'+String(mm).padStart(2,'0'),chg=ch.c-ch.o,sg=chg>=0?'+':'',cl=chg>=0?wc:lc;tip.innerHTML='<div style="font-weight:500;margin-bottom:4px">'+ts+'</div><div>始: '+ch.o.toLocaleString()+'</div><div>高: '+ch.h.toLocaleString()+'</div><div>安: '+ch.l.toLocaleString()+'</div><div>終: '+ch.c.toLocaleString()+' <span style="color:'+cl+'">('+sg+chg+')</span></div>';tip.style.display='block';tip.style.left=(mmx+15)+'px';tip.style.top=(mmy-40)+'px';}else{tip.style.display='none';}}});
+cv.addEventListener('mouseleave',function(){if(hM){hM=null;dr();}tip.style.display='none';cv.style.cursor='default';});
+var tot=55470;var pv=document.getElementById('pv');pv.textContent='+'+tot.toLocaleString()+'円';pv.style.color=wc;
+</script>
+</body>
+</html>
