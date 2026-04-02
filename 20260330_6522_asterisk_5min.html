@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>アスタリスク(6522) 2026/03/30 5分足 トレード記録</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:1rem;max-width:1200px;margin:0 auto;}
+@media(prefers-color-scheme:dark){body{background:#1a1a2e;color:#e0e0e0;}}
+@media(prefers-color-scheme:light){body{background:#fff;color:#333;}}
+h2{font-size:16px;font-weight:500;margin-bottom:4px;}
+.sub{font-size:12px;color:#888;margin-bottom:12px;}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:12px;}
+.legend span{display:flex;align-items:center;gap:4px;}
+canvas{width:100%;height:auto;cursor:crosshair;}
+#tip{position:absolute;display:none;border-radius:8px;padding:8px 12px;font-size:12px;pointer-events:none;z-index:10;white-space:nowrap;}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.card{border-radius:8px;padding:12px 16px;}
+.card-label{font-size:12px;margin-bottom:4px;}
+.card-value{font-size:20px;font-weight:600;}
+</style>
+</head>
+<body>
+<h2>アスタリスク (6522) — 2026/03/30 5分足</h2>
+<div class="sub">日計り信用（特殊空売り・手数料990円/100株込）｜始値 1,480 高値 1,573 安値 1,389 終値 1,463</div>
+<div class="legend" id="leg"></div>
+<div style="position:relative;">
+<canvas id="cv"></canvas>
+<div id="tip"></div>
+</div>
+<div class="cards" id="cards"></div>
+
+<script>
+const dk=window.matchMedia('(prefers-color-scheme:dark)').matches;
+const C={
+  bg:dk?'#1a1a2e':'#ffffff',
+  bullBody:dk?'#1a1a2e':'#ffffff',
+  bullBrd:dk?'#e74c3c':'#c0392b',
+  bearFill:dk?'#4a9ede':'#2e86c1',
+  buyStroke:'#ffe600',
+  sellStroke:dk?'#d946ff':'#bf00ff',
+  halo:dk?'rgba(0,0,0,0.7)':'rgba(255,255,255,0.85)',
+  txt:dk?'#aaa':'#666',
+  ax:dk?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.06)',
+  win:dk?'#5dbb63':'#1a8c3a',
+  lose:dk?'#ff6b6b':'#c0392b',
+  leader:dk?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.2)',
+  cardBg:dk?'#252540':'#f5f5f5',
+  cardTxt:dk?'#aaa':'#888',
+  tipBg:dk?'#252540':'#fff',
+  tipBrd:dk?'#444':'#ddd',
+  lunchBg:dk?'rgba(255,255,255,0.03)':'rgba(0,0,0,0.02)',
+};
+
+// 5min OHLC data for 3/30 only
+const candles=[
+// Morning session 09:00-11:25
+{t:'09:00',o:1480,h:1573,l:1455,c:1538},
+{t:'09:05',o:1538,h:1545,l:1520,c:1530},
+{t:'09:10',o:1530,h:1535,l:1505,c:1515},
+{t:'09:15',o:1515,h:1518,l:1478,c:1490},
+{t:'09:20',o:1490,h:1495,l:1470,c:1480},
+{t:'09:25',o:1480,h:1482,l:1418,c:1430},
+{t:'09:30',o:1430,h:1432,l:1389,c:1400},
+{t:'09:35',o:1400,h:1425,l:1395,c:1420},
+{t:'09:40',o:1420,h:1435,l:1415,c:1430},
+{t:'09:45',o:1430,h:1442,l:1425,c:1438},
+{t:'09:50',o:1438,h:1448,l:1432,c:1442},
+{t:'09:55',o:1442,h:1455,l:1438,c:1452},
+{t:'10:00',o:1452,h:1462,l:1448,c:1458},
+{t:'10:05',o:1458,h:1465,l:1452,c:1460},
+{t:'10:10',o:1460,h:1478,l:1455,c:1472},
+{t:'10:15',o:1472,h:1512,l:1470,c:1505},
+{t:'10:20',o:1505,h:1510,l:1490,c:1495},
+{t:'10:25',o:1495,h:1500,l:1462,c:1468},
+{t:'10:30',o:1468,h:1472,l:1445,c:1450},
+{t:'10:35',o:1450,h:1455,l:1435,c:1440},
+{t:'10:40',o:1440,h:1445,l:1428,c:1432},
+{t:'10:45',o:1432,h:1438,l:1418,c:1422},
+{t:'10:50',o:1422,h:1428,l:1408,c:1412},
+{t:'10:55',o:1412,h:1425,l:1408,c:1420},
+{t:'11:00',o:1420,h:1448,l:1418,c:1442},
+{t:'11:05',o:1442,h:1475,l:1440,c:1468},
+{t:'11:10',o:1468,h:1472,l:1455,c:1460},
+{t:'11:15',o:1460,h:1465,l:1450,c:1455},
+{t:'11:20',o:1455,h:1460,l:1448,c:1452},
+{t:'11:25',o:1452,h:1458,l:1445,c:1450},
+// Afternoon session 12:30-15:25
+{t:'12:30',o:1520,h:1555,l:1485,c:1495},
+{t:'12:35',o:1495,h:1500,l:1478,c:1482},
+{t:'12:40',o:1482,h:1488,l:1472,c:1478},
+{t:'12:45',o:1478,h:1482,l:1468,c:1472},
+{t:'12:50',o:1472,h:1480,l:1468,c:1475},
+{t:'12:55',o:1475,h:1482,l:1472,c:1480},
+{t:'13:00',o:1480,h:1492,l:1478,c:1490},
+{t:'13:05',o:1490,h:1500,l:1488,c:1498},
+{t:'13:10',o:1498,h:1510,l:1495,c:1508},
+{t:'13:15',o:1508,h:1518,l:1505,c:1515},
+{t:'13:20',o:1515,h:1522,l:1512,c:1520},
+{t:'13:25',o:1520,h:1538,l:1518,c:1530},
+{t:'13:30',o:1530,h:1532,l:1515,c:1518},
+{t:'13:35',o:1518,h:1522,l:1508,c:1512},
+{t:'13:40',o:1512,h:1515,l:1502,c:1505},
+{t:'13:45',o:1505,h:1510,l:1498,c:1502},
+{t:'13:50',o:1502,h:1508,l:1495,c:1500},
+{t:'13:55',o:1500,h:1505,l:1495,c:1498},
+{t:'14:00',o:1498,h:1505,l:1492,c:1500},
+{t:'14:05',o:1500,h:1508,l:1495,c:1505},
+{t:'14:10',o:1505,h:1515,l:1500,c:1512},
+{t:'14:15',o:1512,h:1515,l:1498,c:1502},
+{t:'14:20',o:1502,h:1505,l:1484,c:1488},
+{t:'14:25',o:1488,h:1502,l:1486,c:1500},
+{t:'14:30',o:1500,h:1505,l:1495,c:1498},
+{t:'14:35',o:1498,h:1500,l:1488,c:1490},
+{t:'14:40',o:1490,h:1496,l:1484,c:1488},
+{t:'14:45',o:1488,h:1495,l:1484,c:1490},
+{t:'14:50',o:1490,h:1495,l:1480,c:1483},
+{t:'14:55',o:1483,h:1488,l:1475,c:1478},
+{t:'15:00',o:1478,h:1482,l:1470,c:1473},
+{t:'15:05',o:1473,h:1478,l:1465,c:1468},
+{t:'15:10',o:1468,h:1475,l:1462,c:1465},
+{t:'15:15',o:1465,h:1470,l:1458,c:1460},
+{t:'15:20',o:1460,h:1468,l:1450,c:1455},
+{t:'15:25',o:1455,h:1465,l:1448,c:1463},
+];
+
+// All trades: [time, type('open'|'close'), side('sell'|'buy'), price, qty]
+const trades=[
+['09:00','open','sell',1459,200],['09:00','open','sell',1459,200],
+['09:01','open','sell',1480,100],['09:01','open','sell',1480,100],
+['09:07','open','sell',1541,200],['09:08','open','sell',1510,200],
+['09:11','open','sell',1515,200],['09:13','open','sell',1484,200],
+['09:14','open','sell',1499,200],['09:22','open','sell',1479,200],
+['09:31','close','buy',1394.8,200],['09:31','close','buy',1394.8,200],
+['09:31','close','buy',1415.8,200],['09:31','close','buy',1415.8,200],
+['10:09','open','sell',1456,200],['10:10','open','sell',1470,200],
+['10:12','open','sell',1499,200],['10:13','open','sell',1509,200],
+['10:15','open','sell',1476,200],['10:18','open','sell',1498,200],
+['10:27','close','buy',1465,200],['10:28','close','buy',1449.8,200],
+['10:39','close','buy',1440,200],['10:57','close','buy',1415,200],
+['10:57','close','buy',1415,100],
+['11:06','open','sell',1470,200],['11:08','open','sell',1456,200],
+['12:33','open','sell',1517,200],['12:33','open','sell',1526,200],
+['12:34','open','sell',1496,200],['12:34','open','sell',1504,200],
+['12:34','open','sell',1528,200],
+['12:38','close','buy',1481,200],['12:53','close','buy',1471,200],
+['13:22','open','sell',1517,200],['13:23','open','sell',1528,100],
+['13:23','open','sell',1528,100],['13:23','open','sell',1521,200],
+['14:12','open','sell',1512,100],
+['14:24','close','buy',1486,100],['14:24','close','buy',1486,100],
+['14:24','close','buy',1485.9,100],['14:24','close','buy',1485.9,100],
+['14:39','close','buy',1490,200],['14:39','close','buy',1490,100],
+['14:39','close','buy',1490,200],['14:39','close','buy',1489,100],
+['14:39','close','buy',1490,100],['14:39','close','buy',1489,100],
+['14:39','close','buy',1490,200],['14:39','close','buy',1489,200],
+['14:39','close','buy',1490,200],['14:39','close','buy',1490,200],
+['14:39','close','buy',1490,200],['14:39','close','buy',1489,200],
+['14:39','close','buy',1490,200],['14:39','close','buy',1490,400],
+];
+
+// P&L per settlement round (pre-calculated FIFO)
+const plRounds=[
+{time:'09:31',pl:55640,shares:800,label:'09:31決済'},
+{time:'10:40',pl:45130,shares:900,label:'10:27-10:57決済'},
+{time:'12:45',pl:-8260,shares:400,label:'12:38-12:53決済'},
+{time:'14:24',pl:-640,shares:400,label:'14:24決済'},
+{time:'14:39',pl:10360,shares:2600,label:'14:39決済'},
+];
+
+const cv=document.getElementById('cv');
+const dpr=window.devicePixelRatio||1;
+const W=cv.parentElement.clientWidth;
+const H=600;
+cv.width=W*dpr;cv.height=H*dpr;
+cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');
+ctx.scale(dpr,dpr);
+
+const pad={t:30,r:65,b:40,l:10};
+const cw=W-pad.l-pad.r;
+const ch=H-pad.t-pad.b;
+
+// Find lunch gap index
+const lunchIdx=candles.findIndex(c=>c.t==='12:30');
+const totalBars=candles.length;
+const barW=cw/totalBars;
+const candleW=Math.max(barW*0.6,3);
+
+// Price range
+let pMin=9999,pMax=0;
+candles.forEach(c=>{if(c.l<pMin)pMin=c.l;if(c.h>pMax)pMax=c.h;});
+trades.forEach(t=>{if(t[3]<pMin)pMin=t[3];if(t[3]>pMax)pMax=t[3];});
+const pPad=(pMax-pMin)*0.08;
+pMin-=pPad;pMax+=pPad;
+
+function xOf(i){return pad.l+i*barW+barW/2;}
+function yOf(p){return pad.t+ch*(1-(p-pMin)/(pMax-pMin));}
+function timeToIdx(ts){
+  const idx=candles.findIndex(c=>c.t===ts);
+  if(idx>=0)return idx;
+  const[h,m]=ts.split(':').map(Number);
+  const mins=h*60+m;
+  let best=0,bestD=9999;
+  candles.forEach((c,i)=>{
+    const[ch2,cm]=c.t.split(':').map(Number);
+    const d=Math.abs(ch2*60+cm-mins);
+    if(d<bestD){bestD=d;best=i;}
+  });
+  return best;
+}
+
+// Aggregate trades by candle for markers
+const markers=[];
+const seen={};
+trades.forEach(tr=>{
+  const key=tr[0]+'_'+tr[1]+'_'+tr[3];
+  if(!seen[key]){
+    seen[key]=true;
+    const idx=timeToIdx(tr[0]);
+    const totalQty=trades.filter(t2=>t2[0]===tr[0]&&t2[1]===tr[1]&&t2[3]===tr[3]).reduce((s,t2)=>s+t2[4],0);
+    markers.push({idx,type:tr[1],side:tr[2],price:tr[3],qty:totalQty,time:tr[0]});
+  }
+});
+
+let hovM=null;
+const tipEl=document.getElementById('tip');
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  // Lunch break zone
+  if(lunchIdx>0){
+    const x1=xOf(lunchIdx-1)+barW/2;
+    const x2=xOf(lunchIdx)-barW/2;
+    ctx.fillStyle=C.lunchBg;
+    ctx.fillRect(x1,pad.t,x2-x1,ch);
+  }
+
+  // Grid
+  const step=Math.ceil((pMax-pMin)/8/10)*10;
+  const startP=Math.ceil(pMin/step)*step;
+  ctx.font='10px -apple-system,sans-serif';
+  ctx.textAlign='right';
+  for(let p=startP;p<=pMax;p+=step){
+    const y=yOf(p);
+    ctx.strokeStyle=C.ax;ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle=C.txt;ctx.fillText(p.toLocaleString(),W-pad.r+45,y+3);
+  }
+
+  // Time labels
+  ctx.textAlign='center';
+  candles.forEach((c,i)=>{
+    const[h,m]=c.t.split(':').map(Number);
+    if(m===0||m===30){
+      const x=xOf(i);
+      ctx.fillStyle=C.txt;ctx.fillText(c.t,x,H-pad.b+15);
+      ctx.strokeStyle=C.ax;ctx.lineWidth=0.5;
+      ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();
+    }
+  });
+
+  // Candles
+  candles.forEach((c,i)=>{
+    const x=xOf(i);
+    const bull=c.c>=c.o;
+    // Wick
+    ctx.strokeStyle=bull?C.bullBrd:C.bearFill;
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,yOf(c.h));ctx.lineTo(x,yOf(c.l));ctx.stroke();
+    // Body
+    const yTop=yOf(Math.max(c.o,c.c));
+    const yBot=yOf(Math.min(c.o,c.c));
+    const bh=Math.max(yBot-yTop,1);
+    if(bull){
+      ctx.fillStyle=C.bullBody;ctx.strokeStyle=C.bullBrd;ctx.lineWidth=1;
+      ctx.fillRect(x-candleW/2,yTop,candleW,bh);
+      ctx.strokeRect(x-candleW/2,yTop,candleW,bh);
+    }else{
+      ctx.fillStyle=C.bearFill;
+      ctx.fillRect(x-candleW/2,yTop,candleW,bh);
+    }
+  });
+
+  // P&L labels with leader lines
+  plRounds.forEach(r=>{
+    const idx=timeToIdx(r.time);
+    const x=xOf(idx);
+    const isWin=r.pl>=0;
+    const labelY=isWin?pad.t+18:pad.t+8;
+    const anchorY=isWin?yOf(candles[idx].l)+8:yOf(candles[idx].h)-8;
+    // Leader line
+    ctx.strokeStyle=C.leader;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(x,anchorY);ctx.lineTo(x,labelY+6);ctx.stroke();
+    ctx.setLineDash([]);
+    // Label
+    const txt=(isWin?'+':'')+r.pl.toLocaleString()+'円';
+    ctx.font='bold 10px -apple-system,sans-serif';
+    const tw=ctx.measureText(txt).width+8;
+    const lx=Math.max(pad.l,Math.min(x-tw/2,W-pad.r-tw));
+    ctx.fillStyle=isWin?C.win:C.lose;
+    ctx.globalAlpha=0.15;
+    ctx.beginPath();
+    ctx.roundRect(lx,labelY-1,tw,16,4);
+    ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.fillStyle=isWin?C.win:C.lose;
+    ctx.textAlign='center';
+    ctx.fillText(txt,lx+tw/2,labelY+11);
+  });
+
+  // Trade markers
+  markers.forEach(mk=>{
+    const x=xOf(mk.idx);
+    const y=yOf(mk.price);
+    const sz=hovM===mk?10:7;
+    const isOpen=mk.type==='open';
+    const stroke=isOpen?C.buyStroke:C.sellStroke;
+    // Halo
+    ctx.save();
+    ctx.shadowColor=C.halo;ctx.shadowBlur=6;
+    ctx.beginPath();
+    if(isOpen){
+      // Down triangle for sell open
+      ctx.moveTo(x,y+sz);ctx.lineTo(x-sz,y-sz*0.6);ctx.lineTo(x+sz,y-sz*0.6);
+    }else{
+      // Up triangle for buy close
+      ctx.moveTo(x,y-sz);ctx.lineTo(x-sz,y+sz*0.6);ctx.lineTo(x+sz,y+sz*0.6);
+    }
+    ctx.closePath();
+    ctx.strokeStyle=stroke;ctx.lineWidth=2.5;ctx.stroke();
+    ctx.restore();
+    // Marker outline
+    ctx.beginPath();
+    if(isOpen){
+      ctx.moveTo(x,y+sz);ctx.lineTo(x-sz,y-sz*0.6);ctx.lineTo(x+sz,y-sz*0.6);
+    }else{
+      ctx.moveTo(x,y-sz);ctx.lineTo(x-sz,y+sz*0.6);ctx.lineTo(x+sz,y+sz*0.6);
+    }
+    ctx.closePath();
+    ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();
+  });
+}
+
+draw();
+
+// Hover
+cv.addEventListener('mousemove',function(e){
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left;
+  const my=e.clientY-rect.top;
+  // Check markers
+  let hit=null;
+  markers.forEach(mk=>{
+    const x=xOf(mk.idx);const y=yOf(mk.price);
+    if(Math.abs(mx-x)<12&&Math.abs(my-y)<12)hit=mk;
+  });
+  if(hit!==hovM){hovM=hit;draw();}
+  if(hit){
+    cv.style.cursor='pointer';
+    const side=hit.type==='open'?'新規売り':'決済買い';
+    let html='<div style="font-weight:600;margin-bottom:4px">'+hit.time+' '+side+'</div>';
+    html+='<div>単価: '+hit.price.toLocaleString()+'円</div>';
+    html+='<div>数量: '+hit.qty.toLocaleString()+'株</div>';
+    html+='<div>金額: '+(hit.price*hit.qty).toLocaleString()+'円</div>';
+    tipEl.innerHTML=html;
+    tipEl.style.cssText='position:absolute;display:block;background:'+C.tipBg+';border:1px solid '+C.tipBrd+';border-radius:8px;padding:8px 12px;font-size:12px;color:'+(dk?'#e0e0e0':'#333')+';pointer-events:none;z-index:10;white-space:nowrap;left:'+(mx+15)+'px;top:'+(my-40)+'px';
+  }else{
+    // Candle tooltip
+    let cHit=null;
+    candles.forEach((c,i)=>{
+      const x=xOf(i);
+      if(Math.abs(mx-x)<barW/2+2)cHit=c;
+    });
+    if(cHit){
+      cv.style.cursor='crosshair';
+      const chg=cHit.c-cHit.o;const sg=chg>=0?'+':'';
+      const cl=chg>=0?C.win:C.lose;
+      tipEl.innerHTML='<div style="font-weight:500;margin-bottom:4px">'+cHit.t+'</div><div>始: '+cHit.o.toLocaleString()+'</div><div>高: '+cHit.h.toLocaleString()+'</div><div>安: '+cHit.l.toLocaleString()+'</div><div>終: '+cHit.c.toLocaleString()+' <span style="color:'+cl+'">('+sg+chg+')</span></div>';
+      tipEl.style.cssText='position:absolute;display:block;background:'+C.tipBg+';border:1px solid '+C.tipBrd+';border-radius:8px;padding:8px 12px;font-size:12px;color:'+(dk?'#e0e0e0':'#333')+';pointer-events:none;z-index:10;white-space:nowrap;left:'+(mx+15)+'px;top:'+(my-40)+'px';
+    }else{tipEl.style.display='none';cv.style.cursor='default';}
+  }
+});
+cv.addEventListener('mouseleave',function(){hovM=null;draw();tipEl.style.display='none';cv.style.cursor='default';});
+
+// Legend
+document.getElementById('leg').innerHTML=[
+  '<span><span style="width:10px;height:10px;border:1.5px solid '+C.bullBrd+';background:transparent;border-radius:1px;display:inline-block"></span>陽線</span>',
+  '<span><span style="width:10px;height:10px;background:'+C.bearFill+';border-radius:1px;display:inline-block"></span>陰線</span>',
+  '<span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid '+C.buyStroke+';display:inline-block"></span>新規売り</span>',
+  '<span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:8px solid '+C.sellStroke+';display:inline-block"></span>決済買い</span>',
+].join('');
+
+// Summary cards
+const tot=102230;
+document.getElementById('cards').innerHTML='<div class="card" style="background:'+C.cardBg+'"><div class="card-label" style="color:'+C.cardTxt+'">当日純損益（手数料込）</div><div class="card-value" style="color:'+C.win+'">+'+tot.toLocaleString()+'円</div></div><div class="card" style="background:'+C.cardBg+'"><div class="card-label" style="color:'+C.cardTxt+'">決済回数（勝敗）</div><div class="card-value" style="color:'+(dk?'#e0e0e0':'#333')+'">3勝2敗</div></div><div class="card" style="background:'+C.cardBg+'"><div class="card-label" style="color:'+C.cardTxt+'">勝率</div><div class="card-value" style="color:'+(dk?'#e0e0e0':'#333')+'">60.0%</div></div>';
+</script>
+</body>
+</html>
