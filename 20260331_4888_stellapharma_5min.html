@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>2026/03/31 4888 ステラファーマ - 5min</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  background: #0d1117; color: #e6edf3; padding: 16px; min-height: 100vh;
+}
+.wrap { max-width: 1600px; margin: 0 auto; }
+h1 { font-size: 18px; margin-bottom: 12px; color: #f0f6fc; font-weight: 600; }
+.subtitle { font-size: 13px; color: #8b949e; margin-bottom: 16px; }
+.summary {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;
+}
+.card {
+  background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px 16px;
+}
+.card .label { font-size: 11px; color: #8b949e; margin-bottom: 4px; }
+.card .value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.card .sub { font-size: 11px; color: #8b949e; margin-top: 2px; }
+.pos { color: #3fb950; }
+.neg { color: #f85149; }
+.chart-box {
+  background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px;
+  position: relative;
+}
+canvas { display: block; cursor: crosshair; }
+#tooltip {
+  position: absolute; background: rgba(22,27,34,0.95); border: 1px solid #30363d;
+  border-radius: 6px; padding: 8px 10px; font-size: 11px; pointer-events: none;
+  display: none; z-index: 10; min-width: 140px; line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+#tooltip .row { display: flex; justify-content: space-between; gap: 12px; }
+#tooltip .k { color: #8b949e; }
+#tooltip .sep { border-top: 1px solid #30363d; margin: 4px 0; }
+#tooltip .trade { color: #ffe600; }
+#tooltip .trade.buy { color: #bf00ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>2026/03/31 4888 ステラファーマ - 5min</h1>
+  <div class="subtitle">チャート表示: 09:00 ～ 15:30 ・ 手数料: 48円/100株</div>
+  <div class="summary">
+    <div class="card">
+      <div class="label">純損益</div>
+      <div class="value pos">+6,280円</div>
+      <div class="sub">手数料控除後</div>
+    </div>
+    <div class="card">
+      <div class="label">勝率</div>
+      <div class="value">75%</div>
+      <div class="sub">3勝 / 1敗</div>
+    </div>
+    <div class="card">
+      <div class="label">取引数</div>
+      <div class="value">4</div>
+      <div class="sub">ペア</div>
+    </div>
+    <div class="card">
+      <div class="label">総手数料</div>
+      <div class="value neg">-1,920円</div>
+      <div class="sub">往復</div>
+    </div>
+  </div>
+  <div class="chart-box">
+    <canvas id="chart"></canvas>
+    <div id="tooltip"></div>
+  </div>
+</div>
+<script>
+const OHLC = [{"t": "09:00", "o": 759.0, "h": 790.0, "l": 738.0, "c": 745.0, "v": 198100}, {"t": "09:05", "o": 746.0, "h": 751.0, "l": 738.0, "c": 743.0, "v": 58700}, {"t": "09:10", "o": 741.0, "h": 766.0, "l": 739.0, "c": 763.0, "v": 70500}, {"t": "09:15", "o": 765.0, "h": 769.0, "l": 756.0, "c": 769.0, "v": 36200}, {"t": "09:20", "o": 768.0, "h": 783.0, "l": 756.0, "c": 777.0, "v": 103800}, {"t": "09:25", "o": 776.0, "h": 794.0, "l": 775.0, "c": 780.0, "v": 124500}, {"t": "09:30", "o": 779.0, "h": 790.0, "l": 743.0, "c": 747.0, "v": 141500}, {"t": "09:35", "o": 746.0, "h": 756.0, "l": 742.0, "c": 754.0, "v": 72400}, {"t": "09:40", "o": 753.0, "h": 762.0, "l": 748.0, "c": 762.0, "v": 33400}, {"t": "09:45", "o": 762.0, "h": 770.0, "l": 758.0, "c": 768.0, "v": 37300}, {"t": "09:50", "o": 768.0, "h": 784.0, "l": 757.0, "c": 762.0, "v": 44300}, {"t": "09:55", "o": 763.0, "h": 767.0, "l": 759.0, "c": 765.0, "v": 6800}, {"t": "10:00", "o": 766.0, "h": 773.0, "l": 750.0, "c": 756.0, "v": 31300}, {"t": "10:05", "o": 758.0, "h": 758.0, "l": 747.0, "c": 749.0, "v": 38100}, {"t": "10:10", "o": 750.0, "h": 755.0, "l": 749.0, "c": 750.0, "v": 17300}, {"t": "10:15", "o": 752.0, "h": 758.0, "l": 751.0, "c": 756.0, "v": 13600}, {"t": "10:20", "o": 758.0, "h": 760.0, "l": 752.0, "c": 753.0, "v": 22400}, {"t": "10:25", "o": 753.0, "h": 758.0, "l": 753.0, "c": 758.0, "v": 14200}, {"t": "10:30", "o": 755.0, "h": 757.0, "l": 745.0, "c": 756.0, "v": 27100}, {"t": "10:35", "o": 757.0, "h": 771.0, "l": 756.0, "c": 769.0, "v": 42100}, {"t": "10:40", "o": 769.0, "h": 771.0, "l": 764.0, "c": 770.0, "v": 17200}, {"t": "10:45", "o": 771.0, "h": 784.0, "l": 771.0, "c": 774.0, "v": 46500}, {"t": "10:50", "o": 777.0, "h": 782.0, "l": 774.0, "c": 781.0, "v": 21400}, {"t": "10:55", "o": 781.0, "h": 784.0, "l": 775.0, "c": 782.0, "v": 29300}, {"t": "11:00", "o": 783.0, "h": 786.0, "l": 772.0, "c": 773.0, "v": 30800}, {"t": "11:05", "o": 774.0, "h": 781.0, "l": 772.0, "c": 781.0, "v": 13400}, {"t": "11:10", "o": 783.0, "h": 797.0, "l": 783.0, "c": 788.0, "v": 73500}, {"t": "11:15", "o": 789.0, "h": 794.0, "l": 788.0, "c": 792.0, "v": 28900}, {"t": "11:20", "o": 792.0, "h": 792.0, "l": 786.0, "c": 789.0, "v": 27300}, {"t": "11:25", "o": 790.0, "h": 792.0, "l": 783.0, "c": 785.0, "v": 22100}, {"t": "11:30", "o": 785.0, "h": 785.0, "l": 785.0, "c": 785.0, "v": 1200}, {"t": "12:30", "o": 785.0, "h": 785.0, "l": 773.0, "c": 774.0, "v": 50500}, {"t": "12:35", "o": 773.0, "h": 773.0, "l": 764.0, "c": 766.0, "v": 29200}, {"t": "12:40", "o": 766.0, "h": 768.0, "l": 758.0, "c": 761.0, "v": 35100}, {"t": "12:45", "o": 760.0, "h": 765.0, "l": 760.0, "c": 762.0, "v": 16400}, {"t": "12:50", "o": 763.0, "h": 763.0, "l": 753.0, "c": 759.0, "v": 47100}, {"t": "12:55", "o": 758.0, "h": 762.0, "l": 753.0, "c": 759.0, "v": 31500}, {"t": "13:00", "o": 761.0, "h": 770.0, "l": 759.0, "c": 770.0, "v": 28800}, {"t": "13:05", "o": 769.0, "h": 770.0, "l": 751.0, "c": 752.0, "v": 36900}, {"t": "13:10", "o": 752.0, "h": 756.0, "l": 752.0, "c": 756.0, "v": 10800}, {"t": "13:15", "o": 756.0, "h": 758.0, "l": 755.0, "c": 758.0, "v": 8700}, {"t": "13:20", "o": 759.0, "h": 766.0, "l": 758.0, "c": 758.0, "v": 20400}, {"t": "13:25", "o": 759.0, "h": 763.0, "l": 756.0, "c": 756.0, "v": 13900}, {"t": "13:30", "o": 756.0, "h": 768.0, "l": 755.0, "c": 768.0, "v": 16000}, {"t": "13:35", "o": 768.0, "h": 770.0, "l": 764.0, "c": 767.0, "v": 9900}, {"t": "13:40", "o": 769.0, "h": 773.0, "l": 767.0, "c": 767.0, "v": 15500}, {"t": "13:45", "o": 766.0, "h": 769.0, "l": 764.0, "c": 765.0, "v": 13300}, {"t": "13:50", "o": 765.0, "h": 771.0, "l": 765.0, "c": 769.0, "v": 25500}, {"t": "13:55", "o": 769.0, "h": 772.0, "l": 766.0, "c": 768.0, "v": 6800}, {"t": "14:00", "o": 768.0, "h": 776.0, "l": 767.0, "c": 774.0, "v": 30000}, {"t": "14:05", "o": 775.0, "h": 775.0, "l": 766.0, "c": 769.0, "v": 13600}, {"t": "14:10", "o": 770.0, "h": 772.0, "l": 767.0, "c": 769.0, "v": 12400}, {"t": "14:15", "o": 770.0, "h": 772.0, "l": 769.0, "c": 772.0, "v": 6400}, {"t": "14:20", "o": 771.0, "h": 780.0, "l": 770.0, "c": 777.0, "v": 15000}, {"t": "14:25", "o": 779.0, "h": 786.0, "l": 776.0, "c": 777.0, "v": 35700}, {"t": "14:30", "o": 778.0, "h": 778.0, "l": 770.0, "c": 775.0, "v": 14700}, {"t": "14:35", "o": 774.0, "h": 776.0, "l": 767.0, "c": 772.0, "v": 11100}, {"t": "14:40", "o": 772.0, "h": 776.0, "l": 771.0, "c": 771.0, "v": 8800}, {"t": "14:45", "o": 771.0, "h": 771.0, "l": 766.0, "c": 768.0, "v": 13900}, {"t": "14:50", "o": 770.0, "h": 773.0, "l": 769.0, "c": 772.0, "v": 10000}, {"t": "14:55", "o": 772.0, "h": 776.0, "l": 772.0, "c": 772.0, "v": 9000}, {"t": "15:00", "o": 772.0, "h": 773.0, "l": 762.0, "c": 762.0, "v": 18200}, {"t": "15:05", "o": 761.0, "h": 770.0, "l": 758.0, "c": 762.0, "v": 21400}, {"t": "15:10", "o": 763.0, "h": 764.0, "l": 760.0, "c": 762.0, "v": 6300}, {"t": "15:15", "o": 762.0, "h": 765.0, "l": 761.0, "c": 762.0, "v": 6800}, {"t": "15:20", "o": 763.0, "h": 767.0, "l": 762.0, "c": 763.0, "v": 23300}, {"t": "15:30", "o": 759.0, "h": 759.0, "l": 759.0, "c": 759.0, "v": 37900}];
+const PAIRS = [{"pair_id": 1, "sell_time": "09:00", "sell_price": 759.0, "buy_time": "09:00", "buy_price": 790.0, "qty": 500, "gross": -15500, "fee": 480, "net": -15980, "is_win": false}, {"pair_id": 2, "sell_time": "09:02", "sell_price": 754.0, "buy_time": "09:34", "buy_price": 750.36, "qty": 500, "gross": 1820, "fee": 480, "net": 1340, "is_win": true}, {"pair_id": 3, "sell_time": "09:11", "sell_price": 762.0, "buy_time": "09:35", "buy_price": 744.5, "qty": 500, "gross": 8750, "fee": 480, "net": 8270, "is_win": true}, {"pair_id": 4, "sell_time": "09:32", "sell_price": 771.0, "buy_time": "09:35", "buy_price": 744.74, "qty": 500, "gross": 13130, "fee": 480, "net": 12650, "is_win": true}];
+const MARKERS = [{"time": "09:00", "type": "S", "price": 759.0, "qty": 500, "pair_id": 1}, {"time": "09:00", "type": "B", "price": 790.0, "qty": 500, "pair_id": 1}, {"time": "09:02", "type": "S", "price": 754.0, "qty": 500, "pair_id": 2}, {"time": "09:11", "type": "S", "price": 762.0, "qty": 500, "pair_id": 3}, {"time": "09:32", "type": "S", "price": 771.0, "qty": 500, "pair_id": 4}, {"time": "09:34", "type": "B", "price": 750.0, "qty": 100, "pair_id": 2}, {"time": "09:34", "type": "B", "price": 750.9, "qty": 100, "pair_id": 2}, {"time": "09:34", "type": "B", "price": 750.0, "qty": 100, "pair_id": 2}, {"time": "09:34", "type": "B", "price": 750.7, "qty": 100, "pair_id": 2}, {"time": "09:34", "type": "B", "price": 750.2, "qty": 100, "pair_id": 2}, {"time": "09:35", "type": "B", "price": 744.5, "qty": 100, "pair_id": 3}, {"time": "09:35", "type": "B", "price": 744.5, "qty": 100, "pair_id": 3}, {"time": "09:35", "type": "B", "price": 744.4, "qty": 200, "pair_id": 3}, {"time": "09:35", "type": "B", "price": 744.7, "qty": 100, "pair_id": 3}, {"time": "09:35", "type": "B", "price": 744.7, "qty": 100, "pair_id": 4}, {"time": "09:35", "type": "B", "price": 744.9, "qty": 200, "pair_id": 4}, {"time": "09:35", "type": "B", "price": 744.6, "qty": 200, "pair_id": 4}];
+
+const canvas = document.getElementById('chart');
+const ctx = canvas.getContext('2d');
+const tooltip = document.getElementById('tooltip');
+
+const DPR = window.devicePixelRatio || 1;
+const PAD = { top: 20, right: 80, bottom: 50, left: 60 };
+const VOL_RATIO = 0.18;
+
+function resize() {
+  const box = canvas.parentElement;
+  const w = box.clientWidth - 24;
+  const h = Math.max(500, Math.min(700, window.innerHeight - 280));
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  canvas.width = w * DPR;
+  canvas.height = h * DPR;
+  ctx.scale(DPR, DPR);
+  return { w, h };
+}
+
+function timeToMin(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+let hoverIdx = -1;
+let hoverMarker = -1;
+let chartState = null;
+
+function draw() {
+  const { w, h } = resize();
+  ctx.clearRect(0, 0, w, h);
+
+  const priceH = (h - PAD.top - PAD.bottom) * (1 - VOL_RATIO);
+  const volH = (h - PAD.top - PAD.bottom) * VOL_RATIO;
+  const volTop = PAD.top + priceH + 10;
+
+  // Find price range
+  let minP = Infinity, maxP = -Infinity, maxV = 0;
+  OHLC.forEach(c => {
+    minP = Math.min(minP, c.l);
+    maxP = Math.max(maxP, c.h);
+    maxV = Math.max(maxV, c.v);
+  });
+  // Include marker prices
+  MARKERS.forEach(m => {
+    minP = Math.min(minP, m.price);
+    maxP = Math.max(maxP, m.price);
+  });
+  const pad = (maxP - minP) * 0.08;
+  minP -= pad; maxP += pad;
+
+  const plotW = w - PAD.left - PAD.right;
+  const barW = plotW / OHLC.length;
+  const candleW = Math.max(2, barW * 0.7);
+
+  const yP = p => PAD.top + priceH - (p - minP) / (maxP - minP) * priceH;
+  const yV = v => volTop + volH - (v / maxV) * volH;
+  const xI = i => PAD.left + i * barW + barW / 2;
+
+  chartState = { w, h, plotW, barW, yP, yV, xI, minP, maxP, volTop, volH, priceH };
+
+  // Grid & Y-axis labels (price)
+  ctx.strokeStyle = '#21262d';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#8b949e';
+  ctx.font = '10px monospace';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  const priceStep = (maxP - minP) / 6;
+  for (let i = 0; i <= 6; i++) {
+    const p = minP + priceStep * i;
+    const y = yP(p);
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y); ctx.lineTo(w - PAD.right, y);
+    ctx.stroke();
+    ctx.fillText(p.toFixed(1), PAD.left - 6, y);
+  }
+
+  // X-axis time labels
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  const labelStep = Math.max(1, Math.floor(OHLC.length / 10));
+  for (let i = 0; i < OHLC.length; i += labelStep) {
+    const x = xI(i);
+    ctx.fillText(OHLC[i].t, x, PAD.top + priceH + 2);
+  }
+  // Volume label
+  ctx.textAlign = 'right';
+  ctx.fillText('Vol: ' + (maxV >= 10000 ? (maxV/10000).toFixed(0)+'万' : maxV), PAD.left - 6, volTop + 5);
+
+  // Volume bars
+  OHLC.forEach((c, i) => {
+    const x = xI(i) - candleW / 2;
+    const vh = volTop + volH - yV(c.v);
+    ctx.fillStyle = c.c >= c.o ? 'rgba(63,185,80,0.4)' : 'rgba(248,81,73,0.4)';
+    ctx.fillRect(x, yV(c.v), candleW, vh);
+  });
+
+  // Candles
+  OHLC.forEach((c, i) => {
+    const x = xI(i);
+    const isUp = c.c >= c.o;
+    const color = isUp ? '#e74c3c' : '#3498db';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    // Wick
+    ctx.beginPath();
+    ctx.moveTo(x, yP(c.h)); ctx.lineTo(x, yP(c.l));
+    ctx.stroke();
+    // Body
+    const top = yP(Math.max(c.o, c.c));
+    const bot = yP(Math.min(c.o, c.c));
+    const bodyH = Math.max(1, bot - top);
+    if (isUp) {
+      ctx.fillStyle = '#0d1117';
+      ctx.fillRect(x - candleW/2, top, candleW, bodyH);
+      ctx.strokeRect(x - candleW/2, top, candleW, bodyH);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(x - candleW/2, top, candleW, bodyH);
+    }
+  });
+
+  // Trade markers
+  const timeToIdx = {};
+  OHLC.forEach((c, i) => { if (!(c.t in timeToIdx)) timeToIdx[c.t] = i; });
+
+  // Snap marker time to nearest candle
+  function findIdx(t) {
+    if (t in timeToIdx) return timeToIdx[t];
+    const tmin = timeToMin(t);
+    let best = 0, bestD = Infinity;
+    OHLC.forEach((c, i) => {
+      const d = Math.abs(timeToMin(c.t) - tmin);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+
+  // Group markers by (time, type, price) for visual offset
+  const markerPos = [];
+  MARKERS.forEach((m, mi) => {
+    const idx = findIdx(m.time);
+    markerPos.push({ idx, price: m.price, type: m.type, qty: m.qty, pair_id: m.pair_id, mi });
+  });
+
+  // Draw markers
+  markerPos.forEach(m => {
+    const x = xI(m.idx);
+    const y = yP(m.price);
+    const isHover = hoverMarker === m.mi;
+    const scale = isHover ? 1.6 : 1.0;
+    const size = 8 * scale;
+    const isSell = m.type === 'S';
+    const color = isSell ? '#ffe600' : '#bf00ff';
+
+    // Halo
+    ctx.fillStyle = color + '40';
+    ctx.beginPath();
+    ctx.arc(x, y, size * 1.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Triangle (▼ for sell, ▲ for buy-close)
+    ctx.fillStyle = 'rgba(13,17,23,0.3)';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2 * scale;
+    ctx.beginPath();
+    if (isSell) {
+      // ▼ pointing down (above marker point, apex at point)
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - size, y - size * 1.2);
+      ctx.lineTo(x + size, y - size * 1.2);
+    } else {
+      // ▲ pointing up (below marker point, apex at point)
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - size, y + size * 1.2);
+      ctx.lineTo(x + size, y + size * 1.2);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  });
+
+  // P&L labels anchored at BUY (close) marker, placed in empty chart space
+  ctx.font = 'bold 11px monospace';
+
+  // Pre-build candle rect data for overlap checks
+  const candleRects = OHLC.map((c, i) => ({
+    x: PAD.left + i * barW + barW / 2,
+    yHigh: yP(c.h),
+    yLow: yP(c.l),
+    halfW: barW / 2,
+  }));
+
+  // Pre-build marker positions for overlap checks
+  const markerRects = MARKERS.map(m => {
+    const idx = findIdx(m.time);
+    return {
+      x: PAD.left + idx * barW + barW / 2,
+      y: yP(m.price),
+      r: 18,
+    };
+  });
+
+  function overlapsCandles(x, y, tw, th) {
+    const hw = tw/2 + 4, hh = th/2;
+    const x1 = x - hw, x2 = x + hw;
+    const y1 = y - hh, y2 = y + hh;
+    for (let i = 0; i < candleRects.length; i++) {
+      const c = candleRects[i];
+      if (c.x + c.halfW < x1 || c.x - c.halfW > x2) continue;
+      if (c.yHigh > y2 || c.yLow < y1) continue;
+      return true;
+    }
+    return false;
+  }
+
+  function overlapsMarkers(x, y, tw, th) {
+    const hw = tw/2 + 4, hh = th/2;
+    for (let i = 0; i < markerRects.length; i++) {
+      const m = markerRects[i];
+      const closestX = Math.max(x - hw, Math.min(m.x, x + hw));
+      const closestY = Math.max(y - hh, Math.min(m.y, y + hh));
+      const dist = Math.hypot(m.x - closestX, m.y - closestY);
+      if (dist < m.r) return true;
+    }
+    return false;
+  }
+
+  function overlapsPlaced(x, y, tw, placed) {
+    for (const l of placed) {
+      const minDx = (tw + l.tw)/2 + 6;
+      const dx = Math.abs(x - l.x);
+      const dy = Math.abs(y - l.y);
+      if (dx < minDx && dy < 22) return true;
+    }
+    return false;
+  }
+
+  // Build label list with anchors at BUY markers
+  const labelInputs = PAIRS.map(p => {
+    const buyIdx = findIdx(p.buy_time);
+    const buyX = PAD.left + buyIdx * barW + barW / 2;
+    const buyY = yP(p.buy_price);
+    const txt = (p.net >= 0 ? '+' : '') + p.net.toLocaleString() + '円';
+    const tw = ctx.measureText(txt).width;
+    return { p, txt, tw, th: 18, mx: buyX, my: buyY };
+  });
+
+  // Sort: place larger |net| first (claims best spots first)
+  labelInputs.sort((a, b) => Math.abs(b.p.net) - Math.abs(a.p.net));
+
+  const placed = [];
+  const chartX1 = PAD.left + 10;
+  const chartX2 = w - PAD.right - 10;
+  const chartY1 = PAD.top + 12;
+  const chartY2 = PAD.top + priceH - 12;
+
+  labelInputs.forEach(l => {
+    let best = null, bestScore = Infinity;
+    const step = 10;
+    const minX = chartX1 + l.tw/2;
+    const maxX = chartX2 - l.tw/2;
+    for (let y = chartY1; y <= chartY2; y += step) {
+      for (let x = minX; x <= maxX; x += step) {
+        let score = 0;
+        if (overlapsCandles(x, y, l.tw, l.th)) score += 10000;
+        if (overlapsMarkers(x, y, l.tw, l.th)) score += 5000;
+        if (overlapsPlaced(x, y, l.tw, placed)) score += 3000;
+        // Distance from anchor (buy marker)
+        score += Math.hypot(x - l.mx, y - l.my);
+        // Prefer direction consistent with P&L: wins above, losses below
+        const dy = y - l.my;
+        if (l.p.is_win && dy > 0) score += 20;
+        if (!l.p.is_win && dy < 0) score += 20;
+        if (score < bestScore) { bestScore = score; best = { x, y }; }
+      }
+    }
+    l.x = best.x;
+    l.y = best.y;
+    placed.push(l);
+  });
+
+  // Draw leader lines from BUY marker to label edge
+  placed.forEach(l => {
+    ctx.strokeStyle = l.p.is_win ? '#3fb950' : '#f85149';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(l.mx, l.my);
+    const ddx = l.x - l.mx;
+    const ddy = l.y - l.my;
+    const len = Math.hypot(ddx, ddy);
+    if (len > 2) {
+      const halfW = l.tw / 2 + 4;
+      const halfH = l.th / 2;
+      const ux = ddx / len, uy = ddy / len;
+      const tHitX = ux !== 0 ? halfW / Math.abs(ux) : Infinity;
+      const tHitY = uy !== 0 ? halfH / Math.abs(uy) : Infinity;
+      const t = Math.min(tHitX, tHitY);
+      ctx.lineTo(l.x - ux * t, l.y - uy * t);
+    } else {
+      ctx.lineTo(l.x, l.y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Draw label boxes
+  placed.forEach(l => {
+    ctx.fillStyle = l.p.is_win ? 'rgba(63,185,80,0.95)' : 'rgba(248,81,73,0.95)';
+    ctx.strokeStyle = l.p.is_win ? '#3fb950' : '#f85149';
+    ctx.lineWidth = 1;
+    const bx = l.x - l.tw/2 - 4;
+    const by = l.y - l.th/2;
+    ctx.fillRect(bx, by, l.tw + 8, l.th);
+    ctx.strokeRect(bx, by, l.tw + 8, l.th);
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(l.txt, l.x, l.y);
+  });
+
+  // Crosshair on hover
+  if (hoverIdx >= 0 && hoverIdx < OHLC.length) {
+    const x = xI(hoverIdx);
+    ctx.strokeStyle = 'rgba(139,148,158,0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + priceH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+canvas.addEventListener('mousemove', e => {
+  if (!chartState) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  // Check marker hover first
+  let foundMarker = -1;
+  let markerInfo = null;
+  for (let i = 0; i < MARKERS.length; i++) {
+    const m = MARKERS[i];
+    const timeToIdx = {};
+    OHLC.forEach((c, idx) => { if (!(c.t in timeToIdx)) timeToIdx[c.t] = idx; });
+    let idx = timeToIdx[m.time];
+    if (idx === undefined) {
+      const tmin = timeToMin(m.time);
+      let best = 0, bestD = Infinity;
+      OHLC.forEach((c, ci) => {
+        const d = Math.abs(timeToMin(c.t) - tmin);
+        if (d < bestD) { bestD = d; best = ci; }
+      });
+      idx = best;
+    }
+    const x = chartState.xI(idx);
+    const y = chartState.yP(m.price);
+    const dist = Math.hypot(mx - x, my - y);
+    if (dist < 16) { foundMarker = i; markerInfo = { m, x, y }; break; }
+  }
+
+  // OHLC index
+  const plotX = mx - PAD.left;
+  let idx = Math.floor(plotX / chartState.barW);
+  idx = Math.max(0, Math.min(OHLC.length - 1, idx));
+
+  const needRedraw = (hoverIdx !== idx) || (hoverMarker !== foundMarker);
+  hoverIdx = idx;
+  hoverMarker = foundMarker;
+  if (needRedraw) draw();
+
+  // Tooltip
+  if (foundMarker >= 0) {
+    const m = MARKERS[foundMarker];
+    const pair = PAIRS.find(p => p.pair_id === m.pair_id);
+    const typeLabel = m.type === 'S' ? '新規売り' : '決済買い';
+    const typeClass = m.type === 'S' ? '' : 'buy';
+    let html = `<div class="row"><span class="k">時刻</span><span>${m.time}</span></div>`;
+    html += `<div class="row"><span class="k">取引</span><span class="trade ${typeClass}">${typeLabel}</span></div>`;
+    html += `<div class="row"><span class="k">単価</span><span>${m.price.toFixed(1)}円</span></div>`;
+    html += `<div class="row"><span class="k">数量</span><span>${m.qty}株</span></div>`;
+    if (pair) {
+      html += `<div class="sep"></div>`;
+      html += `<div class="row"><span class="k">ペア損益</span><span class="${pair.is_win?'pos':'neg'}">${pair.net>=0?'+':''}${pair.net.toLocaleString()}円</span></div>`;
+    }
+    tooltip.innerHTML = html;
+    tooltip.style.display = 'block';
+    const tr = tooltip.getBoundingClientRect();
+    const cr = canvas.parentElement.getBoundingClientRect();
+    let tx = e.clientX - cr.left + 12;
+    let ty = e.clientY - cr.top + 12;
+    if (tx + tr.width > cr.width) tx = e.clientX - cr.left - tr.width - 12;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top = ty + 'px';
+  } else if (idx >= 0 && idx < OHLC.length) {
+    const c = OHLC[idx];
+    let html = `<div class="row"><span class="k">時刻</span><span>${c.t}</span></div>`;
+    html += `<div class="row"><span class="k">始値</span><span>${c.o.toFixed(1)}</span></div>`;
+    html += `<div class="row"><span class="k">高値</span><span>${c.h.toFixed(1)}</span></div>`;
+    html += `<div class="row"><span class="k">安値</span><span>${c.l.toFixed(1)}</span></div>`;
+    html += `<div class="row"><span class="k">終値</span><span>${c.c.toFixed(1)}</span></div>`;
+    html += `<div class="row"><span class="k">出来高</span><span>${c.v.toLocaleString()}</span></div>`;
+    tooltip.innerHTML = html;
+    tooltip.style.display = 'block';
+    const tr = tooltip.getBoundingClientRect();
+    const cr = canvas.parentElement.getBoundingClientRect();
+    let tx = e.clientX - cr.left + 12;
+    let ty = e.clientY - cr.top + 12;
+    if (tx + tr.width > cr.width) tx = e.clientX - cr.left - tr.width - 12;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top = ty + 'px';
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  hoverIdx = -1; hoverMarker = -1;
+  tooltip.style.display = 'none';
+  draw();
+});
+
+window.addEventListener('resize', draw);
+draw();
+</script>
+</body>
+</html>
