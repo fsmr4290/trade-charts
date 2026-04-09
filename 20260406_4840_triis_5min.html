@@ -15,7 +15,7 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 .cv-wrap{position:relative;width:100%}
 canvas{display:block;width:100%;cursor:default}
 #tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
 .card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
 .card-value{font-size:22px;font-weight:600}
@@ -35,11 +35,11 @@ canvas{display:block;width:100%;cursor:default}
   <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済(買い)</span>
   <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>決済(売り)</span>
 </div>
+<div class="cards" id="cards"></div>
 <div class="cv-wrap">
   <canvas id="cc"></canvas>
   <div id="tip"></div>
 </div>
-<div class="cards" id="cards"></div>
 </div>
 <script>
 const DATA = {"candles": [{"t": "09:05:00", "o": 1014.0, "h": 1014.0, "l": 922.0, "c": 947.0, "v": 244000}, {"t": "09:10:00", "o": 948.0, "h": 980.0, "l": 933.0, "c": 954.0, "v": 66700}, {"t": "09:15:00", "o": 953.0, "h": 994.0, "l": 933.0, "c": 976.0, "v": 49700}, {"t": "09:20:00", "o": 967.0, "h": 1049.0, "l": 967.0, "c": 1033.0, "v": 102400}, {"t": "09:25:00", "o": 1034.0, "h": 1036.0, "l": 958.0, "c": 967.0, "v": 78600}, {"t": "09:30:00", "o": 966.0, "h": 987.0, "l": 960.0, "c": 974.0, "v": 22500}, {"t": "09:35:00", "o": 977.0, "h": 982.0, "l": 941.0, "c": 978.0, "v": 31900}, {"t": "09:40:00", "o": 974.0, "h": 1020.0, "l": 971.0, "c": 1005.0, "v": 52500}, {"t": "09:45:00", "o": 1003.0, "h": 1020.0, "l": 996.0, "c": 1013.0, "v": 29100}, {"t": "09:50:00", "o": 1013.0, "h": 1016.0, "l": 992.0, "c": 1013.0, "v": 18300}, {"t": "09:55:00", "o": 1013.0, "h": 1018.0, "l": 983.0, "c": 994.0, "v": 14600}, {"t": "10:00:00", "o": 995.0, "h": 995.0, "l": 977.0, "c": 994.0, "v": 9100}, {"t": "10:05:00", "o": 994.0, "h": 1006.0, "l": 985.0, "c": 985.0, "v": 6500}, {"t": "10:10:00", "o": 985.0, "h": 997.0, "l": 979.0, "c": 997.0, "v": 6600}, {"t": "10:15:00", "o": 997.0, "h": 998.0, "l": 976.0, "c": 976.0, "v": 8900}, {"t": "10:20:00", "o": 975.0, "h": 982.0, "l": 959.0, "c": 982.0, "v": 18600}, {"t": "10:25:00", "o": 984.0, "h": 998.0, "l": 979.0, "c": 989.0, "v": 10600}, {"t": "10:30:00", "o": 989.0, "h": 989.0, "l": 963.0, "c": 974.0, "v": 6400}, {"t": "10:35:00", "o": 978.0, "h": 1014.0, "l": 978.0, "c": 1007.0, "v": 24100}, {"t": "10:40:00", "o": 1007.0, "h": 1008.0, "l": 990.0, "c": 996.0, "v": 6400}, {"t": "10:45:00", "o": 998.0, "h": 1015.0, "l": 991.0, "c": 998.0, "v": 6000}, {"t": "10:50:00", "o": 998.0, "h": 1010.0, "l": 998.0, "c": 1007.0, "v": 4500}, {"t": "10:55:00", "o": 1007.0, "h": 1027.0, "l": 1007.0, "c": 1026.0, "v": 10400}, {"t": "11:00:00", "o": 1027.0, "h": 1066.0, "l": 1023.0, "c": 1052.0, "v": 79800}, {"t": "11:05:00", "o": 1054.0, "h": 1064.0, "l": 1035.0, "c": 1052.0, "v": 42300}, {"t": "11:10:00", "o": 1051.0, "h": 1076.0, "l": 1040.0, "c": 1059.0, "v": 33900}, {"t": "11:15:00", "o": 1059.0, "h": 1059.0, "l": 1034.0, "c": 1036.0, "v": 21400}, {"t": "11:20:00", "o": 1035.0, "h": 1055.0, "l": 1034.0, "c": 1050.0, "v": 9400}, {"t": "11:25:00", "o": 1049.0, "h": 1052.0, "l": 1035.0, "c": 1049.0, "v": 13500}, {"t": "11:30:00", "o": 1043.0, "h": 1043.0, "l": 1043.0, "c": 1043.0, "v": 200}, {"t": "12:30:00", "o": 1035.0, "h": 1040.0, "l": 1009.0, "c": 1021.0, "v": 27200}, {"t": "12:35:00", "o": 1021.0, "h": 1021.0, "l": 1008.0, "c": 1010.0, "v": 10200}, {"t": "12:40:00", "o": 1012.0, "h": 1039.0, "l": 1012.0, "c": 1031.0, "v": 10900}, {"t": "12:45:00", "o": 1031.0, "h": 1045.0, "l": 1021.0, "c": 1043.0, "v": 15800}, {"t": "12:50:00", "o": 1042.0, "h": 1043.0, "l": 1028.0, "c": 1036.0, "v": 6500}, {"t": "12:55:00", "o": 1039.0, "h": 1047.0, "l": 1036.0, "c": 1036.0, "v": 4900}, {"t": "13:00:00", "o": 1035.0, "h": 1036.0, "l": 1022.0, "c": 1032.0, "v": 5800}, {"t": "13:05:00", "o": 1033.0, "h": 1050.0, "l": 1033.0, "c": 1043.0, "v": 11300}, {"t": "13:10:00", "o": 1043.0, "h": 1073.0, "l": 1040.0, "c": 1066.0, "v": 28600}, {"t": "13:15:00", "o": 1066.0, "h": 1072.0, "l": 1061.0, "c": 1066.0, "v": 19900}, {"t": "13:20:00", "o": 1067.0, "h": 1070.0, "l": 1054.0, "c": 1055.0, "v": 13600}, {"t": "13:25:00", "o": 1057.0, "h": 1082.0, "l": 1056.0, "c": 1075.0, "v": 21100}, {"t": "13:30:00", "o": 1075.0, "h": 1090.0, "l": 1055.0, "c": 1075.0, "v": 31200}, {"t": "13:35:00", "o": 1070.0, "h": 1084.0, "l": 1060.0, "c": 1074.0, "v": 19000}, {"t": "13:40:00", "o": 1073.0, "h": 1075.0, "l": 1068.0, "c": 1070.0, "v": 7200}, {"t": "13:45:00", "o": 1072.0, "h": 1072.0, "l": 1060.0, "c": 1068.0, "v": 13100}, {"t": "13:50:00", "o": 1066.0, "h": 1069.0, "l": 1064.0, "c": 1069.0, "v": 2100}, {"t": "13:55:00", "o": 1069.0, "h": 1075.0, "l": 1060.0, "c": 1072.0, "v": 12800}, {"t": "14:00:00", "o": 1074.0, "h": 1074.0, "l": 1065.0, "c": 1065.0, "v": 2400}, {"t": "14:05:00", "o": 1063.0, "h": 1070.0, "l": 1063.0, "c": 1069.0, "v": 2900}, {"t": "14:10:00", "o": 1070.0, "h": 1083.0, "l": 1070.0, "c": 1078.0, "v": 11500}, {"t": "14:15:00", "o": 1076.0, "h": 1086.0, "l": 1066.0, "c": 1076.0, "v": 7700}, {"t": "14:20:00", "o": 1078.0, "h": 1078.0, "l": 1070.0, "c": 1070.0, "v": 3600}, {"t": "14:25:00", "o": 1070.0, "h": 1078.0, "l": 1070.0, "c": 1074.0, "v": 2500}, {"t": "14:30:00", "o": 1074.0, "h": 1078.0, "l": 1062.0, "c": 1066.0, "v": 7500}, {"t": "14:35:00", "o": 1066.0, "h": 1066.0, "l": 1030.0, "c": 1054.0, "v": 26500}, {"t": "14:40:00", "o": 1055.0, "h": 1065.0, "l": 1038.0, "c": 1042.0, "v": 10700}, {"t": "14:45:00", "o": 1042.0, "h": 1083.0, "l": 1040.0, "c": 1083.0, "v": 20700}, {"t": "14:50:00", "o": 1076.0, "h": 1086.0, "l": 1071.0, "c": 1071.0, "v": 19000}, {"t": "14:55:00", "o": 1071.0, "h": 1071.0, "l": 1060.0, "c": 1068.0, "v": 4900}, {"t": "15:00:00", "o": 1068.0, "h": 1077.0, "l": 1068.0, "c": 1076.0, "v": 8900}, {"t": "15:05:00", "o": 1076.0, "h": 1080.0, "l": 1071.0, "c": 1078.0, "v": 4100}, {"t": "15:10:00", "o": 1077.0, "h": 1077.0, "l": 1048.0, "c": 1061.0, "v": 11700}, {"t": "15:15:00", "o": 1062.0, "h": 1071.0, "l": 1053.0, "c": 1065.0, "v": 6300}, {"t": "15:20:00", "o": 1069.0, "h": 1095.0, "l": 1069.0, "c": 1087.0, "v": 37300}, {"t": "15:30:00", "o": 1100.0, "h": 1100.0, "l": 1100.0, "c": 1100.0, "v": 58300}], "trades": [{"t": "10:34:00", "side": "sell", "qty": 200, "price": 974, "kind": "open", "pnl": null}, {"t": "10:57:00", "side": "buy", "qty": 100, "price": 1009, "kind": "close", "pnl": -3500}, {"t": "10:57:01", "side": "buy", "qty": 100, "price": 1009, "kind": "close", "pnl": -3500}]};
@@ -62,7 +62,7 @@ const COL = {
 const cv = document.getElementById('cc');
 const tip = document.getElementById('tip');
 const dpr = window.devicePixelRatio || 1;
-const H = 560;
+const H = 640;
 let W = cv.parentElement.clientWidth;
 cv.width = W * dpr; cv.height = H * dpr;
 cv.style.width = W + 'px'; cv.style.height = H + 'px';
@@ -71,7 +71,12 @@ ctx.scale(dpr, dpr);
 
 const PAD = { l: 60, r: 20, t: 20, b: 40 };
 const CW = W - PAD.l - PAD.r;
-const CH = H - PAD.t - PAD.b;
+const USABLE_H = H - PAD.t - PAD.b;
+const PRICE_H = Math.round(USABLE_H * 0.74);
+const VOL_GAP = 10;
+const VOL_H = USABLE_H - PRICE_H - VOL_GAP;
+const VOL_TOP = PAD.t + PRICE_H + VOL_GAP;
+const CH = PRICE_H; // legacy alias used below for price area
 
 // Time → x
 const candles = DATA.candles;
@@ -110,6 +115,11 @@ pmin -= pad; pmax += pad;
 
 function pToY(p) { return PAD.t + (1 - (p - pmin) / (pmax - pmin)) * CH; }
 
+// Max volume
+let vmax = 0;
+candles.forEach(c => { if (c.v > vmax) vmax = c.v; });
+function vToY(v) { return VOL_TOP + VOL_H - (v / (vmax || 1)) * VOL_H; }
+
 // ---- Draw axes/grid ----
 function drawAxes() {
   ctx.strokeStyle = COL.axis;
@@ -117,7 +127,7 @@ function drawAxes() {
   ctx.fillStyle = COL.text;
   ctx.font = '11px -apple-system,sans-serif';
 
-  // y grid (5 levels)
+  // y grid (5 levels) — price area only
   for (let i = 0; i <= 5; i++) {
     const y = PAD.t + (CH * i) / 5;
     const p = pmax - ((pmax - pmin) * i) / 5;
@@ -128,10 +138,17 @@ function drawAxes() {
     ctx.fillText(p.toFixed(p < 100 ? 2 : 0), PAD.l - 6, y);
   }
 
+  // Volume axis label
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  ctx.fillStyle = COL.text;
+  const vlbl = vmax >= 10000 ? (vmax / 10000).toFixed(0) + '万' : vmax.toLocaleString();
+  ctx.fillText('Vol: ' + vlbl, PAD.l - 6, VOL_TOP + 2);
+
   // x labels: every ~30min for 5min, every ~60min for 1min
   const labelEvery = tfMin <= 1 ? 60 : 30;
   let lastM = -999;
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const xLabelY = VOL_TOP + VOL_H + 6;
   for (let i = 0; i < N; i++) {
     const m = candleMins[i];
     if (m - lastM >= labelEvery || i === 0) {
@@ -139,12 +156,24 @@ function drawAxes() {
       const hh = Math.floor(m / 60);
       const mm = Math.floor(m % 60);
       ctx.fillStyle = COL.text;
-      ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`, x, PAD.t + CH + 6);
+      ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`, x, xLabelY);
       ctx.strokeStyle = COL.grid;
-      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, PAD.t + CH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, VOL_TOP + VOL_H); ctx.stroke();
       lastM = m;
     }
   }
+}
+
+// ---- Draw volume bars ----
+function drawVolume() {
+  candles.forEach((c, i) => {
+    const x = PAD.l + i * slot + slot / 2;
+    const bull = c.c >= c.o;
+    const y = vToY(c.v);
+    const h = VOL_TOP + VOL_H - y;
+    ctx.fillStyle = bull ? 'rgba(255,85,85,0.5)' : 'rgba(93,173,226,0.5)';
+    ctx.fillRect(x - candleW / 2, y, candleW, h);
+  });
 }
 
 // ---- Draw candles ----
@@ -299,6 +328,7 @@ let hoverMarker = -1;
 function render() {
   ctx.clearRect(0, 0, W, H);
   drawAxes();
+  drawVolume();
   drawCandles();
   placeLabels();
   drawMarkers(hoverMarker);

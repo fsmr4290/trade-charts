@@ -15,7 +15,7 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 .cv-wrap{position:relative;width:100%}
 canvas{display:block;width:100%;cursor:default}
 #tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
 .card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
 .card-value{font-size:22px;font-weight:600}
@@ -35,11 +35,11 @@ canvas{display:block;width:100%;cursor:default}
   <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済(買い)</span>
   <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>決済(売り)</span>
 </div>
+<div class="cards" id="cards"></div>
 <div class="cv-wrap">
   <canvas id="cc"></canvas>
   <div id="tip"></div>
 </div>
-<div class="cards" id="cards"></div>
 </div>
 <script>
 const DATA = {"candles": [{"t": "09:05:00", "o": 2734.0, "h": 2792.0, "l": 2561.0, "c": 2584.0, "v": 291400}, {"t": "09:10:00", "o": 2571.0, "h": 2574.0, "l": 2508.0, "c": 2534.0, "v": 56000}, {"t": "09:15:00", "o": 2530.0, "h": 2573.0, "l": 2490.0, "c": 2573.0, "v": 55600}, {"t": "09:20:00", "o": 2573.0, "h": 2580.0, "l": 2483.0, "c": 2500.0, "v": 43300}, {"t": "09:25:00", "o": 2502.0, "h": 2562.0, "l": 2473.0, "c": 2557.0, "v": 43000}, {"t": "09:30:00", "o": 2556.0, "h": 2677.0, "l": 2542.0, "c": 2653.0, "v": 59300}, {"t": "09:35:00", "o": 2649.0, "h": 2698.0, "l": 2594.0, "c": 2682.0, "v": 55400}, {"t": "09:40:00", "o": 2682.0, "h": 2688.0, "l": 2640.0, "c": 2668.0, "v": 24100}, {"t": "09:45:00", "o": 2664.0, "h": 2728.0, "l": 2632.0, "c": 2703.0, "v": 79400}, {"t": "09:50:00", "o": 2703.0, "h": 2729.0, "l": 2675.0, "c": 2675.0, "v": 46500}, {"t": "09:55:00", "o": 2685.0, "h": 2698.0, "l": 2648.0, "c": 2676.0, "v": 27700}, {"t": "10:00:00", "o": 2680.0, "h": 2800.0, "l": 2671.0, "c": 2793.0, "v": 112700}, {"t": "10:05:00", "o": 2796.0, "h": 2819.0, "l": 2730.0, "c": 2743.0, "v": 115400}, {"t": "10:10:00", "o": 2742.0, "h": 2776.0, "l": 2713.0, "c": 2726.0, "v": 60200}, {"t": "10:15:00", "o": 2730.0, "h": 2740.0, "l": 2663.0, "c": 2711.0, "v": 54900}, {"t": "10:20:00", "o": 2712.0, "h": 2796.0, "l": 2682.0, "c": 2773.0, "v": 78100}, {"t": "10:25:00", "o": 2777.0, "h": 2780.0, "l": 2727.0, "c": 2766.0, "v": 41800}, {"t": "10:30:00", "o": 2764.0, "h": 2777.0, "l": 2740.0, "c": 2756.0, "v": 33500}, {"t": "10:35:00", "o": 2763.0, "h": 2884.0, "l": 2748.0, "c": 2880.0, "v": 92600}, {"t": "10:40:00", "o": 2879.0, "h": 2888.0, "l": 2818.0, "c": 2820.0, "v": 70300}, {"t": "10:45:00", "o": 2828.0, "h": 2863.0, "l": 2813.0, "c": 2829.0, "v": 39300}, {"t": "10:50:00", "o": 2835.0, "h": 2861.0, "l": 2833.0, "c": 2845.0, "v": 14900}, {"t": "10:55:00", "o": 2850.0, "h": 2874.0, "l": 2816.0, "c": 2836.0, "v": 44500}, {"t": "11:00:00", "o": 2831.0, "h": 2834.0, "l": 2755.0, "c": 2775.0, "v": 49100}, {"t": "11:05:00", "o": 2777.0, "h": 2784.0, "l": 2737.0, "c": 2758.0, "v": 27700}, {"t": "11:10:00", "o": 2764.0, "h": 2788.0, "l": 2743.0, "c": 2743.0, "v": 16100}, {"t": "11:15:00", "o": 2745.0, "h": 2775.0, "l": 2728.0, "c": 2770.0, "v": 13300}, {"t": "11:20:00", "o": 2765.0, "h": 2769.0, "l": 2721.0, "c": 2751.0, "v": 17600}, {"t": "11:25:00", "o": 2758.0, "h": 2763.0, "l": 2732.0, "c": 2732.0, "v": 6400}, {"t": "11:30:00", "o": 2735.0, "h": 2735.0, "l": 2735.0, "c": 2735.0, "v": 300}, {"t": "12:30:00", "o": 2760.0, "h": 2851.0, "l": 2742.0, "c": 2797.0, "v": 80400}, {"t": "12:35:00", "o": 2798.0, "h": 2832.0, "l": 2786.0, "c": 2818.0, "v": 16400}, {"t": "12:40:00", "o": 2819.0, "h": 2854.0, "l": 2810.0, "c": 2830.0, "v": 23400}, {"t": "12:45:00", "o": 2835.0, "h": 2852.0, "l": 2821.0, "c": 2851.0, "v": 15200}, {"t": "12:50:00", "o": 2852.0, "h": 2977.0, "l": 2852.0, "c": 2956.0, "v": 132400}, {"t": "12:55:00", "o": 2957.0, "h": 2979.0, "l": 2933.0, "c": 2968.0, "v": 91000}, {"t": "13:00:00", "o": 2960.0, "h": 2965.0, "l": 2932.0, "c": 2949.0, "v": 45800}, {"t": "13:05:00", "o": 2949.0, "h": 2992.0, "l": 2935.0, "c": 2964.0, "v": 64400}, {"t": "13:10:00", "o": 2963.0, "h": 2982.0, "l": 2935.0, "c": 2975.0, "v": 55000}, {"t": "13:15:00", "o": 2971.0, "h": 3000.0, "l": 2940.0, "c": 2961.0, "v": 66300}, {"t": "13:20:00", "o": 2962.0, "h": 2985.0, "l": 2946.0, "c": 2973.0, "v": 38200}, {"t": "13:25:00", "o": 2973.0, "h": 2974.0, "l": 2942.0, "c": 2950.0, "v": 25400}, {"t": "13:30:00", "o": 2950.0, "h": 3060.0, "l": 2943.0, "c": 3060.0, "v": 63200}, {"t": "13:35:00", "o": 3060.0, "h": 3265.0, "l": 3045.0, "c": 3175.0, "v": 180200}, {"t": "13:40:00", "o": 3175.0, "h": 3390.0, "l": 3130.0, "c": 3315.0, "v": 146800}, {"t": "13:45:00", "o": 3315.0, "h": 3345.0, "l": 3250.0, "c": 3295.0, "v": 90000}, {"t": "13:50:00", "o": 3295.0, "h": 3320.0, "l": 3195.0, "c": 3220.0, "v": 75800}, {"t": "13:55:00", "o": 3215.0, "h": 3230.0, "l": 3155.0, "c": 3170.0, "v": 56900}, {"t": "14:00:00", "o": 3165.0, "h": 3210.0, "l": 3085.0, "c": 3130.0, "v": 82800}, {"t": "14:05:00", "o": 3125.0, "h": 3145.0, "l": 3085.0, "c": 3130.0, "v": 51300}, {"t": "14:10:00", "o": 3135.0, "h": 3145.0, "l": 3075.0, "c": 3105.0, "v": 33900}, {"t": "14:15:00", "o": 3100.0, "h": 3125.0, "l": 3065.0, "c": 3085.0, "v": 21800}, {"t": "14:20:00", "o": 3090.0, "h": 3145.0, "l": 3060.0, "c": 3060.0, "v": 64300}, {"t": "14:25:00", "o": 3065.0, "h": 3135.0, "l": 3060.0, "c": 3095.0, "v": 41100}, {"t": "14:30:00", "o": 3100.0, "h": 3145.0, "l": 3075.0, "c": 3120.0, "v": 18800}, {"t": "14:35:00", "o": 3115.0, "h": 3205.0, "l": 3115.0, "c": 3175.0, "v": 59100}, {"t": "14:40:00", "o": 3175.0, "h": 3205.0, "l": 3020.0, "c": 3020.0, "v": 75800}, {"t": "14:45:00", "o": 3025.0, "h": 3070.0, "l": 2987.0, "c": 3030.0, "v": 61400}, {"t": "14:50:00", "o": 3025.0, "h": 3050.0, "l": 3010.0, "c": 3050.0, "v": 16100}, {"t": "14:55:00", "o": 3045.0, "h": 3060.0, "l": 3030.0, "c": 3055.0, "v": 10100}, {"t": "15:00:00", "o": 3065.0, "h": 3090.0, "l": 3040.0, "c": 3055.0, "v": 16300}, {"t": "15:05:00", "o": 3050.0, "h": 3055.0, "l": 3025.0, "c": 3030.0, "v": 12800}, {"t": "15:10:00", "o": 3030.0, "h": 3050.0, "l": 3015.0, "c": 3015.0, "v": 11600}, {"t": "15:15:00", "o": 3020.0, "h": 3030.0, "l": 2989.0, "c": 3030.0, "v": 32000}, {"t": "15:20:00", "o": 3035.0, "h": 3070.0, "l": 3025.0, "c": 3065.0, "v": 25200}, {"t": "15:30:00", "o": 3000.0, "h": 3000.0, "l": 3000.0, "c": 3000.0, "v": 30900}], "trades": [{"t": "09:06:03", "side": "buy", "qty": 100, "price": 2757, "kind": "open", "pnl": null}, {"t": "09:06:09", "side": "buy", "qty": 100, "price": 2742, "kind": "open", "pnl": null}, {"t": "09:06:31", "side": "buy", "qty": 100, "price": 2773, "kind": "open", "pnl": null}, {"t": "09:06:36", "side": "buy", "qty": 100, "price": 2737, "kind": "open", "pnl": null}, {"t": "09:06:57", "side": "buy", "qty": 100, "price": 2662, "kind": "open", "pnl": null}, {"t": "09:07:14", "side": "buy", "qty": 100, "price": 2642, "kind": "open", "pnl": null}, {"t": "09:08:54", "side": "buy", "qty": 100, "price": 2638, "kind": "open", "pnl": null}, {"t": "09:09:52", "side": "buy", "qty": 100, "price": 2573, "kind": "open", "pnl": null}, {"t": "09:17:10", "side": "buy", "qty": 100, "price": 2535.2, "kind": "open", "pnl": null}, {"t": "09:17:24", "side": "buy", "qty": 100, "price": 2526, "kind": "open", "pnl": null}, {"t": "09:19:48", "side": "buy", "qty": 100, "price": 2546, "kind": "open", "pnl": null}, {"t": "09:19:55", "side": "buy", "qty": 100, "price": 2553, "kind": "open", "pnl": null}, {"t": "09:20:05", "side": "buy", "qty": 100, "price": 2569, "kind": "open", "pnl": null}, {"t": "09:20:09", "side": "buy", "qty": 100, "price": 2576, "kind": "open", "pnl": null}, {"t": "09:24:31", "side": "buy", "qty": 100, "price": 2508.3, "kind": "open", "pnl": null}, {"t": "09:27:12", "side": "buy", "qty": 100, "price": 2506, "kind": "open", "pnl": null}, {"t": "09:27:41", "side": "buy", "qty": 100, "price": 2543.9, "kind": "open", "pnl": null}, {"t": "09:27:47", "side": "buy", "qty": 100, "price": 2544, "kind": "open", "pnl": null}, {"t": "09:31:45", "side": "sell", "qty": 200, "price": 2587.05, "kind": "close", "pnl": 15980}, {"t": "09:31:54", "side": "sell", "qty": 200, "price": 2616.25, "kind": "close", "pnl": 17130}, {"t": "09:32:02", "side": "sell", "qty": 200, "price": 2617, "kind": "close", "pnl": 14610}, {"t": "09:32:06", "side": "sell", "qty": 200, "price": 2606.2, "kind": "close", "pnl": 11340}, {"t": "09:32:52", "side": "sell", "qty": 200, "price": 2620, "kind": "close", "pnl": 9800}, {"t": "09:33:19", "side": "sell", "qty": 200, "price": 2632.1, "kind": "close", "pnl": 5020}, {"t": "09:35:10", "side": "sell", "qty": 600, "price": 2645.66, "kind": "close", "pnl": -43900}, {"t": "10:24:06", "side": "buy", "qty": 100, "price": 2770, "kind": "open", "pnl": null}, {"t": "10:24:12", "side": "buy", "qty": 100, "price": 2754, "kind": "open", "pnl": null}, {"t": "10:26:51", "side": "sell", "qty": 200, "price": 2743, "kind": "close", "pnl": -3800}, {"t": "10:27:00", "side": "buy", "qty": 100, "price": 2775, "kind": "open", "pnl": null}, {"t": "10:28:00", "side": "buy", "qty": 100, "price": 2768, "kind": "open", "pnl": null}, {"t": "10:29:00", "side": "sell", "qty": 100, "price": 2748, "kind": "close", "pnl": -2700}, {"t": "10:29:01", "side": "sell", "qty": 100, "price": 2748, "kind": "close", "pnl": -2000}, {"t": "10:39:25", "side": "buy", "qty": 100, "price": 2868, "kind": "open", "pnl": null}, {"t": "10:39:45", "side": "buy", "qty": 100, "price": 2882, "kind": "open", "pnl": null}, {"t": "10:44:17", "side": "buy", "qty": 100, "price": 2846, "kind": "open", "pnl": null}, {"t": "10:45:10", "side": "buy", "qty": 100, "price": 2827, "kind": "open", "pnl": null}, {"t": "10:47:10", "side": "sell", "qty": 200, "price": 2850, "kind": "close", "pnl": 2700}, {"t": "10:53:37", "side": "sell", "qty": 200, "price": 2856, "kind": "close", "pnl": -3800}, {"t": "12:54:00", "side": "buy", "qty": 100, "price": 2939, "kind": "open", "pnl": null}, {"t": "12:56:00", "side": "sell", "qty": 100, "price": 2972, "kind": "close", "pnl": 3300}, {"t": "13:39:00", "side": "buy", "qty": 100, "price": 3155, "kind": "open", "pnl": null}, {"t": "13:39:01", "side": "sell", "qty": 100, "price": 3175.5, "kind": "close", "pnl": 2050}]};
@@ -62,7 +62,7 @@ const COL = {
 const cv = document.getElementById('cc');
 const tip = document.getElementById('tip');
 const dpr = window.devicePixelRatio || 1;
-const H = 560;
+const H = 640;
 let W = cv.parentElement.clientWidth;
 cv.width = W * dpr; cv.height = H * dpr;
 cv.style.width = W + 'px'; cv.style.height = H + 'px';
@@ -71,7 +71,12 @@ ctx.scale(dpr, dpr);
 
 const PAD = { l: 60, r: 20, t: 20, b: 40 };
 const CW = W - PAD.l - PAD.r;
-const CH = H - PAD.t - PAD.b;
+const USABLE_H = H - PAD.t - PAD.b;
+const PRICE_H = Math.round(USABLE_H * 0.74);
+const VOL_GAP = 10;
+const VOL_H = USABLE_H - PRICE_H - VOL_GAP;
+const VOL_TOP = PAD.t + PRICE_H + VOL_GAP;
+const CH = PRICE_H; // legacy alias used below for price area
 
 // Time → x
 const candles = DATA.candles;
@@ -110,6 +115,11 @@ pmin -= pad; pmax += pad;
 
 function pToY(p) { return PAD.t + (1 - (p - pmin) / (pmax - pmin)) * CH; }
 
+// Max volume
+let vmax = 0;
+candles.forEach(c => { if (c.v > vmax) vmax = c.v; });
+function vToY(v) { return VOL_TOP + VOL_H - (v / (vmax || 1)) * VOL_H; }
+
 // ---- Draw axes/grid ----
 function drawAxes() {
   ctx.strokeStyle = COL.axis;
@@ -117,7 +127,7 @@ function drawAxes() {
   ctx.fillStyle = COL.text;
   ctx.font = '11px -apple-system,sans-serif';
 
-  // y grid (5 levels)
+  // y grid (5 levels) — price area only
   for (let i = 0; i <= 5; i++) {
     const y = PAD.t + (CH * i) / 5;
     const p = pmax - ((pmax - pmin) * i) / 5;
@@ -128,10 +138,17 @@ function drawAxes() {
     ctx.fillText(p.toFixed(p < 100 ? 2 : 0), PAD.l - 6, y);
   }
 
+  // Volume axis label
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  ctx.fillStyle = COL.text;
+  const vlbl = vmax >= 10000 ? (vmax / 10000).toFixed(0) + '万' : vmax.toLocaleString();
+  ctx.fillText('Vol: ' + vlbl, PAD.l - 6, VOL_TOP + 2);
+
   // x labels: every ~30min for 5min, every ~60min for 1min
   const labelEvery = tfMin <= 1 ? 60 : 30;
   let lastM = -999;
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const xLabelY = VOL_TOP + VOL_H + 6;
   for (let i = 0; i < N; i++) {
     const m = candleMins[i];
     if (m - lastM >= labelEvery || i === 0) {
@@ -139,12 +156,24 @@ function drawAxes() {
       const hh = Math.floor(m / 60);
       const mm = Math.floor(m % 60);
       ctx.fillStyle = COL.text;
-      ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`, x, PAD.t + CH + 6);
+      ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`, x, xLabelY);
       ctx.strokeStyle = COL.grid;
-      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, PAD.t + CH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, VOL_TOP + VOL_H); ctx.stroke();
       lastM = m;
     }
   }
+}
+
+// ---- Draw volume bars ----
+function drawVolume() {
+  candles.forEach((c, i) => {
+    const x = PAD.l + i * slot + slot / 2;
+    const bull = c.c >= c.o;
+    const y = vToY(c.v);
+    const h = VOL_TOP + VOL_H - y;
+    ctx.fillStyle = bull ? 'rgba(255,85,85,0.5)' : 'rgba(93,173,226,0.5)';
+    ctx.fillRect(x - candleW / 2, y, candleW, h);
+  });
 }
 
 // ---- Draw candles ----
@@ -299,6 +328,7 @@ let hoverMarker = -1;
 function render() {
   ctx.clearRect(0, 0, W, H);
   drawAxes();
+  drawVolume();
   drawCandles();
   placeLabels();
   drawMarkers(hoverMarker);
