@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>278A テラドローン 1分足 2026/04/07</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:#000000;color:#e6edf3;padding:20px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#8b949e;margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:12px;font-size:12px;color:#9ba3ae}
+.legend span{display:flex;align-items:center;gap:6px}
+.cv-wrap{position:relative;width:100%}
+canvas{display:block;width:100%;cursor:default}
+#tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
+.card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
+.card-value{font-size:22px;font-weight:600}
+.card-sub{font-size:11px;color:#8b949e;margin-top:2px}
+.card-value.win{color:#3fb950}
+.card-value.lose{color:#f85149}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>278A テラドローン 1分足 2026/04/07</h1>
+<div class="sub">インタラクティブ売買記録チャート ・ 貸株料: 900円/100株</div>
+<div class="legend">
+  <span><span style="width:10px;height:10px;border:1.5px solid #ff5555;background:transparent;display:inline-block"></span>陽線</span>
+  <span><span style="width:10px;height:10px;background:#5dade2;display:inline-block"></span>陰線</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block"></span>新規(買い)</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #ffe600;display:inline-block"></span>新規(売り)</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済(買い)</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>決済(売り)</span>
+</div>
+<div class="cards" id="cards"></div>
+<div class="cv-wrap">
+  <canvas id="cc"></canvas>
+  <div id="tip"></div>
+</div>
+</div>
+<script>
+const DATA = {"candles": [{"t":"09:00:00","o":4640,"h":4690,"l":4585,"c":4600,"v":49700},
+{"t":"09:01:00","o":4600,"h":4600,"l":4555,"c":4580,"v":12100},
+{"t":"09:02:00","o":4585,"h":4585,"l":4460,"c":4465,"v":26800},
+{"t":"09:03:00","o":4475,"h":4500,"l":4470,"c":4495,"v":9400},
+{"t":"09:04:00","o":4495,"h":4500,"l":4455,"c":4475,"v":14800},
+{"t":"09:05:00","o":4470,"h":4485,"l":4445,"c":4460,"v":13300},
+{"t":"09:06:00","o":4460,"h":4470,"l":4440,"c":4460,"v":7200},
+{"t":"09:07:00","o":4460,"h":4460,"l":4435,"c":4440,"v":4600},
+{"t":"09:08:00","o":4445,"h":4475,"l":4435,"c":4460,"v":4600},
+{"t":"09:09:00","o":4455,"h":4465,"l":4440,"c":4440,"v":3700},
+{"t":"09:10:00","o":4435,"h":4435,"l":4370,"c":4390,"v":34700},
+{"t":"09:11:00","o":4390,"h":4415,"l":4385,"c":4390,"v":5000},
+{"t":"09:12:00","o":4385,"h":4395,"l":4385,"c":4390,"v":1800},
+{"t":"09:13:00","o":4400,"h":4410,"l":4395,"c":4395,"v":2800},
+{"t":"09:14:00","o":4395,"h":4415,"l":4395,"c":4410,"v":3300},
+{"t":"09:15:00","o":4405,"h":4470,"l":4405,"c":4465,"v":5600},
+{"t":"09:16:00","o":4460,"h":4475,"l":4440,"c":4475,"v":4300},
+{"t":"09:17:00","o":4460,"h":4480,"l":4460,"c":4470,"v":3100},
+{"t":"09:18:00","o":4465,"h":4470,"l":4460,"c":4465,"v":3000},
+{"t":"09:19:00","o":4465,"h":4465,"l":4445,"c":4460,"v":4000},
+{"t":"09:20:00","o":4455,"h":4470,"l":4450,"c":4470,"v":3700},
+{"t":"09:21:00","o":4465,"h":4465,"l":4455,"c":4455,"v":1900},
+{"t":"09:22:00","o":4460,"h":4460,"l":4440,"c":4445,"v":3400},
+{"t":"09:23:00","o":4440,"h":4445,"l":4410,"c":4415,"v":4200},
+{"t":"09:24:00","o":4410,"h":4415,"l":4395,"c":4400,"v":6000},
+{"t":"09:25:00","o":4405,"h":4405,"l":4395,"c":4395,"v":3300},
+{"t":"09:26:00","o":4390,"h":4400,"l":4390,"c":4400,"v":2700},
+{"t":"09:27:00","o":4390,"h":4395,"l":4390,"c":4395,"v":1300},
+{"t":"09:28:00","o":4400,"h":4400,"l":4395,"c":4400,"v":1100},
+{"t":"09:29:00","o":4405,"h":4425,"l":4400,"c":4425,"v":3700},
+{"t":"09:30:00","o":4430,"h":4455,"l":4430,"c":4440,"v":5500},
+{"t":"09:31:00","o":4435,"h":4435,"l":4425,"c":4425,"v":900},
+{"t":"09:32:00","o":4420,"h":4420,"l":4410,"c":4415,"v":1400},
+{"t":"09:33:00","o":4405,"h":4415,"l":4400,"c":4405,"v":3200},
+{"t":"09:34:00","o":4410,"h":4425,"l":4410,"c":4425,"v":900},
+{"t":"09:35:00","o":4425,"h":4430,"l":4420,"c":4430,"v":700},
+{"t":"09:36:00","o":4435,"h":4445,"l":4430,"c":4445,"v":1800},
+{"t":"09:37:00","o":4435,"h":4435,"l":4420,"c":4420,"v":1300},
+{"t":"09:38:00","o":4420,"h":4435,"l":4420,"c":4435,"v":900},
+{"t":"09:39:00","o":4430,"h":4430,"l":4420,"c":4430,"v":1100},
+{"t":"09:40:00","o":4425,"h":4425,"l":4405,"c":4415,"v":2200},
+{"t":"09:41:00","o":4415,"h":4420,"l":4380,"c":4385,"v":14000},
+{"t":"09:42:00","o":4400,"h":4410,"l":4400,"c":4410,"v":1300},
+{"t":"09:43:00","o":4405,"h":4405,"l":4390,"c":4390,"v":1300},
+{"t":"09:44:00","o":4395,"h":4400,"l":4395,"c":4395,"v":600},
+{"t":"09:45:00","o":4410,"h":4415,"l":4410,"c":4410,"v":1100},
+{"t":"09:46:00","o":4405,"h":4415,"l":4400,"c":4415,"v":1000},
+{"t":"09:47:00","o":4415,"h":4415,"l":4410,"c":4410,"v":300},
+{"t":"09:48:00","o":4410,"h":4410,"l":4400,"c":4400,"v":800},
+{"t":"09:49:00","o":4395,"h":4400,"l":4390,"c":4395,"v":1200},
+{"t":"09:50:00","o":4390,"h":4390,"l":4380,"c":4385,"v":2100},
+{"t":"09:51:00","o":4395,"h":4395,"l":4390,"c":4390,"v":1200},
+{"t":"09:52:00","o":4395,"h":4395,"l":4395,"c":4395,"v":1000},
+{"t":"09:53:00","o":4390,"h":4395,"l":4380,"c":4395,"v":2100},
+{"t":"09:54:00","o":4395,"h":4395,"l":4395,"c":4395,"v":100},
+{"t":"09:55:00","o":4400,"h":4400,"l":4385,"c":4385,"v":2300},
+{"t":"09:56:00","o":4385,"h":4390,"l":4360,"c":4360,"v":19800},
+{"t":"09:57:00","o":4365,"h":4365,"l":4335,"c":4340,"v":20500},
+{"t":"09:58:00","o":4345,"h":4350,"l":4340,"c":4350,"v":1700},
+{"t":"09:59:00","o":4350,"h":4350,"l":4340,"c":4340,"v":1100},
+{"t":"10:00:00","o":4340,"h":4340,"l":4300,"c":4300,"v":17200},
+{"t":"10:01:00","o":4305,"h":4315,"l":4300,"c":4310,"v":2400},
+{"t":"10:02:00","o":4315,"h":4335,"l":4315,"c":4330,"v":4400},
+{"t":"10:03:00","o":4330,"h":4330,"l":4315,"c":4325,"v":2300},
+{"t":"10:04:00","o":4320,"h":4320,"l":4315,"c":4315,"v":800},
+{"t":"10:05:00","o":4325,"h":4325,"l":4305,"c":4310,"v":2700},
+{"t":"10:06:00","o":4320,"h":4320,"l":4305,"c":4305,"v":900},
+{"t":"10:07:00","o":4315,"h":4315,"l":4310,"c":4315,"v":800},
+{"t":"10:08:00","o":4320,"h":4320,"l":4310,"c":4315,"v":1900},
+{"t":"10:09:00","o":4310,"h":4320,"l":4305,"c":4310,"v":2400},
+{"t":"10:10:00","o":4310,"h":4315,"l":4290,"c":4290,"v":9100},
+{"t":"10:11:00","o":4295,"h":4305,"l":4280,"c":4295,"v":7600},
+{"t":"10:12:00","o":4295,"h":4295,"l":4265,"c":4285,"v":7000},
+{"t":"10:13:00","o":4285,"h":4290,"l":4280,"c":4285,"v":2700},
+{"t":"10:14:00","o":4285,"h":4290,"l":4260,"c":4270,"v":9200},
+{"t":"10:15:00","o":4280,"h":4285,"l":4270,"c":4285,"v":2500},
+{"t":"10:16:00","o":4290,"h":4290,"l":4280,"c":4285,"v":1200},
+{"t":"10:17:00","o":4285,"h":4285,"l":4280,"c":4285,"v":500},
+{"t":"10:18:00","o":4290,"h":4290,"l":4285,"c":4285,"v":700},
+{"t":"10:19:00","o":4285,"h":4290,"l":4280,"c":4285,"v":1700},
+{"t":"10:20:00","o":4280,"h":4285,"l":4280,"c":4280,"v":900},
+{"t":"10:21:00","o":4285,"h":4285,"l":4270,"c":4280,"v":1100},
+{"t":"10:22:00","o":4270,"h":4270,"l":4265,"c":4265,"v":900},
+{"t":"10:23:00","o":4270,"h":4275,"l":4260,"c":4260,"v":3300},
+{"t":"10:24:00","o":4265,"h":4270,"l":4260,"c":4260,"v":2100},
+{"t":"10:25:00","o":4260,"h":4260,"l":4245,"c":4250,"v":5200},
+{"t":"10:26:00","o":4255,"h":4270,"l":4245,"c":4270,"v":2700},
+{"t":"10:27:00","o":4265,"h":4265,"l":4265,"c":4265,"v":400},
+{"t":"10:28:00","o":4265,"h":4275,"l":4265,"c":4275,"v":1100},
+{"t":"10:29:00","o":4275,"h":4275,"l":4270,"c":4270,"v":600},
+{"t":"10:30:00","o":4270,"h":4270,"l":4260,"c":4260,"v":2200},
+{"t":"10:31:00","o":4265,"h":4265,"l":4255,"c":4260,"v":800},
+{"t":"10:32:00","o":4260,"h":4260,"l":4250,"c":4250,"v":1400},
+{"t":"10:33:00","o":4255,"h":4255,"l":4245,"c":4245,"v":1100},
+{"t":"10:34:00","o":4250,"h":4255,"l":4245,"c":4255,"v":1000},
+{"t":"10:35:00","o":4255,"h":4260,"l":4255,"c":4255,"v":1100},
+{"t":"10:36:00","o":4255,"h":4260,"l":4250,"c":4260,"v":800},
+{"t":"10:37:00","o":4260,"h":4260,"l":4240,"c":4240,"v":5200},
+{"t":"10:38:00","o":4245,"h":4255,"l":4240,"c":4240,"v":1100},
+{"t":"10:39:00","o":4240,"h":4260,"l":4240,"c":4245,"v":4200},
+{"t":"10:40:00","o":4245,"h":4255,"l":4245,"c":4255,"v":1300},
+{"t":"10:41:00","o":4250,"h":4260,"l":4250,"c":4255,"v":500},
+{"t":"10:42:00","o":4265,"h":4275,"l":4260,"c":4260,"v":2100},
+{"t":"10:43:00","o":4260,"h":4265,"l":4260,"c":4265,"v":400},
+{"t":"10:44:00","o":4265,"h":4280,"l":4265,"c":4270,"v":3000},
+{"t":"10:45:00","o":4270,"h":4275,"l":4265,"c":4275,"v":1300},
+{"t":"10:46:00","o":4280,"h":4295,"l":4280,"c":4290,"v":2500},
+{"t":"10:47:00","o":4295,"h":4295,"l":4270,"c":4275,"v":4800},
+{"t":"10:48:00","o":4275,"h":4275,"l":4275,"c":4275,"v":200},
+{"t":"10:49:00","o":4275,"h":4280,"l":4275,"c":4280,"v":600},
+{"t":"10:50:00","o":4275,"h":4280,"l":4270,"c":4270,"v":3000},
+{"t":"10:51:00","o":4270,"h":4270,"l":4255,"c":4255,"v":3300},
+{"t":"10:52:00","o":4255,"h":4255,"l":4245,"c":4245,"v":1900},
+{"t":"10:53:00","o":4250,"h":4250,"l":4245,"c":4245,"v":1300},
+{"t":"10:54:00","o":4250,"h":4250,"l":4250,"c":4250,"v":1000},
+{"t":"10:55:00","o":4250,"h":4255,"l":4245,"c":4255,"v":800},
+{"t":"10:56:00","o":4260,"h":4260,"l":4245,"c":4250,"v":700},
+{"t":"10:57:00","o":4245,"h":4250,"l":4245,"c":4250,"v":1000},
+{"t":"10:58:00","o":4250,"h":4255,"l":4250,"c":4250,"v":300},
+{"t":"10:59:00","o":4260,"h":4270,"l":4255,"c":4255,"v":1000},
+{"t":"11:00:00","o":4265,"h":4265,"l":4255,"c":4255,"v":300},
+{"t":"11:01:00","o":4255,"h":4275,"l":4255,"c":4275,"v":1400},
+{"t":"11:02:00","o":4270,"h":4270,"l":4265,"c":4265,"v":800},
+{"t":"11:03:00","o":4260,"h":4260,"l":4255,"c":4255,"v":200},
+{"t":"11:04:00","o":4255,"h":4255,"l":4250,"c":4250,"v":800},
+{"t":"11:05:00","o":4245,"h":4245,"l":4240,"c":4240,"v":1600},
+{"t":"11:06:00","o":4245,"h":4250,"l":4240,"c":4250,"v":800},
+{"t":"11:07:00","o":4250,"h":4250,"l":4250,"c":4250,"v":500},
+{"t":"11:08:00","o":4245,"h":4250,"l":4240,"c":4240,"v":1900},
+{"t":"11:09:00","o":4240,"h":4245,"l":4225,"c":4245,"v":6400},
+{"t":"11:10:00","o":4245,"h":4250,"l":4245,"c":4245,"v":500},
+{"t":"11:11:00","o":4245,"h":4245,"l":4245,"c":4245,"v":100},
+{"t":"11:12:00","o":4250,"h":4250,"l":4240,"c":4240,"v":900},
+{"t":"11:13:00","o":4240,"h":4240,"l":4230,"c":4235,"v":1900},
+{"t":"11:14:00","o":4245,"h":4245,"l":4235,"c":4235,"v":400},
+{"t":"11:15:00","o":4245,"h":4245,"l":4235,"c":4235,"v":200},
+{"t":"11:16:00","o":4240,"h":4245,"l":4240,"c":4245,"v":500},
+{"t":"11:17:00","o":4245,"h":4245,"l":4235,"c":4235,"v":500},
+{"t":"11:18:00","o":4230,"h":4230,"l":4230,"c":4230,"v":100},
+{"t":"11:19:00","o":4240,"h":4240,"l":4230,"c":4240,"v":2100},
+{"t":"11:20:00","o":4245,"h":4245,"l":4240,"c":4240,"v":300},
+{"t":"11:21:00","o":4245,"h":4245,"l":4240,"c":4245,"v":900},
+{"t":"11:22:00","o":4240,"h":4245,"l":4240,"c":4245,"v":500},
+{"t":"11:23:00","o":4245,"h":4245,"l":4240,"c":4240,"v":500},
+{"t":"11:24:00","o":4240,"h":4240,"l":4235,"c":4240,"v":5900},
+{"t":"11:25:00","o":4240,"h":4240,"l":4240,"c":4240,"v":200},
+{"t":"11:26:00","o":4235,"h":4235,"l":4235,"c":4235,"v":200},
+{"t":"11:27:00","o":4240,"h":4260,"l":4240,"c":4260,"v":3400},
+{"t":"11:28:00","o":4255,"h":4255,"l":4250,"c":4250,"v":200},
+{"t":"11:29:00","o":4255,"h":4260,"l":4255,"c":4255,"v":1000},
+{"t":"11:30:00","o":4255,"h":4255,"l":4255,"c":4255,"v":1200},
+{"t":"12:30:00","o":4275,"h":4275,"l":4255,"c":4260,"v":5400},
+{"t":"12:31:00","o":4260,"h":4275,"l":4260,"c":4265,"v":2300},
+{"t":"12:32:00","o":4265,"h":4265,"l":4250,"c":4250,"v":1900},
+{"t":"12:33:00","o":4255,"h":4260,"l":4250,"c":4260,"v":1000},
+{"t":"12:34:00","o":4260,"h":4260,"l":4255,"c":4260,"v":900},
+{"t":"12:35:00","o":4260,"h":4260,"l":4235,"c":4235,"v":4100},
+{"t":"12:36:00","o":4235,"h":4245,"l":4235,"c":4240,"v":700},
+{"t":"12:37:00","o":4240,"h":4240,"l":4235,"c":4235,"v":1000},
+{"t":"12:38:00","o":4230,"h":4230,"l":4225,"c":4225,"v":3400},
+{"t":"12:39:00","o":4220,"h":4220,"l":4215,"c":4215,"v":3200},
+{"t":"12:40:00","o":4215,"h":4220,"l":4215,"c":4215,"v":1800},
+{"t":"12:41:00","o":4215,"h":4215,"l":4210,"c":4210,"v":2500},
+{"t":"12:42:00","o":4210,"h":4210,"l":4200,"c":4200,"v":4300},
+{"t":"12:43:00","o":4205,"h":4210,"l":4200,"c":4210,"v":3700},
+{"t":"12:44:00","o":4210,"h":4230,"l":4210,"c":4230,"v":3200},
+{"t":"12:45:00","o":4230,"h":4230,"l":4230,"c":4230,"v":1400},
+{"t":"12:46:00","o":4230,"h":4235,"l":4230,"c":4235,"v":1200},
+{"t":"12:47:00","o":4235,"h":4235,"l":4235,"c":4235,"v":600},
+{"t":"12:48:00","o":4235,"h":4240,"l":4235,"c":4240,"v":500},
+{"t":"12:49:00","o":4240,"h":4240,"l":4225,"c":4225,"v":1000},
+{"t":"12:50:00","o":4225,"h":4225,"l":4225,"c":4225,"v":100},
+{"t":"12:51:00","o":4225,"h":4230,"l":4225,"c":4230,"v":900},
+{"t":"12:52:00","o":4225,"h":4225,"l":4225,"c":4225,"v":100},
+{"t":"12:53:00","o":4230,"h":4235,"l":4230,"c":4235,"v":200},
+{"t":"12:54:00","o":4230,"h":4230,"l":4230,"c":4230,"v":300},
+{"t":"12:55:00","o":4225,"h":4225,"l":4225,"c":4225,"v":300},
+{"t":"12:56:00","o":4230,"h":4230,"l":4230,"c":4230,"v":400},
+{"t":"12:57:00","o":4230,"h":4230,"l":4230,"c":4230,"v":100},
+{"t":"12:58:00","o":4225,"h":4225,"l":4225,"c":4225,"v":900},
+{"t":"12:59:00","o":4225,"h":4225,"l":4225,"c":4225,"v":200},
+{"t":"13:00:00","o":4220,"h":4220,"l":4215,"c":4215,"v":1500},
+{"t":"13:01:00","o":4220,"h":4230,"l":4220,"c":4225,"v":1400},
+{"t":"13:02:00","o":4230,"h":4235,"l":4230,"c":4235,"v":800},
+{"t":"13:03:00","o":4235,"h":4240,"l":4235,"c":4240,"v":700},
+{"t":"13:04:00","o":4235,"h":4235,"l":4235,"c":4235,"v":300},
+{"t":"13:05:00","o":4235,"h":4235,"l":4235,"c":4235,"v":1000},
+{"t":"13:06:00","o":4235,"h":4235,"l":4235,"c":4235,"v":1200},
+{"t":"13:07:00","o":4240,"h":4240,"l":4240,"c":4240,"v":2200},
+{"t":"13:08:00","o":4240,"h":4240,"l":4235,"c":4235,"v":400},
+{"t":"13:09:00","o":4235,"h":4235,"l":4235,"c":4235,"v":500},
+{"t":"13:10:00","o":4235,"h":4235,"l":4235,"c":4235,"v":100},
+{"t":"13:11:00","o":4230,"h":4230,"l":4230,"c":4230,"v":100},
+{"t":"13:13:00","o":4230,"h":4230,"l":4220,"c":4220,"v":1400},
+{"t":"13:14:00","o":4225,"h":4225,"l":4220,"c":4220,"v":600},
+{"t":"13:15:00","o":4220,"h":4220,"l":4220,"c":4220,"v":900},
+{"t":"13:16:00","o":4220,"h":4225,"l":4220,"c":4225,"v":1900},
+{"t":"13:17:00","o":4225,"h":4225,"l":4220,"c":4225,"v":300},
+{"t":"13:18:00","o":4225,"h":4230,"l":4225,"c":4230,"v":300},
+{"t":"13:19:00","o":4230,"h":4230,"l":4230,"c":4230,"v":300},
+{"t":"13:20:00","o":4230,"h":4235,"l":4230,"c":4230,"v":800},
+{"t":"13:21:00","o":4240,"h":4240,"l":4235,"c":4235,"v":300},
+{"t":"13:22:00","o":4240,"h":4255,"l":4240,"c":4255,"v":1500},
+{"t":"13:23:00","o":4255,"h":4265,"l":4255,"c":4265,"v":3000},
+{"t":"13:24:00","o":4260,"h":4260,"l":4260,"c":4260,"v":100},
+{"t":"13:25:00","o":4255,"h":4260,"l":4255,"c":4260,"v":600},
+{"t":"13:26:00","o":4255,"h":4265,"l":4255,"c":4265,"v":1500},
+{"t":"13:27:00","o":4260,"h":4260,"l":4260,"c":4260,"v":100},
+{"t":"13:28:00","o":4260,"h":4260,"l":4255,"c":4255,"v":400},
+{"t":"13:29:00","o":4260,"h":4260,"l":4260,"c":4260,"v":200},
+{"t":"13:30:00","o":4260,"h":4260,"l":4255,"c":4260,"v":700},
+{"t":"13:31:00","o":4255,"h":4255,"l":4255,"c":4255,"v":200},
+{"t":"13:32:00","o":4255,"h":4255,"l":4255,"c":4255,"v":300},
+{"t":"13:33:00","o":4255,"h":4255,"l":4255,"c":4255,"v":200},
+{"t":"13:35:00","o":4260,"h":4260,"l":4260,"c":4260,"v":200},
+{"t":"13:36:00","o":4260,"h":4265,"l":4260,"c":4265,"v":500},
+{"t":"13:37:00","o":4265,"h":4265,"l":4265,"c":4265,"v":200},
+{"t":"13:38:00","o":4265,"h":4265,"l":4265,"c":4265,"v":500},
+{"t":"13:39:00","o":4265,"h":4265,"l":4260,"c":4260,"v":1000},
+{"t":"13:40:00","o":4265,"h":4265,"l":4265,"c":4265,"v":300},
+{"t":"13:41:00","o":4270,"h":4275,"l":4270,"c":4275,"v":1000},
+{"t":"13:42:00","o":4265,"h":4270,"l":4265,"c":4270,"v":200},
+{"t":"13:43:00","o":4265,"h":4265,"l":4260,"c":4260,"v":600},
+{"t":"13:44:00","o":4260,"h":4260,"l":4260,"c":4260,"v":200},
+{"t":"13:45:00","o":4260,"h":4265,"l":4260,"c":4265,"v":700},
+{"t":"13:46:00","o":4260,"h":4260,"l":4260,"c":4260,"v":200},
+{"t":"13:48:00","o":4265,"h":4265,"l":4265,"c":4265,"v":300},
+{"t":"13:49:00","o":4265,"h":4265,"l":4265,"c":4265,"v":100},
+{"t":"13:51:00","o":4265,"h":4265,"l":4265,"c":4265,"v":200},
+{"t":"13:52:00","o":4265,"h":4265,"l":4255,"c":4255,"v":1300},
+{"t":"13:54:00","o":4255,"h":4255,"l":4255,"c":4255,"v":700},
+{"t":"13:55:00","o":4255,"h":4255,"l":4255,"c":4255,"v":200},
+{"t":"13:56:00","o":4255,"h":4255,"l":4255,"c":4255,"v":700},
+{"t":"13:57:00","o":4255,"h":4255,"l":4255,"c":4255,"v":100},
+{"t":"13:58:00","o":4250,"h":4255,"l":4250,"c":4255,"v":300},
+{"t":"13:59:00","o":4255,"h":4255,"l":4250,"c":4250,"v":1100},
+{"t":"14:01:00","o":4255,"h":4255,"l":4255,"c":4255,"v":100},
+{"t":"14:02:00","o":4260,"h":4260,"l":4260,"c":4260,"v":400},
+{"t":"14:03:00","o":4260,"h":4260,"l":4260,"c":4260,"v":300},
+{"t":"14:04:00","o":4265,"h":4265,"l":4265,"c":4265,"v":300},
+{"t":"14:05:00","o":4265,"h":4265,"l":4265,"c":4265,"v":100},
+{"t":"14:06:00","o":4265,"h":4265,"l":4265,"c":4265,"v":100},
+{"t":"14:08:00","o":4260,"h":4265,"l":4260,"c":4265,"v":300},
+{"t":"14:09:00","o":4265,"h":4265,"l":4265,"c":4265,"v":200},
+{"t":"14:10:00","o":4260,"h":4260,"l":4260,"c":4260,"v":300},
+{"t":"14:11:00","o":4260,"h":4260,"l":4260,"c":4260,"v":200},
+{"t":"14:12:00","o":4260,"h":4260,"l":4260,"c":4260,"v":400},
+{"t":"14:13:00","o":4260,"h":4265,"l":4260,"c":4265,"v":300},
+{"t":"14:14:00","o":4265,"h":4265,"l":4265,"c":4265,"v":100},
+{"t":"14:15:00","o":4265,"h":4265,"l":4265,"c":4265,"v":100},
+{"t":"14:17:00","o":4265,"h":4270,"l":4265,"c":4270,"v":1100},
+{"t":"14:18:00","o":4275,"h":4285,"l":4275,"c":4285,"v":2400},
+{"t":"14:19:00","o":4285,"h":4300,"l":4285,"c":4300,"v":3000},
+{"t":"14:20:00","o":4300,"h":4300,"l":4300,"c":4300,"v":900},
+{"t":"14:21:00","o":4300,"h":4300,"l":4300,"c":4300,"v":1900},
+{"t":"14:22:00","o":4305,"h":4315,"l":4305,"c":4315,"v":2400},
+{"t":"14:23:00","o":4315,"h":4330,"l":4315,"c":4330,"v":1900},
+{"t":"14:24:00","o":4330,"h":4330,"l":4315,"c":4315,"v":1600},
+{"t":"14:25:00","o":4320,"h":4320,"l":4315,"c":4315,"v":900},
+{"t":"14:26:00","o":4315,"h":4315,"l":4315,"c":4315,"v":100},
+{"t":"14:27:00","o":4315,"h":4315,"l":4295,"c":4295,"v":2400},
+{"t":"14:28:00","o":4300,"h":4300,"l":4295,"c":4300,"v":2900},
+{"t":"14:29:00","o":4290,"h":4290,"l":4270,"c":4270,"v":3900},
+{"t":"14:30:00","o":4270,"h":4270,"l":4270,"c":4270,"v":300},
+{"t":"14:31:00","o":4265,"h":4270,"l":4265,"c":4270,"v":1100},
+{"t":"14:32:00","o":4270,"h":4270,"l":4265,"c":4270,"v":800},
+{"t":"14:33:00","o":4270,"h":4270,"l":4270,"c":4270,"v":100},
+{"t":"14:34:00","o":4270,"h":4270,"l":4270,"c":4270,"v":200},
+{"t":"14:35:00","o":4260,"h":4260,"l":4255,"c":4255,"v":800},
+{"t":"14:36:00","o":4255,"h":4260,"l":4255,"c":4255,"v":300},
+{"t":"14:37:00","o":4255,"h":4260,"l":4255,"c":4255,"v":400},
+{"t":"14:39:00","o":4255,"h":4255,"l":4255,"c":4255,"v":200},
+{"t":"14:40:00","o":4255,"h":4255,"l":4250,"c":4255,"v":1600},
+{"t":"14:41:00","o":4250,"h":4250,"l":4250,"c":4250,"v":400},
+{"t":"14:42:00","o":4255,"h":4255,"l":4250,"c":4250,"v":1100},
+{"t":"14:44:00","o":4250,"h":4250,"l":4250,"c":4250,"v":200},
+{"t":"14:45:00","o":4250,"h":4250,"l":4250,"c":4250,"v":100},
+{"t":"14:46:00","o":4245,"h":4245,"l":4245,"c":4245,"v":200},
+{"t":"14:48:00","o":4245,"h":4245,"l":4245,"c":4245,"v":200},
+{"t":"14:49:00","o":4250,"h":4250,"l":4250,"c":4250,"v":100},
+{"t":"14:50:00","o":4245,"h":4245,"l":4245,"c":4245,"v":300},
+{"t":"14:51:00","o":4245,"h":4245,"l":4245,"c":4245,"v":300},
+{"t":"14:52:00","o":4245,"h":4245,"l":4240,"c":4240,"v":1000},
+{"t":"14:53:00","o":4240,"h":4240,"l":4235,"c":4235,"v":1400},
+{"t":"14:54:00","o":4235,"h":4235,"l":4235,"c":4235,"v":500},
+{"t":"14:55:00","o":4230,"h":4235,"l":4225,"c":4230,"v":2700},
+{"t":"14:56:00","o":4235,"h":4245,"l":4235,"c":4245,"v":1600},
+{"t":"14:57:00","o":4250,"h":4255,"l":4250,"c":4255,"v":1000},
+{"t":"14:59:00","o":4250,"h":4250,"l":4250,"c":4250,"v":1000},
+{"t":"15:02:00","o":4245,"h":4245,"l":4245,"c":4245,"v":200},
+{"t":"15:03:00","o":4245,"h":4245,"l":4240,"c":4240,"v":500},
+{"t":"15:04:00","o":4245,"h":4245,"l":4245,"c":4245,"v":600},
+{"t":"15:08:00","o":4245,"h":4245,"l":4240,"c":4240,"v":1000},
+{"t":"15:09:00","o":4240,"h":4240,"l":4240,"c":4240,"v":300},
+{"t":"15:10:00","o":4245,"h":4245,"l":4235,"c":4235,"v":900},
+{"t":"15:12:00","o":4235,"h":4240,"l":4235,"c":4235,"v":700},
+{"t":"15:13:00","o":4240,"h":4240,"l":4240,"c":4240,"v":1500},
+{"t":"15:14:00","o":4240,"h":4240,"l":4230,"c":4230,"v":1600},
+{"t":"15:15:00","o":4230,"h":4230,"l":4225,"c":4230,"v":1200},
+{"t":"15:17:00","o":4230,"h":4230,"l":4230,"c":4230,"v":700},
+{"t":"15:20:00","o":4230,"h":4230,"l":4225,"c":4225,"v":800},
+{"t":"15:21:00","o":4230,"h":4230,"l":4220,"c":4220,"v":2400},
+{"t":"15:22:00","o":4220,"h":4220,"l":4215,"c":4215,"v":1200},
+{"t":"15:23:00","o":4215,"h":4220,"l":4210,"c":4210,"v":2700},
+{"t":"15:24:00","o":4210,"h":4215,"l":4210,"c":4210,"v":2600},
+{"t":"15:25:00","o":4215,"h":4215,"l":4215,"c":4215,"v":100},
+{"t":"15:30:00","o":4215,"h":4215,"l":4215,"c":4215,"v":19900}], "trades": [{"t":"09:03:00","side":"sell","qty":100,"price":4491,"kind":"open","pnl":null},
+{"t":"09:10:00","side":"buy","qty":100,"price":4389.5,"kind":"close","pnl":9250.0}], "fee_total": 900};
+
+const COL = {
+  bullBody: '#000000',
+  bullBrd:  '#ff5555',
+  bear:     '#5dade2',
+  axis:     '#30363d',
+  text:     '#9ba3ae',
+  grid:     'rgba(255,255,255,0.07)',
+  yellow:   '#ffe600',
+  purple:   '#bf00ff',
+  halo:     'rgba(255,255,255,0.35)',
+  win:      '#3fb950',
+  lose:     '#f85149',
+  leader:   'rgba(220,220,220,0.55)',
+};
+
+const cv = document.getElementById('cc');
+const tip = document.getElementById('tip');
+const dpr = window.devicePixelRatio || 1;
+const H = 640;
+let W = cv.parentElement.clientWidth;
+cv.width = W * dpr; cv.height = H * dpr;
+cv.style.width = W + 'px'; cv.style.height = H + 'px';
+const ctx = cv.getContext('2d');
+ctx.scale(dpr, dpr);
+
+const PAD = { l: 60, r: 20, t: 20, b: 40 };
+const CW = W - PAD.l - PAD.r;
+const USABLE_H = H - PAD.t - PAD.b;
+const PRICE_H = Math.round(USABLE_H * 0.74);
+const VOL_GAP = 10;
+const VOL_H = USABLE_H - PRICE_H - VOL_GAP;
+const VOL_TOP = PAD.t + PRICE_H + VOL_GAP;
+const CH = PRICE_H;
+
+const candles = DATA.candles;
+const N = candles.length;
+const candleW = (CW / N) * 0.7;
+const slot = CW / N;
+
+function tToMin(t) {
+  const [h, m, s] = t.split(':').map(Number);
+  return h * 60 + m + (s || 0) / 60;
+}
+const candleMins = candles.map(c => tToMin(c.t));
+const tfMin = candles.length > 1 ? candleMins[1] - candleMins[0] : 5;
+
+function tToX(t) {
+  const m = tToMin(t);
+  for (let i = 0; i < N; i++) {
+    const cm = candleMins[i];
+    if (m >= cm && m < cm + tfMin) {
+      const frac = (m - cm) / tfMin;
+      return PAD.l + i * slot + slot / 2 + (frac - 0.5) * slot;
+    }
+  }
+  if (m < candleMins[0]) return PAD.l + slot / 2;
+  return PAD.l + (N - 1) * slot + slot / 2;
+}
+
+let pmin = Infinity, pmax = -Infinity;
+candles.forEach(c => { pmin = Math.min(pmin, c.l); pmax = Math.max(pmax, c.h); });
+DATA.trades.forEach(t => { pmin = Math.min(pmin, t.price); pmax = Math.max(pmax, t.price); });
+const padP = (pmax - pmin) * 0.08;
+pmin -= padP; pmax += padP;
+
+function pToY(p) { return PAD.t + (1 - (p - pmin) / (pmax - pmin)) * CH; }
+
+let vmax = 0;
+candles.forEach(c => { if (c.v > vmax) vmax = c.v; });
+function vToY(v) { return VOL_TOP + VOL_H - (v / (vmax || 1)) * VOL_H; }
+
+function drawAxes() {
+  ctx.strokeStyle = COL.axis;
+  ctx.lineWidth = 1;
+  ctx.fillStyle = COL.text;
+  ctx.font = '11px -apple-system,sans-serif';
+  for (let i = 0; i <= 5; i++) {
+    const y = PAD.t + (CH * i) / 5;
+    const p = pmax - ((pmax - pmin) * i) / 5;
+    ctx.strokeStyle = COL.grid;
+    ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(PAD.l + CW, y); ctx.stroke();
+    ctx.fillStyle = COL.text;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText(p.toFixed(p < 100 ? 2 : 0), PAD.l - 6, y);
+  }
+  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+  ctx.fillStyle = COL.text;
+  const vlbl = vmax >= 10000 ? (vmax / 10000).toFixed(0) + '万' : vmax.toLocaleString();
+  ctx.fillText('Vol: ' + vlbl, PAD.l - 6, VOL_TOP + 2);
+  const labelEvery = tfMin <= 1 ? 60 : 30;
+  let lastM = -999;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const xLabelY = VOL_TOP + VOL_H + 6;
+  for (let i = 0; i < N; i++) {
+    const m = candleMins[i];
+    if (m - lastM >= labelEvery || i === 0) {
+      const x = PAD.l + i * slot + slot / 2;
+      const hh = Math.floor(m / 60);
+      const mm = Math.floor(m % 60);
+      ctx.fillStyle = COL.text;
+      ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`, x, xLabelY);
+      ctx.strokeStyle = COL.grid;
+      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, VOL_TOP + VOL_H); ctx.stroke();
+      lastM = m;
+    }
+  }
+}
+
+function drawVolume() {
+  candles.forEach((c, i) => {
+    const x = PAD.l + i * slot + slot / 2;
+    const bull = c.c >= c.o;
+    const y = vToY(c.v);
+    const h = VOL_TOP + VOL_H - y;
+    ctx.fillStyle = bull ? 'rgba(255,85,85,0.5)' : 'rgba(93,173,226,0.5)';
+    ctx.fillRect(x - candleW / 2, y, candleW, h);
+  });
+}
+
+function drawCandles() {
+  candles.forEach((c, i) => {
+    const x = PAD.l + i * slot + slot / 2;
+    const yo = pToY(c.o), yh = pToY(c.h), yl = pToY(c.l), yc = pToY(c.c);
+    const bull = c.c >= c.o;
+    ctx.strokeStyle = bull ? COL.bullBrd : COL.bear;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, yh); ctx.lineTo(x, yl); ctx.stroke();
+    const bt = Math.min(yo, yc), bb = Math.max(yo, yc);
+    const bh = Math.max(1, bb - bt);
+    if (bull) {
+      ctx.fillStyle = COL.bullBody;
+      ctx.fillRect(x - candleW / 2, bt, candleW, bh);
+      ctx.strokeRect(x - candleW / 2, bt, candleW, bh);
+    } else {
+      ctx.fillStyle = COL.bear;
+      ctx.fillRect(x - candleW / 2, bt, candleW, bh);
+    }
+  });
+}
+
+function triPath(x, y, size, dir) {
+  ctx.beginPath();
+  if (dir === 'up') {
+    ctx.moveTo(x, y - size);
+    ctx.lineTo(x - size * 0.9, y + size * 0.7);
+    ctx.lineTo(x + size * 0.9, y + size * 0.7);
+  } else {
+    ctx.moveTo(x, y + size);
+    ctx.lineTo(x - size * 0.9, y - size * 0.7);
+    ctx.lineTo(x + size * 0.9, y - size * 0.7);
+  }
+  ctx.closePath();
+}
+
+const markerData = DATA.trades.map(t => {
+  const x = tToX(t.t);
+  const y = pToY(t.price);
+  const dir = t.side === 'buy' ? 'up' : 'down';
+  const color = t.kind === 'open' ? COL.yellow : COL.purple;
+  const size = Math.min(14, 7 + Math.sqrt(t.qty / 100) * 2.5);
+  return { ...t, x, y, dir, color, size };
+});
+
+function drawMarkers(hoverIdx) {
+  markerData.forEach((m, i) => {
+    const sz = i === hoverIdx ? m.size * 1.6 : m.size;
+    ctx.fillStyle = m.color + '55';
+    triPath(m.x, m.y, sz, m.dir);
+    ctx.fill();
+    ctx.strokeStyle = m.color;
+    ctx.lineWidth = i === hoverIdx ? 2.4 : 1.8;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  });
+}
+
+function placeLabels() {
+  const closes = markerData.map((m, i) => ({ m, i })).filter(x => x.m.kind === 'close' && x.m.pnl !== null);
+  closes.sort((a, b) => Math.abs(b.m.pnl) - Math.abs(a.m.pnl));
+  const placed = [];
+  closes.forEach(({ m }) => {
+    const txt = (m.pnl >= 0 ? '+' : '') + m.pnl.toLocaleString();
+    ctx.font = 'bold 11px -apple-system,sans-serif';
+    const tw = ctx.measureText(txt).width + 10;
+    const th = 18;
+    let best = null, bestScore = Infinity;
+    const stepX = 14, stepY = 12;
+    for (let dy = -160; dy <= 160; dy += stepY) {
+      for (let dx = -120; dx <= 120; dx += stepX) {
+        if (Math.abs(dx) < 18 && Math.abs(dy) < 18) continue;
+        const lx = m.x + dx, ly = m.y + dy;
+        if (lx - tw/2 < PAD.l + 2 || lx + tw/2 > PAD.l + CW - 2) continue;
+        if (ly - th/2 < PAD.t + 2 || ly + th/2 > PAD.t + CH - 2) continue;
+        let score = Math.hypot(dx, dy) * 0.5;
+        for (let i = 0; i < N; i++) {
+          const cx = PAD.l + i * slot + slot / 2;
+          if (Math.abs(cx - lx) < candleW / 2 + tw / 2) {
+            const c = candles[i];
+            const cyt = pToY(c.h), cyb = pToY(c.l);
+            if (ly + th/2 > cyt && ly - th/2 < cyb) score += 800;
+          }
+        }
+        markerData.forEach(mm => {
+          if (Math.abs(mm.x - lx) < tw/2 + 12 && Math.abs(mm.y - ly) < th/2 + 12) score += 1500;
+        });
+        placed.forEach(p => {
+          if (Math.abs(p.lx - lx) < (tw + p.tw)/2 + 6 && Math.abs(p.ly - ly) < th + 4) score += 2500;
+        });
+        if (m.pnl >= 0 && dy > 0) score += 30;
+        if (m.pnl < 0 && dy < 0) score += 30;
+        if (score < bestScore) { bestScore = score; best = { lx, ly }; }
+      }
+    }
+    if (best) placed.push({ ...best, tw, th, txt, m });
+  });
+  placed.forEach(p => {
+    ctx.strokeStyle = COL.leader;
+    ctx.setLineDash([3, 3]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(p.m.x, p.m.y);
+    const dx = p.lx - p.m.x, dy = p.ly - p.m.y;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    let ex = p.lx, ey = p.ly;
+    if (adx > 0 || ady > 0) {
+      const tx = p.tw / 2 / (adx || 0.001);
+      const ty = p.th / 2 / (ady || 0.001);
+      const t = Math.min(tx, ty);
+      ex = p.lx - dx * t;
+      ey = p.ly - dy * t;
+    }
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  placed.forEach(p => {
+    const win = p.m.pnl >= 0;
+    ctx.fillStyle = win ? COL.win : COL.lose;
+    ctx.fillRect(p.lx - p.tw/2, p.ly - p.th/2, p.tw, p.th);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px -apple-system,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.txt, p.lx, p.ly);
+  });
+}
+
+let hoverMarker = -1;
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  drawAxes();
+  drawVolume();
+  drawCandles();
+  placeLabels();
+  drawMarkers(hoverMarker);
+}
+render();
+
+cv.addEventListener('mousemove', e => {
+  const rect = cv.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let hit = -1;
+  for (let i = markerData.length - 1; i >= 0; i--) {
+    const m = markerData[i];
+    if (Math.hypot(mx - m.x, my - m.y) < m.size + 4) { hit = i; break; }
+  }
+  if (hit !== hoverMarker) { hoverMarker = hit; render(); }
+  if (hit >= 0) {
+    const m = markerData[hit];
+    const kindJp = m.kind === 'open' ? '新規' : '決済';
+    const sideJp = m.side === 'buy' ? '買い' : '売り';
+    let html = `<b>${m.t.slice(0,5)} ${kindJp}${sideJp}</b><br>${m.qty}株 @ ${m.price.toLocaleString()}円`;
+    if (m.pnl !== null) {
+      const c = m.pnl >= 0 ? COL.win : COL.lose;
+      html += `<br><span style="color:${c};font-weight:bold">損益: ${m.pnl >= 0 ? '+' : ''}${m.pnl.toLocaleString()}円</span>`;
+    }
+    tip.innerHTML = html;
+    tip.style.display = 'block';
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let tx = mx + 14, ty = my - th - 8;
+    if (tx + tw > W) tx = mx - tw - 14;
+    if (ty < 0) ty = my + 14;
+    tip.style.left = tx + 'px';
+    tip.style.top = ty + 'px';
+    return;
+  }
+  const ci = Math.floor((mx - PAD.l) / slot);
+  if (ci >= 0 && ci < N && mx >= PAD.l && mx <= PAD.l + CW) {
+    const c = candles[ci];
+    tip.innerHTML = `<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
+    tip.style.display = 'block';
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let tx = mx + 14, ty = my - th - 8;
+    if (tx + tw > W) tx = mx - tw - 14;
+    if (ty < 0) ty = my + 14;
+    tip.style.left = tx + 'px';
+    tip.style.top = ty + 'px';
+  } else {
+    tip.style.display = 'none';
+  }
+});
+cv.addEventListener('mouseleave', () => { tip.style.display = 'none'; hoverMarker = -1; render(); });
+
+const wins = DATA.trades.filter(t => t.pnl !== null && t.pnl > 0).length;
+const losses = DATA.trades.filter(t => t.pnl !== null && t.pnl < 0).length;
+const evens = DATA.trades.filter(t => t.pnl === 0).length;
+const total = DATA.trades.filter(t => t.pnl !== null).reduce((s, t) => s + t.pnl, 0);
+const wr = (wins + losses + evens) > 0 ? (wins / (wins + losses + evens) * 100).toFixed(1) : '0.0';
+const totalCls = total >= 0 ? 'win' : 'lose';
+const totalSign = total >= 0 ? '+' : '';
+const hasFee = DATA.fee_total && DATA.fee_total > 0;
+const cardsEl = document.getElementById('cards');
+if (hasFee) {
+  cardsEl.style.gridTemplateColumns = 'repeat(4, 1fr)';
+  cardsEl.innerHTML = `
+<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div>
+<div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens > 0 ? ' '+evens+'分' : ''}</div></div>
+<div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div>
+<div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>
+`;
+} else {
+  cardsEl.innerHTML = `
+<div class="card"><div class="card-label">合計損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div></div>
+<div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens > 0 ? ' '+evens+'分' : ''}</div></div>
+<div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div>
+`;
+}
+</script>
+</body>
+</html>
