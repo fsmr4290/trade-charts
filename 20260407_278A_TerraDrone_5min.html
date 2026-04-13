@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>278A テラドローン 5分足 2026/04/07</title>
+<title>278A TerraDrone 5分足 2026/04/07</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:#000000;color:#e6edf3;padding:20px;line-height:1.5}
@@ -26,15 +26,13 @@ canvas{display:block;width:100%;cursor:default}
 </head>
 <body>
 <div class="wrap">
-<h1>278A テラドローン 5分足 2026/04/07</h1>
+<h1>278A　TerraDrone 5分足　2026/04/07</h1>
 <div class="sub">インタラクティブ売買記録チャート ・ 貸株料: 900円/100株</div>
 <div class="legend">
   <span><span style="width:10px;height:10px;border:1.5px solid #ff5555;background:transparent;display:inline-block"></span>陽線</span>
   <span><span style="width:10px;height:10px;background:#5dade2;display:inline-block"></span>陰線</span>
-  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block"></span>新規(買い)</span>
-  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #ffe600;display:inline-block"></span>新規(売り)</span>
-  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済(買い)</span>
-  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>決済(売り)</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #ffe600;display:inline-block"></span>新規売り</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済買い</span>
 </div>
 <div class="cards" id="cards"></div>
 <div class="cv-wrap">
@@ -43,7 +41,7 @@ canvas{display:block;width:100%;cursor:default}
 </div>
 </div>
 <script>
-const DATA = {"candles": [{"t":"09:00:00","o":4640,"h":4690,"l":4455,"c":4475,"v":112800},
+const DATA = {"candles":[{"t":"09:00:00","o":4640,"h":4690,"l":4455,"c":4475,"v":112800},
 {"t":"09:05:00","o":4470,"h":4485,"l":4435,"c":4440,"v":33400},
 {"t":"09:10:00","o":4435,"h":4435,"l":4370,"c":4410,"v":47600},
 {"t":"09:15:00","o":4405,"h":4480,"l":4405,"c":4460,"v":20000},
@@ -110,336 +108,176 @@ const DATA = {"candles": [{"t":"09:00:00","o":4640,"h":4690,"l":4455,"c":4475,"v
 {"t":"15:15:00","o":4230,"h":4230,"l":4225,"c":4230,"v":1900},
 {"t":"15:20:00","o":4230,"h":4230,"l":4210,"c":4210,"v":9700},
 {"t":"15:25:00","o":4215,"h":4215,"l":4215,"c":4215,"v":100},
-{"t":"15:30:00","o":4215,"h":4215,"l":4215,"c":4215,"v":19900}], "trades": [{"t":"09:03:00","side":"sell","qty":100,"price":4491,"kind":"open","pnl":null},
-{"t":"09:10:00","side":"buy","qty":100,"price":4389.5,"kind":"close","pnl":9250.0}], "fee_total": 900};
-
-const COL = {
-  bullBody: '#000000',
-  bullBrd:  '#ff5555',
-  bear:     '#5dade2',
-  axis:     '#30363d',
-  text:     '#9ba3ae',
-  grid:     'rgba(255,255,255,0.07)',
-  yellow:   '#ffe600',
-  purple:   '#bf00ff',
-  halo:     'rgba(255,255,255,0.35)',
-  win:      '#3fb950',
-  lose:     '#f85149',
-  leader:   'rgba(220,220,220,0.55)',
-};
-
-const cv = document.getElementById('cc');
-const tip = document.getElementById('tip');
-const dpr = window.devicePixelRatio || 1;
-const H = 640;
-let W = cv.parentElement.clientWidth;
-cv.width = W * dpr; cv.height = H * dpr;
-cv.style.width = W + 'px'; cv.style.height = H + 'px';
-const ctx = cv.getContext('2d');
-ctx.scale(dpr, dpr);
-
-const PAD = { l: 60, r: 20, t: 20, b: 40 };
-const CW = W - PAD.l - PAD.r;
-const USABLE_H = H - PAD.t - PAD.b;
-const PRICE_H = Math.round(USABLE_H * 0.74);
-const VOL_GAP = 10;
-const VOL_H = USABLE_H - PRICE_H - VOL_GAP;
-const VOL_TOP = PAD.t + PRICE_H + VOL_GAP;
-const CH = PRICE_H;
-
-const candles = DATA.candles;
-const N = candles.length;
-const candleW = (CW / N) * 0.7;
-const slot = CW / N;
-
-function tToMin(t) {
-  const [h, m, s] = t.split(':').map(Number);
-  return h * 60 + m + (s || 0) / 60;
+{"t":"15:30:00","o":4215,"h":4215,"l":4215,"c":4215,"v":19900}],"trades":[{"t":"09:03:00","side":"sell","qty":100,"price":4491.0,"kind":"open","pnl":null},
+{"t":"09:10:00","side":"buy","qty":100,"price":4389.5,"kind":"close","pnl":9250.0}],"fee_total":900};
+const COL={bullBody:'#000000',bullBrd:'#ff5555',bear:'#5dade2',axis:'#30363d',text:'#9ba3ae',grid:'rgba(255,255,255,0.07)',yellow:'#ffe600',purple:'#bf00ff',win:'#3fb950',lose:'#f85149',leader:'rgba(220,220,220,0.55)'};
+const cv=document.getElementById('cc'),tip=document.getElementById('tip');
+const dpr=window.devicePixelRatio||1,H=640;
+let W=cv.parentElement.clientWidth;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+const PAD={l:60,r:20,t:20,b:40};
+const CW=W-PAD.l-PAD.r,USABLE_H=H-PAD.t-PAD.b;
+const PRICE_H=Math.round(USABLE_H*0.74),VOL_GAP=10;
+const VOL_H=USABLE_H-PRICE_H-VOL_GAP,VOL_TOP=PAD.t+PRICE_H+VOL_GAP,CH=PRICE_H;
+const candles=DATA.candles,N=candles.length;
+const candleW=(CW/N)*0.7,slot=CW/N;
+function tToMin(t){const[h,m,s]=t.split(':').map(Number);return h*60+m+(s||0)/60;}
+const candleMins=candles.map(c=>tToMin(c.t));
+const tfMin=candles.length>1?candleMins[1]-candleMins[0]:5;
+function tToX(t){
+  const m=tToMin(t);
+  for(let i=0;i<N;i++){const cm=candleMins[i];if(m>=cm&&m<cm+tfMin){const frac=(m-cm)/tfMin;return PAD.l+i*slot+slot/2+(frac-0.5)*slot;}}
+  if(m<candleMins[0])return PAD.l+slot/2;
+  return PAD.l+(N-1)*slot+slot/2;
 }
-const candleMins = candles.map(c => tToMin(c.t));
-const tfMin = candles.length > 1 ? candleMins[1] - candleMins[0] : 5;
-
-function tToX(t) {
-  const m = tToMin(t);
-  for (let i = 0; i < N; i++) {
-    const cm = candleMins[i];
-    if (m >= cm && m < cm + tfMin) {
-      const frac = (m - cm) / tfMin;
-      return PAD.l + i * slot + slot / 2 + (frac - 0.5) * slot;
-    }
+let pmin=Infinity,pmax=-Infinity;
+candles.forEach(c=>{pmin=Math.min(pmin,c.l);pmax=Math.max(pmax,c.h);});
+DATA.trades.forEach(t=>{pmin=Math.min(pmin,t.price);pmax=Math.max(pmax,t.price);});
+const padP=(pmax-pmin)*0.08;pmin-=padP;pmax+=padP;
+function pToY(p){return PAD.t+(1-(p-pmin)/(pmax-pmin))*CH;}
+let vmax=0;candles.forEach(c=>{if(c.v>vmax)vmax=c.v;});
+function vToY(v){return VOL_TOP+VOL_H-(v/(vmax||1))*VOL_H;}
+function drawAxes(){
+  ctx.font='11px -apple-system,sans-serif';
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(CH*i)/5,p=pmax-((pmax-pmin)*i)/5;
+    ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=COL.text;ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(p.toFixed(p<100?2:0),PAD.l-6,y);
   }
-  if (m < candleMins[0]) return PAD.l + slot / 2;
-  return PAD.l + (N - 1) * slot + slot / 2;
-}
-
-let pmin = Infinity, pmax = -Infinity;
-candles.forEach(c => { pmin = Math.min(pmin, c.l); pmax = Math.max(pmax, c.h); });
-DATA.trades.forEach(t => { pmin = Math.min(pmin, t.price); pmax = Math.max(pmax, t.price); });
-const padP = (pmax - pmin) * 0.08;
-pmin -= padP; pmax += padP;
-
-function pToY(p) { return PAD.t + (1 - (p - pmin) / (pmax - pmin)) * CH; }
-
-let vmax = 0;
-candles.forEach(c => { if (c.v > vmax) vmax = c.v; });
-function vToY(v) { return VOL_TOP + VOL_H - (v / (vmax || 1)) * VOL_H; }
-
-function drawAxes() {
-  ctx.strokeStyle = COL.axis;
-  ctx.lineWidth = 1;
-  ctx.fillStyle = COL.text;
-  ctx.font = '11px -apple-system,sans-serif';
-  for (let i = 0; i <= 5; i++) {
-    const y = PAD.t + (CH * i) / 5;
-    const p = pmax - ((pmax - pmin) * i) / 5;
-    ctx.strokeStyle = COL.grid;
-    ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(PAD.l + CW, y); ctx.stroke();
-    ctx.fillStyle = COL.text;
-    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    ctx.fillText(p.toFixed(p < 100 ? 2 : 0), PAD.l - 6, y);
-  }
-  ctx.textAlign = 'right'; ctx.textBaseline = 'top';
-  ctx.fillStyle = COL.text;
-  const vlbl = vmax >= 10000 ? (vmax / 10000).toFixed(0) + '万' : vmax.toLocaleString();
-  ctx.fillText('Vol: ' + vlbl, PAD.l - 6, VOL_TOP + 2);
-  const labelEvery = tfMin <= 1 ? 60 : 30;
-  let lastM = -999;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  const xLabelY = VOL_TOP + VOL_H + 6;
-  for (let i = 0; i < N; i++) {
-    const m = candleMins[i];
-    if (m - lastM >= labelEvery || i === 0) {
-      const x = PAD.l + i * slot + slot / 2;
-      const hh = Math.floor(m / 60);
-      const mm = Math.floor(m % 60);
-      ctx.fillStyle = COL.text;
-      ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`, x, xLabelY);
-      ctx.strokeStyle = COL.grid;
-      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, VOL_TOP + VOL_H); ctx.stroke();
-      lastM = m;
+  const vlbl=vmax>=10000?(vmax/10000).toFixed(0)+'万':vmax.toLocaleString();
+  ctx.textAlign='right';ctx.textBaseline='top';ctx.fillStyle=COL.text;
+  ctx.fillText('Vol: '+vlbl,PAD.l-6,VOL_TOP+2);
+  const labelEvery=tfMin<=1?60:30;let lastM=-999;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=0;i<N;i++){
+    const m=candleMins[i];
+    if(m-lastM>=labelEvery||i===0){
+      const x=PAD.l+i*slot+slot/2,hh=Math.floor(m/60),mm=Math.floor(m%60);
+      ctx.fillStyle=COL.text;ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`,x,VOL_TOP+VOL_H+6);
+      ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,VOL_TOP+VOL_H);ctx.stroke();
+      lastM=m;
     }
   }
 }
-
-function drawVolume() {
-  candles.forEach((c, i) => {
-    const x = PAD.l + i * slot + slot / 2;
-    const bull = c.c >= c.o;
-    const y = vToY(c.v);
-    const h = VOL_TOP + VOL_H - y;
-    ctx.fillStyle = bull ? 'rgba(255,85,85,0.5)' : 'rgba(93,173,226,0.5)';
-    ctx.fillRect(x - candleW / 2, y, candleW, h);
+function drawVolume(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,bull=c.c>=c.o,y=vToY(c.v),h=VOL_TOP+VOL_H-y;
+    ctx.fillStyle=bull?'rgba(255,85,85,0.5)':'rgba(93,173,226,0.5)';
+    ctx.fillRect(x-candleW/2,y,candleW,h);
   });
 }
-
-function drawCandles() {
-  candles.forEach((c, i) => {
-    const x = PAD.l + i * slot + slot / 2;
-    const yo = pToY(c.o), yh = pToY(c.h), yl = pToY(c.l), yc = pToY(c.c);
-    const bull = c.c >= c.o;
-    ctx.strokeStyle = bull ? COL.bullBrd : COL.bear;
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x, yh); ctx.lineTo(x, yl); ctx.stroke();
-    const bt = Math.min(yo, yc), bb = Math.max(yo, yc);
-    const bh = Math.max(1, bb - bt);
-    if (bull) {
-      ctx.fillStyle = COL.bullBody;
-      ctx.fillRect(x - candleW / 2, bt, candleW, bh);
-      ctx.strokeRect(x - candleW / 2, bt, candleW, bh);
-    } else {
-      ctx.fillStyle = COL.bear;
-      ctx.fillRect(x - candleW / 2, bt, candleW, bh);
-    }
+function drawCandles(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,yo=pToY(c.o),yh=pToY(c.h),yl=pToY(c.l),yc=pToY(c.c),bull=c.c>=c.o;
+    ctx.strokeStyle=bull?COL.bullBrd:COL.bear;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();
+    const bt=Math.min(yo,yc),bb=Math.max(yo,yc),bh=Math.max(1,bb-bt);
+    if(bull){ctx.fillStyle=COL.bullBody;ctx.fillRect(x-candleW/2,bt,candleW,bh);ctx.strokeRect(x-candleW/2,bt,candleW,bh);}
+    else{ctx.fillStyle=COL.bear;ctx.fillRect(x-candleW/2,bt,candleW,bh);}
   });
 }
-
-function triPath(x, y, size, dir) {
+function triPath(x,y,size,dir){
   ctx.beginPath();
-  if (dir === 'up') {
-    ctx.moveTo(x, y - size);
-    ctx.lineTo(x - size * 0.9, y + size * 0.7);
-    ctx.lineTo(x + size * 0.9, y + size * 0.7);
-  } else {
-    ctx.moveTo(x, y + size);
-    ctx.lineTo(x - size * 0.9, y - size * 0.7);
-    ctx.lineTo(x + size * 0.9, y - size * 0.7);
-  }
+  if(dir==='up'){ctx.moveTo(x,y-size);ctx.lineTo(x-size*0.9,y+size*0.7);ctx.lineTo(x+size*0.9,y+size*0.7);}
+  else{ctx.moveTo(x,y+size);ctx.lineTo(x-size*0.9,y-size*0.7);ctx.lineTo(x+size*0.9,y-size*0.7);}
   ctx.closePath();
 }
-
-const markerData = DATA.trades.map(t => {
-  const x = tToX(t.t);
-  const y = pToY(t.price);
-  const dir = t.side === 'buy' ? 'up' : 'down';
-  const color = t.kind === 'open' ? COL.yellow : COL.purple;
-  const size = Math.min(14, 7 + Math.sqrt(t.qty / 100) * 2.5);
-  return { ...t, x, y, dir, color, size };
+const markerData=DATA.trades.map(t=>{
+  const x=tToX(t.t),y=pToY(t.price),dir=t.side==='buy'?'up':'down';
+  const color=t.kind==='open'?COL.yellow:COL.purple;
+  const size=Math.min(16,8+Math.sqrt(t.qty/100)*2.0);
+  return{...t,x,y,dir,color,size};
 });
-
-function drawMarkers(hoverIdx) {
-  markerData.forEach((m, i) => {
-    const sz = i === hoverIdx ? m.size * 1.6 : m.size;
-    ctx.fillStyle = m.color + '55';
-    triPath(m.x, m.y, sz, m.dir);
-    ctx.fill();
-    ctx.strokeStyle = m.color;
-    ctx.lineWidth = i === hoverIdx ? 2.4 : 1.8;
-    ctx.lineJoin = 'round';
-    ctx.stroke();
+function drawMarkers(hoverIdx){
+  markerData.forEach((m,i)=>{
+    const sz=i===hoverIdx?m.size*1.6:m.size;
+    ctx.fillStyle=m.color+'55';triPath(m.x,m.y,sz,m.dir);ctx.fill();
+    ctx.strokeStyle=m.color;ctx.lineWidth=i===hoverIdx?2.4:1.8;ctx.lineJoin='round';ctx.stroke();
   });
 }
-
-function placeLabels() {
-  const closes = markerData.map((m, i) => ({ m, i })).filter(x => x.m.kind === 'close' && x.m.pnl !== null);
-  closes.sort((a, b) => Math.abs(b.m.pnl) - Math.abs(a.m.pnl));
-  const placed = [];
-  closes.forEach(({ m }) => {
-    const txt = (m.pnl >= 0 ? '+' : '') + m.pnl.toLocaleString();
-    ctx.font = 'bold 11px -apple-system,sans-serif';
-    const tw = ctx.measureText(txt).width + 10;
-    const th = 18;
-    let best = null, bestScore = Infinity;
-    const stepX = 14, stepY = 12;
-    for (let dy = -160; dy <= 160; dy += stepY) {
-      for (let dx = -120; dx <= 120; dx += stepX) {
-        if (Math.abs(dx) < 18 && Math.abs(dy) < 18) continue;
-        const lx = m.x + dx, ly = m.y + dy;
-        if (lx - tw/2 < PAD.l + 2 || lx + tw/2 > PAD.l + CW - 2) continue;
-        if (ly - th/2 < PAD.t + 2 || ly + th/2 > PAD.t + CH - 2) continue;
-        let score = Math.hypot(dx, dy) * 0.5;
-        for (let i = 0; i < N; i++) {
-          const cx = PAD.l + i * slot + slot / 2;
-          if (Math.abs(cx - lx) < candleW / 2 + tw / 2) {
-            const c = candles[i];
-            const cyt = pToY(c.h), cyb = pToY(c.l);
-            if (ly + th/2 > cyt && ly - th/2 < cyb) score += 800;
-          }
-        }
-        markerData.forEach(mm => {
-          if (Math.abs(mm.x - lx) < tw/2 + 12 && Math.abs(mm.y - ly) < th/2 + 12) score += 1500;
-        });
-        placed.forEach(p => {
-          if (Math.abs(p.lx - lx) < (tw + p.tw)/2 + 6 && Math.abs(p.ly - ly) < th + 4) score += 2500;
-        });
-        if (m.pnl >= 0 && dy > 0) score += 30;
-        if (m.pnl < 0 && dy < 0) score += 30;
-        if (score < bestScore) { bestScore = score; best = { lx, ly }; }
+function placeLabels(){
+  const closes=markerData.map((m,i)=>({m,i})).filter(x=>x.m.kind==='close'&&x.m.pnl!==null);
+  closes.sort((a,b)=>Math.abs(b.m.pnl)-Math.abs(a.m.pnl));
+  const placed=[];
+  closes.forEach(({m})=>{
+    const txt=(m.pnl>=0?'+':'')+m.pnl.toLocaleString();
+    ctx.font='bold 11px -apple-system,sans-serif';
+    const tw=ctx.measureText(txt).width+10,th=18;
+    let best=null,bestScore=Infinity;
+    for(let dy=-160;dy<=160;dy+=12){for(let dx=-120;dx<=120;dx+=14){
+      if(Math.abs(dx)<18&&Math.abs(dy)<18)continue;
+      const lx=m.x+dx,ly=m.y+dy;
+      if(lx-tw/2<PAD.l+2||lx+tw/2>PAD.l+CW-2)continue;
+      if(ly-th/2<PAD.t+2||ly+th/2>PAD.t+CH-2)continue;
+      let score=Math.hypot(dx,dy)*0.5;
+      for(let i=0;i<N;i++){
+        const cx=PAD.l+i*slot+slot/2;
+        if(Math.abs(cx-lx)<candleW/2+tw/2){const c=candles[i];if(ly+th/2>pToY(c.h)&&ly-th/2<pToY(c.l))score+=800;}
       }
-    }
-    if (best) placed.push({ ...best, tw, th, txt, m });
+      markerData.forEach(mm=>{if(Math.abs(mm.x-lx)<tw/2+12&&Math.abs(mm.y-ly)<th/2+12)score+=1500;});
+      placed.forEach(p=>{if(Math.abs(p.lx-lx)<(tw+p.tw)/2+6&&Math.abs(p.ly-ly)<th+4)score+=2500;});
+      if(m.pnl>=0&&dy>0)score+=30;if(m.pnl<0&&dy<0)score+=30;
+      if(score<bestScore){bestScore=score;best={lx,ly};}
+    }}
+    if(best)placed.push({...best,tw,th,txt,m});
   });
-  placed.forEach(p => {
-    ctx.strokeStyle = COL.leader;
-    ctx.setLineDash([3, 3]);
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(p.m.x, p.m.y);
-    const dx = p.lx - p.m.x, dy = p.ly - p.m.y;
-    const adx = Math.abs(dx), ady = Math.abs(dy);
-    let ex = p.lx, ey = p.ly;
-    if (adx > 0 || ady > 0) {
-      const tx = p.tw / 2 / (adx || 0.001);
-      const ty = p.th / 2 / (ady || 0.001);
-      const t = Math.min(tx, ty);
-      ex = p.lx - dx * t;
-      ey = p.ly - dy * t;
-    }
-    ctx.lineTo(ex, ey);
-    ctx.stroke();
-    ctx.setLineDash([]);
+  placed.forEach(p=>{
+    ctx.strokeStyle=COL.leader;ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.m.x,p.m.y);
+    const dx=p.lx-p.m.x,dy=p.ly-p.m.y,adx=Math.abs(dx),ady=Math.abs(dy);
+    let ex=p.lx,ey=p.ly;
+    if(adx>0||ady>0){const tx=p.tw/2/(adx||0.001),ty=p.th/2/(ady||0.001),t=Math.min(tx,ty);ex=p.lx-dx*t;ey=p.ly-dy*t;}
+    ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
   });
-  placed.forEach(p => {
-    const win = p.m.pnl >= 0;
-    ctx.fillStyle = win ? COL.win : COL.lose;
-    ctx.fillRect(p.lx - p.tw/2, p.ly - p.th/2, p.tw, p.th);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 11px -apple-system,sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(p.txt, p.lx, p.ly);
+  placed.forEach(p=>{
+    const win=p.m.pnl>=0;
+    ctx.fillStyle=win?COL.win:COL.lose;ctx.fillRect(p.lx-p.tw/2,p.ly-p.th/2,p.tw,p.th);
+    ctx.fillStyle='#fff';ctx.font='bold 11px -apple-system,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.txt,p.lx,p.ly);
   });
 }
-
-let hoverMarker = -1;
-function render() {
-  ctx.clearRect(0, 0, W, H);
-  drawAxes();
-  drawVolume();
-  drawCandles();
-  placeLabels();
-  drawMarkers(hoverMarker);
-}
+let hoverMarker=-1;
+function render(){ctx.clearRect(0,0,W,H);drawAxes();drawVolume();drawCandles();placeLabels();drawMarkers(hoverMarker);}
 render();
-
-cv.addEventListener('mousemove', e => {
-  const rect = cv.getBoundingClientRect();
-  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-  let hit = -1;
-  for (let i = markerData.length - 1; i >= 0; i--) {
-    const m = markerData[i];
-    if (Math.hypot(mx - m.x, my - m.y) < m.size + 4) { hit = i; break; }
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  let hit=-1;
+  for(let i=markerData.length-1;i>=0;i--){if(Math.hypot(mx-markerData[i].x,my-markerData[i].y)<markerData[i].size+4){hit=i;break;}}
+  if(hit!==hoverMarker){hoverMarker=hit;render();}
+  if(hit>=0){
+    const m=markerData[hit],kindJp=m.kind==='open'?'新規売り':'決済買い';
+    let html=`<b>${m.t.slice(0,5)} ${kindJp}</b><br>合計 ${m.qty}株 @ 平均${m.price.toLocaleString()}円`;
+    if(m.pnl!==null){const c=m.pnl>=0?COL.win:COL.lose;html+=`<br><span style="color:${c};font-weight:bold">損益: ${m.pnl>=0?'+':''}${m.pnl.toLocaleString()}円</span>`;}
+    tip.innerHTML=html;tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';return;
   }
-  if (hit !== hoverMarker) { hoverMarker = hit; render(); }
-  if (hit >= 0) {
-    const m = markerData[hit];
-    const kindJp = m.kind === 'open' ? '新規' : '決済';
-    const sideJp = m.side === 'buy' ? '買い' : '売り';
-    let html = `<b>${m.t.slice(0,5)} ${kindJp}${sideJp}</b><br>${m.qty}株 @ ${m.price.toLocaleString()}円`;
-    if (m.pnl !== null) {
-      const c = m.pnl >= 0 ? COL.win : COL.lose;
-      html += `<br><span style="color:${c};font-weight:bold">損益: ${m.pnl >= 0 ? '+' : ''}${m.pnl.toLocaleString()}円</span>`;
-    }
-    tip.innerHTML = html;
-    tip.style.display = 'block';
-    const tw = tip.offsetWidth, th = tip.offsetHeight;
-    let tx = mx + 14, ty = my - th - 8;
-    if (tx + tw > W) tx = mx - tw - 14;
-    if (ty < 0) ty = my + 14;
-    tip.style.left = tx + 'px';
-    tip.style.top = ty + 'px';
-    return;
-  }
-  const ci = Math.floor((mx - PAD.l) / slot);
-  if (ci >= 0 && ci < N && mx >= PAD.l && mx <= PAD.l + CW) {
-    const c = candles[ci];
-    tip.innerHTML = `<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
-    tip.style.display = 'block';
-    const tw = tip.offsetWidth, th = tip.offsetHeight;
-    let tx = mx + 14, ty = my - th - 8;
-    if (tx + tw > W) tx = mx - tw - 14;
-    if (ty < 0) ty = my + 14;
-    tip.style.left = tx + 'px';
-    tip.style.top = ty + 'px';
-  } else {
-    tip.style.display = 'none';
-  }
+  const ci=Math.floor((mx-PAD.l)/slot);
+  if(ci>=0&&ci<N&&mx>=PAD.l&&mx<=PAD.l+CW){
+    const c=candles[ci];
+    tip.innerHTML=`<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
+    tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';
+  }else tip.style.display='none';
 });
-cv.addEventListener('mouseleave', () => { tip.style.display = 'none'; hoverMarker = -1; render(); });
-
-const wins = DATA.trades.filter(t => t.pnl !== null && t.pnl > 0).length;
-const losses = DATA.trades.filter(t => t.pnl !== null && t.pnl < 0).length;
-const evens = DATA.trades.filter(t => t.pnl === 0).length;
-const total = DATA.trades.filter(t => t.pnl !== null).reduce((s, t) => s + t.pnl, 0);
-const wr = (wins + losses + evens) > 0 ? (wins / (wins + losses + evens) * 100).toFixed(1) : '0.0';
-const totalCls = total >= 0 ? 'win' : 'lose';
-const totalSign = total >= 0 ? '+' : '';
-const hasFee = DATA.fee_total && DATA.fee_total > 0;
-const cardsEl = document.getElementById('cards');
-if (hasFee) {
-  cardsEl.style.gridTemplateColumns = 'repeat(4, 1fr)';
-  cardsEl.innerHTML = `
-<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div>
-<div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens > 0 ? ' '+evens+'分' : ''}</div></div>
-<div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div>
-<div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>
-`;
-} else {
-  cardsEl.innerHTML = `
-<div class="card"><div class="card-label">合計損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div></div>
-<div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens > 0 ? ' '+evens+'分' : ''}</div></div>
-<div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div>
-`;
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hoverMarker=-1;render();});
+const wins=DATA.trades.filter(t=>t.pnl!==null&&t.pnl>0).length;
+const losses=DATA.trades.filter(t=>t.pnl!==null&&t.pnl<0).length;
+const evens=DATA.trades.filter(t=>t.pnl===0).length;
+const total=DATA.trades.filter(t=>t.pnl!==null).reduce((s,t)=>s+t.pnl,0);
+const wr=(wins+losses+evens)>0?(wins/(wins+losses+evens)*100).toFixed(1):'0.0';
+const totalCls=total>=0?'win':'lose',totalSign=total>=0?'+':'';
+const hasFee=DATA.fee_total&&DATA.fee_total>0;
+const cardsEl=document.getElementById('cards');
+if(hasFee){
+  cardsEl.style.gridTemplateColumns='repeat(4, 1fr)';
+  cardsEl.innerHTML=`<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div><div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>`;
+}else{
+  cardsEl.innerHTML=`<div class="card"><div class="card-label">合計損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div>`;
 }
-</script>
-</body>
-</html>
+</script></body></html>
