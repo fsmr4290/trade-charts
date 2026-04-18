@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7375 リファインバースグループ 5分足 2026/04/09</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:#000000;color:#e6edf3;padding:20px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#8b949e;margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:12px;color:#9ba3ae}
+.legend span{display:flex;align-items:center;gap:6px}
+.cv-wrap{position:relative;width:100%}
+canvas{display:block;width:100%;cursor:default}
+#tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
+.card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
+.card-value{font-size:22px;font-weight:600}
+.card-sub{font-size:11px;color:#8b949e;margin-top:2px}
+.card-value.win{color:#3fb950}
+.card-value.lose{color:#f85149}
+.line-swatch{display:inline-block;width:14px;height:2px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>7375　リファインバースグループ 5分足　2026/04/09</h1>
+<div class="sub">インタラクティブ売買記録チャート ・ 貸株料: 820円/100株</div>
+<div class="legend">
+  <span><span style="width:10px;height:10px;border:1.5px solid #ff5555;background:transparent;display:inline-block"></span>陽線</span>
+  <span><span style="width:10px;height:10px;background:#5dade2;display:inline-block"></span>陰線</span>
+  <span><span class="line-swatch" style="background:#f0b90b"></span>VWAP</span>
+  <span><span class="line-swatch" style="background:#ff8c42"></span>25MA</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #ffe600;display:inline-block"></span>新規売り</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済買い</span>
+</div>
+<div class="cards" id="cards"></div>
+<div class="cv-wrap"><canvas id="cc"></canvas><div id="tip"></div></div>
+</div>
+<script>
+const DATA={"candles":[{"t":"09:00:00","o":1573,"h":1750,"l":1565,"c":1728,"v":809300,"ma25":null,"vwap":1681.00},
+{"t":"09:05:00","o":1728,"h":1749,"l":1674,"c":1683,"v":366000,"ma25":null,"vwap":1687.54},
+{"t":"09:10:00","o":1684,"h":1695,"l":1645,"c":1660,"v":203500,"ma25":null,"vwap":1684.46},
+{"t":"09:15:00","o":1662,"h":1685,"l":1631,"c":1680,"v":196400,"ma25":null,"vwap":1682.07},
+{"t":"09:20:00","o":1682,"h":1699,"l":1661,"c":1675,"v":162200,"ma25":null,"vwap":1681.73},
+{"t":"09:25:00","o":1671,"h":1675,"l":1634,"c":1640,"v":90300,"ma25":null,"vwap":1680.14},
+{"t":"09:30:00","o":1638,"h":1666,"l":1637,"c":1641,"v":69400,"ma25":null,"vwap":1678.97},
+{"t":"09:35:00","o":1642,"h":1688,"l":1640,"c":1676,"v":106100,"ma25":null,"vwap":1678.38},
+{"t":"09:40:00","o":1676,"h":1716,"l":1673,"c":1694,"v":165400,"ma25":null,"vwap":1679.60},
+{"t":"09:45:00","o":1694,"h":1740,"l":1679,"c":1724,"v":193800,"ma25":null,"vwap":1682.45},
+{"t":"09:50:00","o":1725,"h":1736,"l":1691,"c":1707,"v":169500,"ma25":1613.36,"vwap":1684.38},
+{"t":"09:55:00","o":1707,"h":1710,"l":1681,"c":1689,"v":80100,"ma25":1616.04,"vwap":1684.66},
+{"t":"10:00:00","o":1687,"h":1694,"l":1677,"c":1688,"v":63500,"ma25":1620.28,"vwap":1684.70},
+{"t":"10:05:00","o":1685,"h":1705,"l":1682,"c":1687,"v":94400,"ma25":1625.28,"vwap":1684.92},
+{"t":"10:10:00","o":1686,"h":1689,"l":1666,"c":1673,"v":74000,"ma25":1630.20,"vwap":1684.69},
+{"t":"10:15:00","o":1673,"h":1702,"l":1666,"c":1681,"v":70000,"ma25":1635.88,"vwap":1684.65},
+{"t":"10:20:00","o":1681,"h":1683,"l":1650,"c":1680,"v":88600,"ma25":1641.04,"vwap":1684.25},
+{"t":"10:25:00","o":1679,"h":1690,"l":1666,"c":1669,"v":67800,"ma25":1645.72,"vwap":1684.04},
+{"t":"10:30:00","o":1671,"h":1722,"l":1664,"c":1705,"v":124500,"ma25":1651.20,"vwap":1684.55},
+{"t":"10:35:00","o":1707,"h":1728,"l":1689,"c":1695,"v":105100,"ma25":1656.84,"vwap":1685.17},
+{"t":"10:40:00","o":1694,"h":1705,"l":1675,"c":1682,"v":98600,"ma25":1661.60,"vwap":1685.23},
+{"t":"10:45:00","o":1682,"h":1700,"l":1678,"c":1699,"v":44000,"ma25":1667.40,"vwap":1685.32},
+{"t":"10:50:00","o":1698,"h":1715,"l":1686,"c":1690,"v":95300,"ma25":1672.64,"vwap":1685.64},
+{"t":"10:55:00","o":1692,"h":1694,"l":1670,"c":1674,"v":60100,"ma25":1678.12,"vwap":1685.53},
+{"t":"11:00:00","o":1674,"h":1681,"l":1640,"c":1640,"v":94300,"ma25":1682.40,"vwap":1684.72},
+{"t":"11:05:00","o":1641,"h":1650,"l":1621,"c":1633,"v":72700,"ma25":1678.60,"vwap":1683.75},
+{"t":"11:10:00","o":1630,"h":1639,"l":1630,"c":1635,"v":23100,"ma25":1676.68,"vwap":1683.45},
+{"t":"11:15:00","o":1635,"h":1640,"l":1586,"c":1599,"v":79200,"ma25":1674.24,"vwap":1681.91},
+{"t":"11:20:00","o":1598,"h":1601,"l":1585,"c":1598,"v":46600,"ma25":1670.96,"vwap":1680.87},
+{"t":"11:25:00","o":1598,"h":1600,"l":1583,"c":1595,"v":38400,"ma25":1667.76,"vwap":1680.02},
+{"t":"11:30:00","o":1592,"h":1592,"l":1592,"c":1592,"v":400,"ma25":1665.84,"vwap":1680.01},
+{"t":"12:30:00","o":1593,"h":1631,"l":1587,"c":1626,"v":104200,"ma25":1665.24,"vwap":1678.33},
+{"t":"12:35:00","o":1626,"h":1631,"l":1602,"c":1604,"v":52400,"ma25":1662.36,"vwap":1677.49},
+{"t":"12:40:00","o":1605,"h":1621,"l":1605,"c":1614,"v":25800,"ma25":1659.16,"vwap":1677.09},
+{"t":"12:45:00","o":1613,"h":1613,"l":1591,"c":1595,"v":33400,"ma25":1654.00,"vwap":1676.47},
+{"t":"12:50:00","o":1595,"h":1610,"l":1594,"c":1602,"v":23300,"ma25":1649.80,"vwap":1676.05},
+{"t":"12:55:00","o":1602,"h":1602,"l":1583,"c":1587,"v":31700,"ma25":1645.72,"vwap":1675.41},
+{"t":"13:00:00","o":1587,"h":1619,"l":1583,"c":1607,"v":57000,"ma25":1642.48,"vwap":1674.45},
+{"t":"13:05:00","o":1607,"h":1607,"l":1593,"c":1595,"v":25700,"ma25":1638.80,"vwap":1673.99},
+{"t":"13:10:00","o":1595,"h":1599,"l":1586,"c":1587,"v":18600,"ma25":1635.36,"vwap":1673.64},
+{"t":"13:15:00","o":1588,"h":1597,"l":1586,"c":1592,"v":13300,"ma25":1631.80,"vwap":1673.39},
+{"t":"13:20:00","o":1591,"h":1600,"l":1588,"c":1600,"v":12500,"ma25":1628.60,"vwap":1673.16},
+{"t":"13:25:00","o":1600,"h":1617,"l":1594,"c":1594,"v":48600,"ma25":1625.60,"vwap":1672.37},
+{"t":"13:30:00","o":1594,"h":1600,"l":1591,"c":1599,"v":23400,"ma25":1621.36,"vwap":1671.97},
+{"t":"13:35:00","o":1600,"h":1612,"l":1597,"c":1601,"v":26800,"ma25":1617.60,"vwap":1671.56},
+{"t":"13:40:00","o":1600,"h":1625,"l":1599,"c":1623,"v":36900,"ma25":1615.24,"vwap":1671.10},
+{"t":"13:45:00","o":1623,"h":1635,"l":1613,"c":1635,"v":69500,"ma25":1612.68,"vwap":1670.44},
+{"t":"13:50:00","o":1634,"h":1640,"l":1624,"c":1631,"v":46600,"ma25":1610.32,"vwap":1670.04},
+{"t":"13:55:00","o":1630,"h":1632,"l":1620,"c":1625,"v":24600,"ma25":1608.36,"vwap":1669.81},
+{"t":"14:00:00","o":1624,"h":1624,"l":1604,"c":1610,"v":36400,"ma25":1607.16,"vwap":1669.36},
+{"t":"14:05:00","o":1611,"h":1615,"l":1601,"c":1612,"v":26000,"ma25":1606.32,"vwap":1669.03},
+{"t":"14:10:00","o":1613,"h":1624,"l":1609,"c":1610,"v":16900,"ma25":1605.32,"vwap":1668.83},
+{"t":"14:15:00","o":1613,"h":1616,"l":1607,"c":1607,"v":20100,"ma25":1605.64,"vwap":1668.58},
+{"t":"14:20:00","o":1606,"h":1606,"l":1591,"c":1597,"v":35100,"ma25":1605.60,"vwap":1668.06},
+{"t":"14:25:00","o":1596,"h":1596,"l":1550,"c":1557,"v":101600,"ma25":1604.08,"vwap":1665.96},
+{"t":"14:30:00","o":1555,"h":1568,"l":1550,"c":1550,"v":38800,"ma25":1602.40,"vwap":1665.09},
+{"t":"14:35:00","o":1550,"h":1557,"l":1541,"c":1542,"v":36700,"ma25":1599.04,"vwap":1664.21},
+{"t":"14:40:00","o":1541,"h":1565,"l":1533,"c":1549,"v":64900,"ma25":1596.84,"vwap":1662.72},
+{"t":"14:45:00","o":1549,"h":1550,"l":1475,"c":1484,"v":159400,"ma25":1591.64,"vwap":1657.79},
+{"t":"14:50:00","o":1486,"h":1504,"l":1467,"c":1496,"v":73800,"ma25":1587.68,"vwap":1655.41},
+{"t":"14:55:00","o":1496,"h":1505,"l":1480,"c":1500,"v":46000,"ma25":1583.60,"vwap":1654.01},
+{"t":"15:00:00","o":1498,"h":1504,"l":1485,"c":1488,"v":24600,"ma25":1579.64,"vwap":1653.26},
+{"t":"15:05:00","o":1488,"h":1500,"l":1485,"c":1494,"v":21800,"ma25":1575.12,"vwap":1652.61},
+{"t":"15:10:00","o":1495,"h":1515,"l":1471,"c":1502,"v":56100,"ma25":1571.40,"vwap":1650.98},
+{"t":"15:15:00","o":1501,"h":1507,"l":1454,"c":1459,"v":62500,"ma25":1566.28,"vwap":1648.94},
+{"t":"15:20:00","o":1460,"h":1460,"l":1410,"c":1431,"v":144200,"ma25":1559.84,"vwap":1643.39},
+{"t":"15:30:00","o":1415,"h":1415,"l":1415,"c":1415,"v":70300,"ma25":1552.44,"vwap":1640.55}],"trades":[{"t":"09:04:00","side":"sell","qty":400,"price":1698.0,"kind":"open","pnl":null},
+{"t":"09:05:00","side":"sell","qty":200,"price":1700.0,"kind":"open","pnl":null},
+{"t":"09:07:00","side":"sell","qty":200,"price":1710.0,"kind":"open","pnl":null},
+{"t":"09:10:00","side":"buy","qty":200,"price":1665.9,"kind":"close","pnl":3580.0},
+{"t":"09:13:00","side":"buy","qty":200,"price":1666.75,"kind":"close","pnl":5810.0},
+{"t":"09:15:00","side":"buy","qty":400,"price":1657.0,"kind":"close","pnl":15920.0}],"fee_total":6560};
+const COL={bullBody:'#000000',bullBrd:'#ff5555',bear:'#5dade2',axis:'#30363d',text:'#9ba3ae',grid:'rgba(255,255,255,0.07)',yellow:'#ffe600',purple:'#bf00ff',win:'#3fb950',lose:'#f85149',leader:'rgba(220,220,220,0.55)',vwap:'#f0b90b',ma25:'#ff8c42'};
+const cv=document.getElementById('cc'),tip=document.getElementById('tip');
+const dpr=window.devicePixelRatio||1,H=640;
+let W=cv.parentElement.clientWidth;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+const PAD={l:60,r:20,t:20,b:40};
+const CW=W-PAD.l-PAD.r,USABLE_H=H-PAD.t-PAD.b;
+const PRICE_H=Math.round(USABLE_H*0.74),VOL_GAP=10;
+const VOL_H=USABLE_H-PRICE_H-VOL_GAP,VOL_TOP=PAD.t+PRICE_H+VOL_GAP,CH=PRICE_H;
+const candles=DATA.candles,N=candles.length,candleW=(CW/N)*0.7,slot=CW/N;
+function tToMin(t){const[h,m,s]=t.split(':').map(Number);return h*60+m+(s||0)/60;}
+const candleMins=candles.map(c=>tToMin(c.t));
+const tfMin=candles.length>1?candleMins[1]-candleMins[0]:5;
+function tToX(t){
+  const m=tToMin(t);
+  for(let i=0;i<N;i++){const cm=candleMins[i];if(m>=cm&&m<cm+tfMin){const frac=(m-cm)/tfMin;return PAD.l+i*slot+slot/2+(frac-0.5)*slot;}}
+  if(m<candleMins[0])return PAD.l+slot/2;
+  return PAD.l+(N-1)*slot+slot/2;
+}
+let pmin=Infinity,pmax=-Infinity;
+candles.forEach(c=>{
+  pmin=Math.min(pmin,c.l);pmax=Math.max(pmax,c.h);
+  if(c.vwap!==null)pmin=Math.min(pmin,c.vwap),pmax=Math.max(pmax,c.vwap);
+  if(c.ma25!==null)pmin=Math.min(pmin,c.ma25),pmax=Math.max(pmax,c.ma25);
+});
+DATA.trades.forEach(t=>{pmin=Math.min(pmin,t.price);pmax=Math.max(pmax,t.price);});
+const padP=(pmax-pmin)*0.08;pmin-=padP;pmax+=padP;
+function pToY(p){return PAD.t+(1-(p-pmin)/(pmax-pmin))*CH;}
+let vmax=0;candles.forEach(c=>{if(c.v>vmax)vmax=c.v;});
+function vToY(v){return VOL_TOP+VOL_H-(v/(vmax||1))*VOL_H;}
+function drawAxes(){
+  ctx.font='11px -apple-system,sans-serif';
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(CH*i)/5,p=pmax-((pmax-pmin)*i)/5;
+    ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=COL.text;ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(p.toFixed(p<100?2:0),PAD.l-6,y);
+  }
+  const vlbl=vmax>=10000?(vmax/10000).toFixed(0)+'万':vmax.toLocaleString();
+  ctx.textAlign='right';ctx.textBaseline='top';ctx.fillStyle=COL.text;
+  ctx.fillText('Vol: '+vlbl,PAD.l-6,VOL_TOP+2);
+  const labelEvery=tfMin<=1?60:30;let lastM=-999;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=0;i<N;i++){
+    const m=candleMins[i];
+    if(m-lastM>=labelEvery||i===0){
+      const x=PAD.l+i*slot+slot/2,hh=Math.floor(m/60),mm=Math.floor(m%60);
+      ctx.fillStyle=COL.text;ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`,x,VOL_TOP+VOL_H+6);
+      ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,VOL_TOP+VOL_H);ctx.stroke();
+      lastM=m;
+    }
+  }
+}
+function drawVolume(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,bull=c.c>=c.o,y=vToY(c.v),h=VOL_TOP+VOL_H-y;
+    ctx.fillStyle=bull?'rgba(255,85,85,0.5)':'rgba(93,173,226,0.5)';ctx.fillRect(x-candleW/2,y,candleW,h);
+  });
+}
+function drawCandles(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,yo=pToY(c.o),yh=pToY(c.h),yl=pToY(c.l),yc=pToY(c.c),bull=c.c>=c.o;
+    ctx.strokeStyle=bull?COL.bullBrd:COL.bear;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();
+    const bt=Math.min(yo,yc),bb=Math.max(yo,yc),bh=Math.max(1,bb-bt);
+    if(bull){ctx.fillStyle=COL.bullBody;ctx.fillRect(x-candleW/2,bt,candleW,bh);ctx.strokeRect(x-candleW/2,bt,candleW,bh);}
+    else{ctx.fillStyle=COL.bear;ctx.fillRect(x-candleW/2,bt,candleW,bh);}
+  });
+}
+function drawVWAP(){
+  ctx.strokeStyle=COL.vwap;ctx.lineWidth=1.6;ctx.lineJoin='round';
+  ctx.beginPath();let started=false;
+  candles.forEach((c,i)=>{
+    if(c.vwap===null)return;
+    const x=PAD.l+i*slot+slot/2,y=pToY(c.vwap);
+    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+function drawMA25(){
+  ctx.strokeStyle=COL.ma25;ctx.lineWidth=1.6;ctx.lineJoin='round';
+  ctx.beginPath();let started=false;
+  candles.forEach((c,i)=>{
+    if(c.ma25===null)return;
+    const x=PAD.l+i*slot+slot/2,y=pToY(c.ma25);
+    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+function triPath(x,y,size,dir){
+  ctx.beginPath();
+  if(dir==='up'){ctx.moveTo(x,y-size);ctx.lineTo(x-size*0.9,y+size*0.7);ctx.lineTo(x+size*0.9,y+size*0.7);}
+  else{ctx.moveTo(x,y+size);ctx.lineTo(x-size*0.9,y-size*0.7);ctx.lineTo(x+size*0.9,y-size*0.7);}
+  ctx.closePath();
+}
+const markerData=DATA.trades.map(t=>{
+  const x=tToX(t.t),y=pToY(t.price),dir=t.side==='buy'?'up':'down';
+  const color=t.kind==='open'?COL.yellow:COL.purple;
+  const size=Math.min(16,8+Math.sqrt(t.qty/100)*2.0);
+  return{...t,x,y,dir,color,size};
+});
+function drawMarkers(hoverIdx){
+  markerData.forEach((m,i)=>{
+    const sz=i===hoverIdx?m.size*1.6:m.size;
+    ctx.fillStyle=m.color+'55';triPath(m.x,m.y,sz,m.dir);ctx.fill();
+    ctx.strokeStyle=m.color;ctx.lineWidth=i===hoverIdx?2.4:1.8;ctx.lineJoin='round';ctx.stroke();
+  });
+}
+function placeLabels(){
+  const closes=markerData.map((m,i)=>({m,i})).filter(x=>x.m.kind==='close'&&x.m.pnl!==null);
+  closes.sort((a,b)=>Math.abs(b.m.pnl)-Math.abs(a.m.pnl));
+  const placed=[];
+  closes.forEach(({m})=>{
+    const txt=(m.pnl>=0?'+':'')+m.pnl.toLocaleString();
+    ctx.font='bold 11px -apple-system,sans-serif';
+    const tw=ctx.measureText(txt).width+10,th=18;
+    let best=null,bestScore=Infinity;
+    for(let dy=-160;dy<=160;dy+=12){for(let dx=-120;dx<=120;dx+=14){
+      if(Math.abs(dx)<18&&Math.abs(dy)<18)continue;
+      const lx=m.x+dx,ly=m.y+dy;
+      if(lx-tw/2<PAD.l+2||lx+tw/2>PAD.l+CW-2)continue;
+      if(ly-th/2<PAD.t+2||ly+th/2>PAD.t+CH-2)continue;
+      let score=Math.hypot(dx,dy)*0.5;
+      for(let i=0;i<N;i++){
+        const cx=PAD.l+i*slot+slot/2;
+        if(Math.abs(cx-lx)<candleW/2+tw/2){const c=candles[i];if(ly+th/2>pToY(c.h)&&ly-th/2<pToY(c.l))score+=800;}
+      }
+      markerData.forEach(mm=>{if(Math.abs(mm.x-lx)<tw/2+12&&Math.abs(mm.y-ly)<th/2+12)score+=1500;});
+      placed.forEach(p=>{if(Math.abs(p.lx-lx)<(tw+p.tw)/2+6&&Math.abs(p.ly-ly)<th+4)score+=2500;});
+      if(m.pnl>=0&&dy>0)score+=30;if(m.pnl<0&&dy<0)score+=30;
+      if(score<bestScore){bestScore=score;best={lx,ly};}
+    }}
+    if(best)placed.push({...best,tw,th,txt,m});
+  });
+  placed.forEach(p=>{
+    ctx.strokeStyle=COL.leader;ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.m.x,p.m.y);
+    const dx=p.lx-p.m.x,dy=p.ly-p.m.y,adx=Math.abs(dx),ady=Math.abs(dy);
+    let ex=p.lx,ey=p.ly;
+    if(adx>0||ady>0){const tx=p.tw/2/(adx||0.001),ty=p.th/2/(ady||0.001),t=Math.min(tx,ty);ex=p.lx-dx*t;ey=p.ly-dy*t;}
+    ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+  });
+  placed.forEach(p=>{
+    const win=p.m.pnl>=0;
+    ctx.fillStyle=win?COL.win:COL.lose;ctx.fillRect(p.lx-p.tw/2,p.ly-p.th/2,p.tw,p.th);
+    ctx.fillStyle='#fff';ctx.font='bold 11px -apple-system,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.txt,p.lx,p.ly);
+  });
+}
+let hoverMarker=-1;
+function render(){ctx.clearRect(0,0,W,H);drawAxes();drawVolume();drawCandles();drawVWAP();drawMA25();placeLabels();drawMarkers(hoverMarker);}
+render();
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  let hit=-1;
+  for(let i=markerData.length-1;i>=0;i--){if(Math.hypot(mx-markerData[i].x,my-markerData[i].y)<markerData[i].size+4){hit=i;break;}}
+  if(hit!==hoverMarker){hoverMarker=hit;render();}
+  if(hit>=0){
+    const m=markerData[hit],kindJp=m.kind==='open'?'新規売り':'決済買い';
+    let html=`<b>${m.t.slice(0,5)} ${kindJp}</b><br>合計 ${m.qty}株 @ 平均${m.price.toLocaleString()}円`;
+    if(m.pnl!==null){const c=m.pnl>=0?COL.win:COL.lose;html+=`<br><span style="color:${c};font-weight:bold">損益: ${m.pnl>=0?'+':''}${m.pnl.toLocaleString()}円</span>`;}
+    tip.innerHTML=html;tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';return;
+  }
+  const ci=Math.floor((mx-PAD.l)/slot);
+  if(ci>=0&&ci<N&&mx>=PAD.l&&mx<=PAD.l+CW){
+    const c=candles[ci];
+    let html=`<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
+    if(c.vwap!==null)html+=`<br><span style="color:${COL.vwap}">VWAP: ${c.vwap.toFixed(1)}</span>`;
+    if(c.ma25!==null)html+=`<br><span style="color:${COL.ma25}">25MA: ${c.ma25.toFixed(1)}</span>`;
+    tip.innerHTML=html;tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';
+  }else tip.style.display='none';
+});
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hoverMarker=-1;render();});
+const wins=DATA.trades.filter(t=>t.pnl!==null&&t.pnl>0).length;
+const losses=DATA.trades.filter(t=>t.pnl!==null&&t.pnl<0).length;
+const evens=DATA.trades.filter(t=>t.pnl===0).length;
+const total=DATA.trades.filter(t=>t.pnl!==null).reduce((s,t)=>s+t.pnl,0);
+const wr=(wins+losses+evens)>0?(wins/(wins+losses+evens)*100).toFixed(1):'0.0';
+const totalCls=total>=0?'win':'lose',totalSign=total>=0?'+':'';
+const hasFee=DATA.fee_total&&DATA.fee_total>0;
+const cardsEl=document.getElementById('cards');
+if(hasFee){
+  cardsEl.style.gridTemplateColumns='repeat(4, 1fr)';
+  cardsEl.innerHTML=`<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div><div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>`;
+}else{
+  cardsEl.innerHTML=`<div class="card"><div class="card-label">合計損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div>`;
+}
+</script></body></html>
