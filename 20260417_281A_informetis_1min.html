@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>281A インフォメティス 1分足 2026/04/17</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:#000000;color:#e6edf3;padding:20px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#8b949e;margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:12px;font-size:12px;color:#9ba3ae}
+.legend span{display:flex;align-items:center;gap:6px}
+.cv-wrap{position:relative;width:100%}
+canvas{display:block;width:100%;cursor:default}
+#tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
+.card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
+.card-value{font-size:22px;font-weight:600}
+.card-sub{font-size:11px;color:#8b949e;margin-top:2px}
+.card-value.win{color:#3fb950}
+.card-value.lose{color:#f85149}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>281A　インフォメティス 1分足　2026/04/17</h1>
+<div class="sub">インタラクティブ売買記録チャート ・ アクティブプラン</div>
+<div class="legend">
+  <span><span style="width:10px;height:10px;border:1.5px solid #ff5555;background:transparent;display:inline-block"></span>陽線</span>
+  <span><span style="width:10px;height:10px;background:#5dade2;display:inline-block"></span>陰線</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #ffe600;display:inline-block"></span>新規売り</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済買い</span>
+</div>
+<div class="cards" id="cards"></div>
+<div class="cv-wrap"><canvas id="cc"></canvas><div id="tip"></div></div>
+</div>
+<script>
+const DATA={"candles":[{"t":"09:00:00","o":742,"h":742,"l":731,"c":734,"v":53300},{"t":"09:01:00","o":734,"h":757,"l":732,"c":757,"v":30000},{"t":"09:02:00","o":758,"h":762,"l":749,"c":755,"v":21800},{"t":"09:03:00","o":752,"h":756,"l":749,"c":751,"v":10300},{"t":"09:04:00","o":750,"h":767,"l":747,"c":767,"v":19700},{"t":"09:05:00","o":768,"h":773,"l":761,"c":773,"v":22400},{"t":"09:06:00","o":770,"h":793,"l":769,"c":791,"v":58000},{"t":"09:07:00","o":792,"h":810,"l":789,"c":807,"v":61200},{"t":"09:08:00","o":809,"h":818,"l":796,"c":796,"v":54200},{"t":"09:09:00","o":797,"h":800,"l":788,"c":792,"v":32000},{"t":"09:10:00","o":791,"h":803,"l":788,"c":798,"v":23600},{"t":"09:11:00","o":797,"h":797,"l":791,"c":794,"v":5500},{"t":"09:12:00","o":795,"h":795,"l":788,"c":792,"v":10100},{"t":"09:13:00","o":789,"h":790,"l":781,"c":785,"v":13800},{"t":"09:14:00","o":785,"h":786,"l":772,"c":775,"v":64000},{"t":"09:15:00","o":775,"h":785,"l":775,"c":781,"v":14500},{"t":"09:16:00","o":779,"h":791,"l":779,"c":786,"v":20700},{"t":"09:17:00","o":786,"h":788,"l":776,"c":777,"v":9600},{"t":"09:18:00","o":776,"h":779,"l":763,"c":768,"v":17100},{"t":"09:19:00","o":766,"h":771,"l":765,"c":770,"v":5200},{"t":"09:20:00","o":770,"h":770,"l":757,"c":759,"v":18500},{"t":"09:21:00","o":759,"h":762,"l":755,"c":757,"v":7400},{"t":"09:22:00","o":757,"h":757,"l":755,"c":755,"v":7600},{"t":"09:23:00","o":755,"h":761,"l":755,"c":759,"v":8200},{"t":"09:24:00","o":759,"h":761,"l":758,"c":761,"v":3700},{"t":"09:25:00","o":761,"h":761,"l":751,"c":751,"v":14600},{"t":"09:26:00","o":753,"h":753,"l":751,"c":751,"v":2100},{"t":"09:27:00","o":753,"h":755,"l":751,"c":754,"v":3400},{"t":"09:28:00","o":753,"h":757,"l":753,"c":755,"v":3000},{"t":"09:29:00","o":756,"h":756,"l":754,"c":756,"v":2100},{"t":"09:30:00","o":754,"h":758,"l":754,"c":755,"v":2400},{"t":"09:31:00","o":757,"h":771,"l":757,"c":769,"v":17900},{"t":"09:32:00","o":769,"h":774,"l":766,"c":766,"v":21500},{"t":"09:33:00","o":766,"h":767,"l":763,"c":765,"v":3800},{"t":"09:34:00","o":765,"h":765,"l":763,"c":763,"v":6700},{"t":"09:35:00","o":763,"h":763,"l":761,"c":761,"v":1700},{"t":"09:36:00","o":762,"h":765,"l":757,"c":765,"v":8500},{"t":"09:37:00","o":762,"h":769,"l":760,"c":765,"v":15700},{"t":"09:38:00","o":764,"h":765,"l":761,"c":765,"v":8800},{"t":"09:39:00","o":766,"h":770,"l":766,"c":770,"v":4100},{"t":"09:40:00","o":769,"h":771,"l":768,"c":770,"v":4100},{"t":"09:41:00","o":768,"h":768,"l":766,"c":767,"v":2400},{"t":"09:42:00","o":768,"h":774,"l":768,"c":770,"v":4900},{"t":"09:43:00","o":771,"h":781,"l":771,"c":780,"v":21600},{"t":"09:44:00","o":780,"h":783,"l":778,"c":779,"v":10300},{"t":"09:45:00","o":777,"h":780,"l":775,"c":776,"v":9900},{"t":"09:46:00","o":775,"h":776,"l":773,"c":773,"v":2600},{"t":"09:47:00","o":773,"h":773,"l":771,"c":772,"v":2700},{"t":"09:48:00","o":773,"h":773,"l":773,"c":773,"v":1100},{"t":"09:49:00","o":773,"h":774,"l":771,"c":773,"v":2400},{"t":"09:50:00","o":771,"h":771,"l":771,"c":771,"v":900},{"t":"09:51:00","o":771,"h":777,"l":771,"c":776,"v":2000},{"t":"09:52:00","o":776,"h":786,"l":776,"c":786,"v":12800},{"t":"09:53:00","o":785,"h":789,"l":782,"c":786,"v":7000},{"t":"09:54:00","o":787,"h":789,"l":785,"c":787,"v":7200},{"t":"09:55:00","o":787,"h":793,"l":787,"c":792,"v":10100},{"t":"09:56:00","o":793,"h":804,"l":793,"c":802,"v":29200},{"t":"09:57:00","o":803,"h":807,"l":796,"c":800,"v":22900},{"t":"09:58:00","o":799,"h":807,"l":797,"c":806,"v":11900},{"t":"09:59:00","o":806,"h":808,"l":802,"c":805,"v":9800},{"t":"10:00:00","o":805,"h":805,"l":794,"c":798,"v":15100},{"t":"10:01:00","o":799,"h":805,"l":797,"c":799,"v":8800},{"t":"10:02:00","o":800,"h":801,"l":795,"c":800,"v":12700},{"t":"10:03:00","o":798,"h":799,"l":795,"c":797,"v":4900},{"t":"10:04:00","o":796,"h":800,"l":792,"c":798,"v":10900},{"t":"10:05:00","o":799,"h":800,"l":795,"c":798,"v":7400},{"t":"10:06:00","o":798,"h":800,"l":798,"c":799,"v":2000},{"t":"10:07:00","o":798,"h":799,"l":794,"c":799,"v":8800},{"t":"10:08:00","o":798,"h":808,"l":798,"c":804,"v":17400},{"t":"10:09:00","o":804,"h":804,"l":797,"c":801,"v":12000},{"t":"10:10:00","o":800,"h":802,"l":799,"c":800,"v":4700},{"t":"10:11:00","o":800,"h":802,"l":800,"c":802,"v":1000},{"t":"10:12:00","o":802,"h":805,"l":801,"c":805,"v":6500},{"t":"10:13:00","o":805,"h":806,"l":801,"c":805,"v":4000},{"t":"10:14:00","o":805,"h":805,"l":801,"c":803,"v":6600},{"t":"10:15:00","o":802,"h":817,"l":802,"c":803,"v":46400},{"t":"10:16:00","o":802,"h":805,"l":801,"c":801,"v":7400},{"t":"10:17:00","o":802,"h":804,"l":798,"c":800,"v":10800},{"t":"10:18:00","o":801,"h":801,"l":797,"c":799,"v":5300},{"t":"10:19:00","o":799,"h":799,"l":792,"c":794,"v":15700},{"t":"10:20:00","o":794,"h":797,"l":794,"c":796,"v":9400},{"t":"10:21:00","o":795,"h":801,"l":793,"c":800,"v":10700},{"t":"10:22:00","o":801,"h":803,"l":798,"c":802,"v":7000},{"t":"10:23:00","o":801,"h":804,"l":799,"c":801,"v":4100},{"t":"10:24:00","o":800,"h":800,"l":798,"c":798,"v":3300},{"t":"10:25:00","o":797,"h":797,"l":794,"c":795,"v":2700},{"t":"10:26:00","o":796,"h":799,"l":795,"c":799,"v":2900},{"t":"10:27:00","o":799,"h":801,"l":799,"c":800,"v":3000},{"t":"10:28:00","o":802,"h":807,"l":802,"c":804,"v":8000},{"t":"10:29:00","o":805,"h":805,"l":802,"c":802,"v":2100},{"t":"10:30:00","o":803,"h":810,"l":802,"c":807,"v":12600},{"t":"10:31:00","o":809,"h":809,"l":804,"c":804,"v":2400},{"t":"10:32:00","o":804,"h":806,"l":803,"c":804,"v":4500},{"t":"10:33:00","o":806,"h":806,"l":804,"c":804,"v":2800},{"t":"10:34:00","o":805,"h":805,"l":800,"c":802,"v":8000},{"t":"10:35:00","o":803,"h":803,"l":797,"c":798,"v":9600},{"t":"10:36:00","o":799,"h":805,"l":799,"c":804,"v":6400},{"t":"10:37:00","o":804,"h":805,"l":802,"c":804,"v":2800},{"t":"10:38:00","o":805,"h":806,"l":803,"c":803,"v":2900},{"t":"10:39:00","o":803,"h":803,"l":797,"c":800,"v":5900},{"t":"10:40:00","o":801,"h":804,"l":798,"c":804,"v":2900},{"t":"10:41:00","o":804,"h":811,"l":804,"c":810,"v":14800},{"t":"10:42:00","o":810,"h":814,"l":806,"c":814,"v":12600},{"t":"10:43:00","o":814,"h":814,"l":809,"c":810,"v":15500},{"t":"10:44:00","o":809,"h":809,"l":804,"c":805,"v":3300},{"t":"10:45:00","o":807,"h":814,"l":807,"c":814,"v":2200},{"t":"10:46:00","o":815,"h":823,"l":812,"c":812,"v":78400},{"t":"10:47:00","o":814,"h":814,"l":810,"c":814,"v":6400},{"t":"10:48:00","o":813,"h":816,"l":812,"c":816,"v":2600},{"t":"10:49:00","o":816,"h":816,"l":806,"c":810,"v":10200},{"t":"10:50:00","o":811,"h":816,"l":811,"c":816,"v":3400},{"t":"10:51:00","o":817,"h":821,"l":816,"c":819,"v":13200},{"t":"10:52:00","o":819,"h":820,"l":813,"c":813,"v":8600},{"t":"10:53:00","o":814,"h":819,"l":814,"c":818,"v":1800},{"t":"10:54:00","o":819,"h":857,"l":818,"c":856,"v":96100},{"t":"10:55:00","o":857,"h":857,"l":849,"c":857,"v":30000},{"t":"10:56:00","o":857,"h":857,"l":837,"c":841,"v":59900},{"t":"10:57:00","o":840,"h":841,"l":835,"c":837,"v":19500},{"t":"10:58:00","o":839,"h":850,"l":839,"c":847,"v":37900},{"t":"10:59:00","o":846,"h":846,"l":831,"c":833,"v":24900},{"t":"11:00:00","o":834,"h":835,"l":829,"c":835,"v":12300},{"t":"11:01:00","o":835,"h":838,"l":833,"c":833,"v":9300},{"t":"11:02:00","o":834,"h":848,"l":834,"c":841,"v":17400},{"t":"11:03:00","o":840,"h":840,"l":836,"c":838,"v":8500},{"t":"11:04:00","o":838,"h":840,"l":833,"c":834,"v":12200},{"t":"11:05:00","o":832,"h":833,"l":826,"c":833,"v":16800},{"t":"11:06:00","o":833,"h":838,"l":832,"c":834,"v":12300},{"t":"11:07:00","o":832,"h":834,"l":832,"c":834,"v":1300},{"t":"11:08:00","o":834,"h":834,"l":833,"c":833,"v":1400},{"t":"11:09:00","o":833,"h":833,"l":821,"c":822,"v":24300},{"t":"11:10:00","o":823,"h":823,"l":821,"c":822,"v":5800},{"t":"11:11:00","o":823,"h":826,"l":821,"c":826,"v":9000},{"t":"11:12:00","o":826,"h":831,"l":826,"c":831,"v":2400},{"t":"11:13:00","o":831,"h":831,"l":829,"c":830,"v":3500},{"t":"11:14:00","o":828,"h":829,"l":824,"c":827,"v":3700},{"t":"11:15:00","o":828,"h":829,"l":823,"c":823,"v":4200},{"t":"11:16:00","o":825,"h":832,"l":825,"c":831,"v":11400},{"t":"11:17:00","o":832,"h":835,"l":830,"c":833,"v":9500},{"t":"11:18:00","o":832,"h":832,"l":831,"c":831,"v":1000},{"t":"11:19:00","o":832,"h":834,"l":831,"c":833,"v":2700},{"t":"11:20:00","o":833,"h":835,"l":832,"c":833,"v":3300},{"t":"11:21:00","o":833,"h":833,"l":833,"c":833,"v":1700},{"t":"11:22:00","o":834,"h":834,"l":828,"c":828,"v":5000},{"t":"11:23:00","o":828,"h":828,"l":812,"c":814,"v":38300},{"t":"11:24:00","o":815,"h":815,"l":810,"c":811,"v":8900},{"t":"11:25:00","o":812,"h":813,"l":810,"c":811,"v":10600},{"t":"11:26:00","o":812,"h":813,"l":805,"c":809,"v":15700},{"t":"11:27:00","o":809,"h":809,"l":802,"c":803,"v":7100},{"t":"11:28:00","o":805,"h":810,"l":805,"c":808,"v":6600},{"t":"11:29:00","o":810,"h":810,"l":806,"c":806,"v":4700},{"t":"11:30:00","o":804,"h":804,"l":804,"c":804,"v":1500},{"t":"12:30:00","o":805,"h":809,"l":804,"c":805,"v":9900},{"t":"12:31:00","o":804,"h":804,"l":785,"c":789,"v":52900},{"t":"12:32:00","o":790,"h":795,"l":787,"c":790,"v":12900},{"t":"12:33:00","o":791,"h":791,"l":789,"c":790,"v":9300},{"t":"12:34:00","o":789,"h":791,"l":785,"c":790,"v":9700},{"t":"12:35:00","o":788,"h":788,"l":779,"c":784,"v":21000},{"t":"12:36:00","o":783,"h":785,"l":782,"c":782,"v":2600},{"t":"12:37:00","o":782,"h":784,"l":781,"c":784,"v":3100},{"t":"12:38:00","o":784,"h":787,"l":783,"c":785,"v":8500},{"t":"12:39:00","o":785,"h":785,"l":779,"c":780,"v":11600},{"t":"12:40:00","o":780,"h":781,"l":773,"c":776,"v":26700},{"t":"12:41:00","o":777,"h":779,"l":777,"c":779,"v":3000},{"t":"12:42:00","o":779,"h":780,"l":776,"c":776,"v":7100},{"t":"12:43:00","o":776,"h":776,"l":771,"c":774,"v":7300},{"t":"12:44:00","o":775,"h":776,"l":775,"c":776,"v":700},{"t":"12:45:00","o":775,"h":778,"l":775,"c":776,"v":3600},{"t":"12:46:00","o":776,"h":781,"l":776,"c":781,"v":3900},{"t":"12:47:00","o":782,"h":782,"l":778,"c":779,"v":4500},{"t":"12:48:00","o":779,"h":780,"l":779,"c":780,"v":1100},{"t":"12:49:00","o":781,"h":782,"l":777,"c":779,"v":10300},{"t":"12:50:00","o":779,"h":780,"l":776,"c":776,"v":5300},{"t":"12:51:00","o":777,"h":778,"l":774,"c":774,"v":5200},{"t":"12:52:00","o":775,"h":782,"l":772,"c":777,"v":17900},{"t":"12:53:00","o":778,"h":778,"l":774,"c":774,"v":3200},{"t":"12:54:00","o":773,"h":773,"l":767,"c":770,"v":16100},{"t":"12:55:00","o":770,"h":773,"l":769,"c":773,"v":2600},{"t":"12:56:00","o":772,"h":772,"l":768,"c":772,"v":5300},{"t":"12:57:00","o":771,"h":773,"l":771,"c":773,"v":800},{"t":"12:58:00","o":772,"h":774,"l":772,"c":773,"v":2100},{"t":"12:59:00","o":774,"h":777,"l":773,"c":777,"v":1300},{"t":"13:00:00","o":778,"h":780,"l":777,"c":780,"v":6000},{"t":"13:01:00","o":780,"h":784,"l":780,"c":782,"v":8800},{"t":"13:02:00","o":783,"h":785,"l":781,"c":783,"v":5900},{"t":"13:03:00","o":784,"h":785,"l":783,"c":783,"v":5000},{"t":"13:04:00","o":782,"h":782,"l":777,"c":778,"v":17300},{"t":"13:05:00","o":779,"h":782,"l":779,"c":782,"v":2600},{"t":"13:06:00","o":783,"h":787,"l":783,"c":785,"v":7800},{"t":"13:07:00","o":785,"h":789,"l":781,"c":784,"v":11500},{"t":"13:08:00","o":785,"h":788,"l":785,"c":786,"v":4000},{"t":"13:09:00","o":786,"h":786,"l":782,"c":784,"v":7900},{"t":"13:10:00","o":785,"h":786,"l":783,"c":783,"v":8600},{"t":"13:11:00","o":783,"h":784,"l":783,"c":784,"v":700},{"t":"13:12:00","o":783,"h":783,"l":781,"c":781,"v":3400},{"t":"13:13:00","o":781,"h":782,"l":780,"c":782,"v":2300},{"t":"13:14:00","o":781,"h":781,"l":781,"c":781,"v":1700},{"t":"13:15:00","o":780,"h":780,"l":770,"c":775,"v":17500},{"t":"13:16:00","o":775,"h":775,"l":768,"c":770,"v":12900},{"t":"13:17:00","o":770,"h":771,"l":766,"c":771,"v":9700},{"t":"13:18:00","o":770,"h":770,"l":763,"c":766,"v":14000},{"t":"13:19:00","o":768,"h":770,"l":768,"c":768,"v":2500},{"t":"13:20:00","o":769,"h":769,"l":766,"c":766,"v":2000},{"t":"13:21:00","o":766,"h":768,"l":766,"c":768,"v":1100},{"t":"13:22:00","o":768,"h":770,"l":768,"c":770,"v":1600},{"t":"13:23:00","o":770,"h":773,"l":768,"c":771,"v":7200},{"t":"13:24:00","o":771,"h":772,"l":771,"c":772,"v":1100},{"t":"13:25:00","o":772,"h":774,"l":771,"c":774,"v":2200},{"t":"13:26:00","o":774,"h":774,"l":774,"c":774,"v":200},{"t":"13:27:00","o":774,"h":774,"l":774,"c":774,"v":400},{"t":"13:28:00","o":774,"h":775,"l":772,"c":772,"v":2500},{"t":"13:29:00","o":771,"h":772,"l":770,"c":770,"v":1200},{"t":"13:30:00","o":771,"h":772,"l":771,"c":772,"v":600},{"t":"13:31:00","o":771,"h":773,"l":771,"c":773,"v":800},{"t":"13:32:00","o":774,"h":775,"l":774,"c":775,"v":500},{"t":"13:33:00","o":775,"h":780,"l":775,"c":780,"v":8400},{"t":"13:34:00","o":781,"h":783,"l":781,"c":783,"v":5700},{"t":"13:35:00","o":784,"h":785,"l":779,"c":779,"v":9000},{"t":"13:36:00","o":780,"h":781,"l":780,"c":781,"v":900},{"t":"13:37:00","o":782,"h":783,"l":782,"c":782,"v":6300},{"t":"13:38:00","o":783,"h":792,"l":783,"c":787,"v":14900},{"t":"13:39:00","o":787,"h":788,"l":786,"c":788,"v":2500},{"t":"13:40:00","o":790,"h":793,"l":790,"c":791,"v":6900},{"t":"13:41:00","o":790,"h":791,"l":786,"c":790,"v":9700},{"t":"13:42:00","o":789,"h":791,"l":789,"c":791,"v":2400},{"t":"13:43:00","o":792,"h":792,"l":788,"c":790,"v":5900},{"t":"13:44:00","o":789,"h":789,"l":787,"c":787,"v":3800},{"t":"13:45:00","o":788,"h":803,"l":788,"c":801,"v":28300},{"t":"13:46:00","o":800,"h":803,"l":800,"c":803,"v":10000},{"t":"13:47:00","o":804,"h":804,"l":801,"c":802,"v":11600},{"t":"13:48:00","o":804,"h":808,"l":804,"c":808,"v":10400},{"t":"13:49:00","o":808,"h":812,"l":807,"c":810,"v":17300},{"t":"13:50:00","o":810,"h":810,"l":809,"c":809,"v":13400},{"t":"13:51:00","o":808,"h":808,"l":802,"c":803,"v":10000},{"t":"13:52:00","o":803,"h":807,"l":803,"c":807,"v":6600},{"t":"13:53:00","o":807,"h":807,"l":804,"c":805,"v":1800},{"t":"13:54:00","o":804,"h":804,"l":798,"c":801,"v":9900},{"t":"13:55:00","o":800,"h":802,"l":800,"c":802,"v":3700},{"t":"13:56:00","o":803,"h":808,"l":803,"c":805,"v":12600},{"t":"13:57:00","o":802,"h":804,"l":801,"c":801,"v":1900},{"t":"13:58:00","o":802,"h":802,"l":800,"c":800,"v":4200},{"t":"13:59:00","o":802,"h":803,"l":801,"c":803,"v":2700},{"t":"14:00:00","o":804,"h":810,"l":804,"c":810,"v":17300},{"t":"14:01:00","o":811,"h":813,"l":810,"c":812,"v":10600},{"t":"14:02:00","o":811,"h":811,"l":808,"c":808,"v":3600},{"t":"14:03:00","o":808,"h":810,"l":808,"c":810,"v":200},{"t":"14:04:00","o":810,"h":812,"l":810,"c":811,"v":4000},{"t":"14:05:00","o":812,"h":813,"l":811,"c":811,"v":3100},{"t":"14:06:00","o":812,"h":812,"l":811,"c":812,"v":400},{"t":"14:07:00","o":812,"h":813,"l":811,"c":813,"v":2800},{"t":"14:08:00","o":814,"h":820,"l":814,"c":818,"v":12200},{"t":"14:09:00","o":817,"h":817,"l":812,"c":817,"v":9000},{"t":"14:10:00","o":817,"h":817,"l":815,"c":815,"v":3300},{"t":"14:11:00","o":814,"h":816,"l":809,"c":816,"v":7600},{"t":"14:12:00","o":817,"h":819,"l":816,"c":819,"v":4300},{"t":"14:13:00","o":819,"h":819,"l":814,"c":814,"v":11500},{"t":"14:14:00","o":813,"h":816,"l":813,"c":814,"v":1300},{"t":"14:15:00","o":816,"h":819,"l":814,"c":817,"v":3200},{"t":"14:16:00","o":816,"h":816,"l":813,"c":813,"v":3200},{"t":"14:17:00","o":813,"h":813,"l":809,"c":810,"v":7100},{"t":"14:18:00","o":811,"h":812,"l":811,"c":811,"v":1600},{"t":"14:19:00","o":811,"h":813,"l":807,"c":813,"v":7000},{"t":"14:20:00","o":812,"h":815,"l":812,"c":813,"v":5200},{"t":"14:21:00","o":814,"h":814,"l":811,"c":813,"v":2900},{"t":"14:22:00","o":812,"h":812,"l":812,"c":812,"v":700},{"t":"14:23:00","o":811,"h":811,"l":806,"c":808,"v":4800},{"t":"14:24:00","o":809,"h":813,"l":809,"c":810,"v":7800},{"t":"14:25:00","o":811,"h":811,"l":805,"c":806,"v":6200},{"t":"14:26:00","o":807,"h":808,"l":806,"c":806,"v":700},{"t":"14:27:00","o":808,"h":808,"l":805,"c":806,"v":5900},{"t":"14:28:00","o":806,"h":809,"l":806,"c":809,"v":4800},{"t":"14:29:00","o":810,"h":810,"l":804,"c":809,"v":8400},{"t":"14:30:00","o":808,"h":808,"l":807,"c":807,"v":700},{"t":"14:31:00","o":807,"h":807,"l":804,"c":806,"v":3300},{"t":"14:32:00","o":806,"h":806,"l":805,"c":806,"v":900},{"t":"14:33:00","o":804,"h":804,"l":802,"c":804,"v":2900},{"t":"14:34:00","o":803,"h":807,"l":803,"c":806,"v":9200},{"t":"14:35:00","o":808,"h":810,"l":804,"c":804,"v":8100},{"t":"14:36:00","o":806,"h":808,"l":806,"c":808,"v":3000},{"t":"14:37:00","o":808,"h":809,"l":807,"c":807,"v":2500},{"t":"14:38:00","o":805,"h":806,"l":803,"c":805,"v":4400},{"t":"14:39:00","o":803,"h":804,"l":801,"c":802,"v":2000},{"t":"14:40:00","o":802,"h":802,"l":802,"c":802,"v":1000},{"t":"14:41:00","o":802,"h":803,"l":798,"c":803,"v":11500},{"t":"14:42:00","o":804,"h":805,"l":804,"c":805,"v":300},{"t":"14:43:00","o":805,"h":805,"l":804,"c":804,"v":1000},{"t":"14:44:00","o":806,"h":806,"l":806,"c":806,"v":800},{"t":"14:45:00","o":804,"h":806,"l":804,"c":805,"v":2900},{"t":"14:46:00","o":806,"h":809,"l":806,"c":807,"v":3700},{"t":"14:47:00","o":806,"h":807,"l":805,"c":805,"v":2400},{"t":"14:48:00","o":809,"h":809,"l":809,"c":809,"v":1600},{"t":"14:49:00","o":808,"h":810,"l":806,"c":806,"v":900},{"t":"14:50:00","o":809,"h":809,"l":805,"c":805,"v":3200},{"t":"14:51:00","o":807,"h":809,"l":807,"c":809,"v":1500},{"t":"14:52:00","o":808,"h":809,"l":808,"c":808,"v":2800},{"t":"14:53:00","o":809,"h":809,"l":809,"c":809,"v":800},{"t":"14:54:00","o":808,"h":808,"l":806,"c":808,"v":1000},{"t":"14:55:00","o":808,"h":809,"l":807,"c":808,"v":2100},{"t":"14:56:00","o":806,"h":806,"l":797,"c":799,"v":8600},{"t":"14:57:00","o":800,"h":804,"l":800,"c":803,"v":3900},{"t":"14:58:00","o":803,"h":805,"l":802,"c":805,"v":2200},{"t":"14:59:00","o":804,"h":804,"l":803,"c":803,"v":1000},{"t":"15:00:00","o":802,"h":802,"l":801,"c":801,"v":1200},{"t":"15:01:00","o":801,"h":803,"l":801,"c":801,"v":2200},{"t":"15:02:00","o":800,"h":801,"l":800,"c":801,"v":1600},{"t":"15:03:00","o":800,"h":801,"l":798,"c":798,"v":2300},{"t":"15:04:00","o":799,"h":799,"l":797,"c":797,"v":700},{"t":"15:05:00","o":798,"h":799,"l":798,"c":798,"v":3000},{"t":"15:06:00","o":797,"h":803,"l":797,"c":803,"v":4000},{"t":"15:07:00","o":803,"h":807,"l":802,"c":806,"v":4200},{"t":"15:08:00","o":806,"h":807,"l":806,"c":806,"v":1900},{"t":"15:09:00","o":805,"h":807,"l":804,"c":807,"v":2900},{"t":"15:10:00","o":806,"h":806,"l":803,"c":803,"v":1400},{"t":"15:11:00","o":805,"h":805,"l":805,"c":805,"v":1100},{"t":"15:12:00","o":806,"h":806,"l":805,"c":805,"v":700},{"t":"15:13:00","o":805,"h":807,"l":803,"c":805,"v":4900},{"t":"15:14:00","o":805,"h":807,"l":805,"c":806,"v":4700},{"t":"15:15:00","o":807,"h":812,"l":807,"c":812,"v":9200},{"t":"15:16:00","o":812,"h":815,"l":812,"c":815,"v":5500},{"t":"15:17:00","o":816,"h":823,"l":816,"c":818,"v":18900},{"t":"15:18:00","o":818,"h":820,"l":817,"c":819,"v":6000},{"t":"15:19:00","o":819,"h":819,"l":804,"c":818,"v":14700},{"t":"15:20:00","o":817,"h":817,"l":814,"c":814,"v":4700},{"t":"15:21:00","o":812,"h":813,"l":810,"c":813,"v":4600},{"t":"15:22:00","o":812,"h":813,"l":810,"c":811,"v":2800},{"t":"15:23:00","o":810,"h":811,"l":807,"c":807,"v":4200},{"t":"15:24:00","o":810,"h":810,"l":803,"c":809,"v":9000},{"t":"15:30:00","o":808,"h":808,"l":808,"c":808,"v":54200}],"trades":[{"t":"09:00:00","side":"sell","qty":500,"price":733.0,"kind":"open","pnl":null},{"t":"09:01:00","side":"sell","qty":500,"price":742.0,"kind":"open","pnl":null},{"t":"09:02:00","side":"sell","qty":500,"price":757.0,"kind":"open","pnl":null},{"t":"09:09:00","side":"sell","qty":500,"price":795.0,"kind":"open","pnl":null},{"t":"09:13:00","side":"sell","qty":500,"price":787.0,"kind":"open","pnl":null},{"t":"09:15:00","side":"sell","qty":500,"price":778.0,"kind":"open","pnl":null},{"t":"09:20:00","side":"buy","qty":1000,"price":761.85,"kind":"close","pnl":25550},{"t":"09:22:00","side":"buy","qty":2000,"price":756.83,"kind":"close","pnl":-15860}],"fee_total":10800};
+const COL={bullBody:'#000000',bullBrd:'#ff5555',bear:'#5dade2',axis:'#30363d',text:'#9ba3ae',grid:'rgba(255,255,255,0.07)',yellow:'#ffe600',purple:'#bf00ff',win:'#3fb950',lose:'#f85149',leader:'rgba(220,220,220,0.55)'};
+const cv=document.getElementById('cc'),tip=document.getElementById('tip');
+const dpr=window.devicePixelRatio||1,H=640;
+let W=cv.parentElement.clientWidth;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+const PAD={l:60,r:20,t:20,b:40};
+const CW=W-PAD.l-PAD.r,USABLE_H=H-PAD.t-PAD.b;
+const PRICE_H=Math.round(USABLE_H*0.74),VOL_GAP=10;
+const VOL_H=USABLE_H-PRICE_H-VOL_GAP,VOL_TOP=PAD.t+PRICE_H+VOL_GAP,CH=PRICE_H;
+const candles=DATA.candles,N=candles.length,candleW=(CW/N)*0.7,slot=CW/N;
+function tToMin(t){const[h,m,s]=t.split(':').map(Number);return h*60+m+(s||0)/60;}
+const candleMins=candles.map(c=>tToMin(c.t));
+const tfMin=candles.length>1?candleMins[1]-candleMins[0]:5;
+function tToX(t){
+  const m=tToMin(t);
+  for(let i=0;i<N;i++){const cm=candleMins[i];if(m>=cm&&m<cm+tfMin){const frac=(m-cm)/tfMin;return PAD.l+i*slot+slot/2+(frac-0.5)*slot;}}
+  if(m<candleMins[0])return PAD.l+slot/2;
+  return PAD.l+(N-1)*slot+slot/2;
+}
+let pmin=Infinity,pmax=-Infinity;
+candles.forEach(c=>{pmin=Math.min(pmin,c.l);pmax=Math.max(pmax,c.h);});
+DATA.trades.forEach(t=>{pmin=Math.min(pmin,t.price);pmax=Math.max(pmax,t.price);});
+const padP=(pmax-pmin)*0.08;pmin-=padP;pmax+=padP;
+function pToY(p){return PAD.t+(1-(p-pmin)/(pmax-pmin))*CH;}
+let vmax=0;candles.forEach(c=>{if(c.v>vmax)vmax=c.v;});
+function vToY(v){return VOL_TOP+VOL_H-(v/(vmax||1))*VOL_H;}
+function drawAxes(){
+  ctx.font='11px -apple-system,sans-serif';
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(CH*i)/5,p=pmax-((pmax-pmin)*i)/5;
+    ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=COL.text;ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(p.toFixed(p<100?2:0),PAD.l-6,y);
+  }
+  const vlbl=vmax>=10000?(vmax/10000).toFixed(0)+'万':vmax.toLocaleString();
+  ctx.textAlign='right';ctx.textBaseline='top';ctx.fillStyle=COL.text;
+  ctx.fillText('Vol: '+vlbl,PAD.l-6,VOL_TOP+2);
+  const labelEvery=tfMin<=1?60:30;let lastM=-999;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=0;i<N;i++){
+    const m=candleMins[i];
+    if(m-lastM>=labelEvery||i===0){
+      const x=PAD.l+i*slot+slot/2,hh=Math.floor(m/60),mm=Math.floor(m%60);
+      ctx.fillStyle=COL.text;ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`,x,VOL_TOP+VOL_H+6);
+      ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,VOL_TOP+VOL_H);ctx.stroke();
+      lastM=m;
+    }
+  }
+}
+function drawVolume(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,bull=c.c>=c.o,y=vToY(c.v),h=VOL_TOP+VOL_H-y;
+    ctx.fillStyle=bull?'rgba(255,85,85,0.5)':'rgba(93,173,226,0.5)';ctx.fillRect(x-candleW/2,y,candleW,h);
+  });
+}
+function drawCandles(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,yo=pToY(c.o),yh=pToY(c.h),yl=pToY(c.l),yc=pToY(c.c),bull=c.c>=c.o;
+    ctx.strokeStyle=bull?COL.bullBrd:COL.bear;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();
+    const bt=Math.min(yo,yc),bb=Math.max(yo,yc),bh=Math.max(1,bb-bt);
+    if(bull){ctx.fillStyle=COL.bullBody;ctx.fillRect(x-candleW/2,bt,candleW,bh);ctx.strokeRect(x-candleW/2,bt,candleW,bh);}
+    else{ctx.fillStyle=COL.bear;ctx.fillRect(x-candleW/2,bt,candleW,bh);}
+  });
+}
+function triPath(x,y,size,dir){
+  ctx.beginPath();
+  if(dir==='up'){ctx.moveTo(x,y-size);ctx.lineTo(x-size*0.9,y+size*0.7);ctx.lineTo(x+size*0.9,y+size*0.7);}
+  else{ctx.moveTo(x,y+size);ctx.lineTo(x-size*0.9,y-size*0.7);ctx.lineTo(x+size*0.9,y-size*0.7);}
+  ctx.closePath();
+}
+const markerData=DATA.trades.map(t=>{
+  const x=tToX(t.t),y=pToY(t.price),dir=t.side==='buy'?'up':'down';
+  const color=t.kind==='open'?COL.yellow:COL.purple;
+  const size=Math.min(16,8+Math.sqrt(t.qty/100)*2.0);
+  return{...t,x,y,dir,color,size};
+});
+function drawMarkers(hoverIdx){
+  markerData.forEach((m,i)=>{
+    const sz=i===hoverIdx?m.size*1.6:m.size;
+    ctx.fillStyle=m.color+'55';triPath(m.x,m.y,sz,m.dir);ctx.fill();
+    ctx.strokeStyle=m.color;ctx.lineWidth=i===hoverIdx?2.4:1.8;ctx.lineJoin='round';ctx.stroke();
+  });
+}
+function placeLabels(){
+  const closes=markerData.map((m,i)=>({m,i})).filter(x=>x.m.kind==='close'&&x.m.pnl!==null);
+  closes.sort((a,b)=>Math.abs(b.m.pnl)-Math.abs(a.m.pnl));
+  const placed=[];
+  closes.forEach(({m})=>{
+    const txt=(m.pnl>=0?'+':'')+m.pnl.toLocaleString();
+    ctx.font='bold 11px -apple-system,sans-serif';
+    const tw=ctx.measureText(txt).width+10,th=18;
+    let best=null,bestScore=Infinity;
+    for(let dy=-160;dy<=160;dy+=12){for(let dx=-120;dx<=120;dx+=14){
+      if(Math.abs(dx)<18&&Math.abs(dy)<18)continue;
+      const lx=m.x+dx,ly=m.y+dy;
+      if(lx-tw/2<PAD.l+2||lx+tw/2>PAD.l+CW-2)continue;
+      if(ly-th/2<PAD.t+2||ly+th/2>PAD.t+CH-2)continue;
+      let score=Math.hypot(dx,dy)*0.5;
+      for(let i=0;i<N;i++){
+        const cx=PAD.l+i*slot+slot/2;
+        if(Math.abs(cx-lx)<candleW/2+tw/2){const c=candles[i];if(ly+th/2>pToY(c.h)&&ly-th/2<pToY(c.l))score+=800;}
+      }
+      markerData.forEach(mm=>{if(Math.abs(mm.x-lx)<tw/2+12&&Math.abs(mm.y-ly)<th/2+12)score+=1500;});
+      placed.forEach(p=>{if(Math.abs(p.lx-lx)<(tw+p.tw)/2+6&&Math.abs(p.ly-ly)<th+4)score+=2500;});
+      if(m.pnl>=0&&dy>0)score+=30;if(m.pnl<0&&dy<0)score+=30;
+      if(score<bestScore){bestScore=score;best={lx,ly};}
+    }}
+    if(best)placed.push({...best,tw,th,txt,m});
+  });
+  placed.forEach(p=>{
+    ctx.strokeStyle=COL.leader;ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.m.x,p.m.y);
+    const dx=p.lx-p.m.x,dy=p.ly-p.m.y,adx=Math.abs(dx),ady=Math.abs(dy);
+    let ex=p.lx,ey=p.ly;
+    if(adx>0||ady>0){const tx=p.tw/2/(adx||0.001),ty=p.th/2/(ady||0.001),t=Math.min(tx,ty);ex=p.lx-dx*t;ey=p.ly-dy*t;}
+    ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+  });
+  placed.forEach(p=>{
+    const win=p.m.pnl>=0;
+    ctx.fillStyle=win?COL.win:COL.lose;ctx.fillRect(p.lx-p.tw/2,p.ly-p.th/2,p.tw,p.th);
+    ctx.fillStyle='#fff';ctx.font='bold 11px -apple-system,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.txt,p.lx,p.ly);
+  });
+}
+let hoverMarker=-1;
+function render(){ctx.clearRect(0,0,W,H);drawAxes();drawVolume();drawCandles();placeLabels();drawMarkers(hoverMarker);}
+render();
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  let hit=-1;
+  for(let i=markerData.length-1;i>=0;i--){if(Math.hypot(mx-markerData[i].x,my-markerData[i].y)<markerData[i].size+4){hit=i;break;}}
+  if(hit!==hoverMarker){hoverMarker=hit;render();}
+  if(hit>=0){
+    const m=markerData[hit],kindJp=m.kind==='open'?'新規':'決済';
+    let html=`<b>${m.t.slice(0,5)} ${kindJp}</b><br>合計 ${m.qty}株 @ 平均${m.price.toLocaleString()}円`;
+    if(m.pnl!==null){const c=m.pnl>=0?COL.win:COL.lose;html+=`<br><span style="color:${c};font-weight:bold">損益: ${m.pnl>=0?'+':''}${m.pnl.toLocaleString()}円</span>`;}
+    tip.innerHTML=html;tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';return;
+  }
+  const ci=Math.floor((mx-PAD.l)/slot);
+  if(ci>=0&&ci<N&&mx>=PAD.l&&mx<=PAD.l+CW){
+    const c=candles[ci];
+    tip.innerHTML=`<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
+    tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';
+  }else tip.style.display='none';
+});
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hoverMarker=-1;render();});
+const wins=DATA.trades.filter(t=>t.pnl!==null&&t.pnl>0).length;
+const losses=DATA.trades.filter(t=>t.pnl!==null&&t.pnl<0).length;
+const evens=DATA.trades.filter(t=>t.pnl===0).length;
+const total=DATA.trades.filter(t=>t.pnl!==null).reduce((s,t)=>s+t.pnl,0);
+const wr=(wins+losses+evens)>0?(wins/(wins+losses+evens)*100).toFixed(1):'0.0';
+const totalCls=total>=0?'win':'lose',totalSign=total>=0?'+':'';
+const cardsEl=document.getElementById('cards');
+cardsEl.style.gridTemplateColumns='repeat(4, 1fr)';
+cardsEl.innerHTML=`<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div><div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>`;
+</script></body></html>
