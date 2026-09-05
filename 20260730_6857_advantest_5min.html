@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6857 アドバンテスト 5分足 2026/07/30</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:#000000;color:#e6edf3;padding:20px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#8b949e;margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:12px;font-size:12px;color:#9ba3ae}
+.legend span{display:flex;align-items:center;gap:6px}
+.cv-wrap{position:relative;width:100%}
+canvas{display:block;width:100%;cursor:default}
+#tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
+.card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
+.card-value{font-size:22px;font-weight:600}
+.card-sub{font-size:11px;color:#8b949e;margin-top:2px}
+.card-value.win{color:#3fb950}
+.card-value.lose{color:#f85149}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>6857　アドバンテスト 5分足　2026/07/30</h1>
+<div style="background:#3a2a10;border-left:4px solid #ffa657;padding:8px 12px;margin:6px 0;color:#ffce93;font-size:13px;border-radius:4px"><b>制度信用 LONG 200株（2往復・約定CSV由来）</b>：09:42:35 信新買100株＠27,865（東証）→ <b>09:42:53</b> 信返売＠28,034.1（ザラ場内 PTS（X））で <b>+16,736円</b>、09:44:23 信新買100株＠27,715（東証）→ <b>09:44:58</b> 信返売＠27,967.2（同）で <b>+25,047円</b>。いずれも <b>18秒 / 35秒</b> の超短期回転で、当日純損益 <b>+41,783円</b>（OrderNo 35639-35642）。制度信用のため <b>P&amp;L は SBI報告値を直接使用</b>・マーカー反転（黄▲=信新買 / 紫▼=信返売）。グロス差益（+16,910 / +25,220）との差 <b>174円 / 173円</b> は買方金利1日分（建代金 2,786,500円・2,771,500円 × 年率2.28%相当 ÷ 365 と機械一致）。<b>09:00-09:17 はローソク足なし</b>（前日終値から上放れの<b>特別買気配</b>・09:18 寄付＠28,480）だが、本日の取引は 09:42-09:44 のため影響なし。</div>
+<div class="sub">インタラクティブ売買記録チャート ・ 制度信用 LONG 200株（2往復・09:42-09:44） ・ SBI報告値 ・ 純損益 +41,783円</div>
+<div class="legend">
+  <span><span style="width:10px;height:10px;border:1.5px solid #ff5555;background:transparent;display:inline-block"></span>陽線</span>
+  <span><span style="width:10px;height:10px;background:#5dade2;display:inline-block"></span>陰線</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block"></span>信新買い（制度信用 LONG）</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>信返売り（制度信用 LONG・PTS破線アウトライン）</span>
+</div>
+<div class="cards" id="cards"></div>
+<div class="cv-wrap"><canvas id="cc"></canvas><div id="tip"></div></div>
+</div>
+<script>
+const DATA={"candles": [{"t": "09:15:00", "o": 28480.0, "h": 28665.0, "l": 27945.0, "c": 28425.0, "v": 1444300}, {"t": "09:20:00", "o": 28405.0, "h": 29090.0, "l": 28240.0, "c": 29060.0, "v": 1237700}, {"t": "09:25:00", "o": 29050.0, "h": 29425.0, "l": 28915.0, "c": 28970.0, "v": 624700}, {"t": "09:30:00", "o": 28985.0, "h": 29140.0, "l": 28715.0, "c": 28960.0, "v": 448700}, {"t": "09:35:00", "o": 28960.0, "h": 28980.0, "l": 28430.0, "c": 28485.0, "v": 436200}, {"t": "09:40:00", "o": 28485.0, "h": 28535.0, "l": 27645.0, "c": 27935.0, "v": 708000}, {"t": "09:45:00", "o": 27920.0, "h": 28315.0, "l": 27900.0, "c": 28100.0, "v": 475500}, {"t": "09:50:00", "o": 28100.0, "h": 28170.0, "l": 27800.0, "c": 28120.0, "v": 319500}, {"t": "09:55:00", "o": 28120.0, "h": 28230.0, "l": 27995.0, "c": 28175.0, "v": 211300}, {"t": "10:00:00", "o": 28180.0, "h": 28260.0, "l": 28025.0, "c": 28200.0, "v": 222900}, {"t": "10:05:00", "o": 28200.0, "h": 28740.0, "l": 28200.0, "c": 28510.0, "v": 388600}, {"t": "10:10:00", "o": 28510.0, "h": 28580.0, "l": 28355.0, "c": 28485.0, "v": 247100}, {"t": "10:15:00", "o": 28490.0, "h": 28515.0, "l": 28215.0, "c": 28435.0, "v": 220600}, {"t": "10:20:00", "o": 28440.0, "h": 28515.0, "l": 28130.0, "c": 28280.0, "v": 221100}, {"t": "10:25:00", "o": 28275.0, "h": 28690.0, "l": 28270.0, "c": 28670.0, "v": 222200}, {"t": "10:30:00", "o": 28660.0, "h": 28925.0, "l": 28600.0, "c": 28835.0, "v": 265600}, {"t": "10:35:00", "o": 28830.0, "h": 29015.0, "l": 28775.0, "c": 28880.0, "v": 281900}, {"t": "10:40:00", "o": 28880.0, "h": 29040.0, "l": 28840.0, "c": 29040.0, "v": 186800}, {"t": "10:45:00", "o": 29040.0, "h": 29040.0, "l": 28760.0, "c": 28830.0, "v": 162100}, {"t": "10:50:00", "o": 28835.0, "h": 28900.0, "l": 28625.0, "c": 28695.0, "v": 155600}, {"t": "10:55:00", "o": 28695.0, "h": 28750.0, "l": 28570.0, "c": 28595.0, "v": 137400}, {"t": "11:00:00", "o": 28595.0, "h": 28740.0, "l": 28400.0, "c": 28460.0, "v": 188300}, {"t": "11:05:00", "o": 28450.0, "h": 28520.0, "l": 28345.0, "c": 28400.0, "v": 190400}, {"t": "11:10:00", "o": 28395.0, "h": 28435.0, "l": 28130.0, "c": 28210.0, "v": 195900}, {"t": "11:15:00", "o": 28210.0, "h": 28225.0, "l": 28080.0, "c": 28125.0, "v": 182300}, {"t": "11:20:00", "o": 28120.0, "h": 28450.0, "l": 28110.0, "c": 28265.0, "v": 184700}, {"t": "11:25:00", "o": 28260.0, "h": 28285.0, "l": 28025.0, "c": 28095.0, "v": 180100}, {"t": "12:30:00", "o": 27800.0, "h": 27820.0, "l": 27410.0, "c": 27810.0, "v": 526900}, {"t": "12:35:00", "o": 27800.0, "h": 27950.0, "l": 27710.0, "c": 27755.0, "v": 256800}, {"t": "12:40:00", "o": 27750.0, "h": 28095.0, "l": 27635.0, "c": 28060.0, "v": 234600}, {"t": "12:45:00", "o": 28065.0, "h": 28230.0, "l": 27835.0, "c": 28125.0, "v": 271300}, {"t": "12:50:00", "o": 28140.0, "h": 28225.0, "l": 28030.0, "c": 28070.0, "v": 179700}, {"t": "12:55:00", "o": 28060.0, "h": 28085.0, "l": 27800.0, "c": 27880.0, "v": 179000}, {"t": "13:00:00", "o": 27885.0, "h": 27925.0, "l": 27735.0, "c": 27890.0, "v": 151300}, {"t": "13:05:00", "o": 27890.0, "h": 27905.0, "l": 27640.0, "c": 27650.0, "v": 140500}, {"t": "13:10:00", "o": 27645.0, "h": 27685.0, "l": 27550.0, "c": 27560.0, "v": 125200}, {"t": "13:15:00", "o": 27560.0, "h": 27580.0, "l": 27435.0, "c": 27510.0, "v": 157000}, {"t": "13:20:00", "o": 27505.0, "h": 27710.0, "l": 27490.0, "c": 27635.0, "v": 157000}, {"t": "13:25:00", "o": 27635.0, "h": 27980.0, "l": 27630.0, "c": 27970.0, "v": 160400}, {"t": "13:30:00", "o": 27970.0, "h": 28070.0, "l": 27910.0, "c": 27920.0, "v": 176100}, {"t": "13:35:00", "o": 27920.0, "h": 28080.0, "l": 27710.0, "c": 27735.0, "v": 192700}, {"t": "13:40:00", "o": 27740.0, "h": 27750.0, "l": 27555.0, "c": 27615.0, "v": 159800}, {"t": "13:45:00", "o": 27605.0, "h": 27785.0, "l": 27575.0, "c": 27700.0, "v": 126600}, {"t": "13:50:00", "o": 27690.0, "h": 27700.0, "l": 27530.0, "c": 27640.0, "v": 117900}, {"t": "13:55:00", "o": 27635.0, "h": 27665.0, "l": 27525.0, "c": 27590.0, "v": 94400}, {"t": "14:00:00", "o": 27595.0, "h": 27665.0, "l": 27420.0, "c": 27465.0, "v": 164600}, {"t": "14:05:00", "o": 27475.0, "h": 27520.0, "l": 27380.0, "c": 27475.0, "v": 123000}, {"t": "14:10:00", "o": 27480.0, "h": 27575.0, "l": 27405.0, "c": 27570.0, "v": 116800}, {"t": "14:15:00", "o": 27575.0, "h": 27790.0, "l": 27535.0, "c": 27770.0, "v": 144500}, {"t": "14:20:00", "o": 27760.0, "h": 27845.0, "l": 27650.0, "c": 27835.0, "v": 126800}, {"t": "14:25:00", "o": 27835.0, "h": 27915.0, "l": 27765.0, "c": 27840.0, "v": 125400}, {"t": "14:30:00", "o": 27840.0, "h": 27930.0, "l": 27765.0, "c": 27860.0, "v": 139700}, {"t": "14:35:00", "o": 27865.0, "h": 27980.0, "l": 27810.0, "c": 27940.0, "v": 162800}, {"t": "14:40:00", "o": 27940.0, "h": 28195.0, "l": 27930.0, "c": 28145.0, "v": 189700}, {"t": "14:45:00", "o": 28150.0, "h": 28280.0, "l": 28110.0, "c": 28160.0, "v": 202100}, {"t": "14:50:00", "o": 28165.0, "h": 28175.0, "l": 27980.0, "c": 28020.0, "v": 135000}, {"t": "14:55:00", "o": 28015.0, "h": 28015.0, "l": 27855.0, "c": 27970.0, "v": 135000}, {"t": "15:00:00", "o": 27955.0, "h": 28085.0, "l": 27930.0, "c": 28035.0, "v": 124000}, {"t": "15:05:00", "o": 28045.0, "h": 28175.0, "l": 28020.0, "c": 28045.0, "v": 133100}, {"t": "15:10:00", "o": 28055.0, "h": 28080.0, "l": 27985.0, "c": 28010.0, "v": 99200}, {"t": "15:15:00", "o": 28010.0, "h": 28010.0, "l": 27875.0, "c": 27985.0, "v": 103000}, {"t": "15:20:00", "o": 27980.0, "h": 28020.0, "l": 27930.0, "c": 27975.0, "v": 117300}, {"t": "15:30:00", "o": 27935.0, "h": 27935.0, "l": 27935.0, "c": 27935.0, "v": 920400}], "trades": [{"t": "09:42:00", "side": "buy", "qty": 100, "price": 27865.0, "kind": "open", "pnl": null}, {"t": "09:42:00", "side": "sell", "qty": 100, "price": 28034.1, "kind": "close", "pnl": 16736}, {"t": "09:44:00", "side": "buy", "qty": 100, "price": 27715.0, "kind": "open", "pnl": null}, {"t": "09:44:00", "side": "sell", "qty": 100, "price": 27967.2, "kind": "close", "pnl": 25047}], "fee_total": 0};
+const COL={bullBody:'#000000',bullBrd:'#ff5555',bear:'#5dade2',axis:'#30363d',text:'#9ba3ae',grid:'rgba(255,255,255,0.07)',yellow:'#ffe600',purple:'#bf00ff',win:'#3fb950',lose:'#f85149',leader:'rgba(220,220,220,0.55)'};
+const cv=document.getElementById('cc'),tip=document.getElementById('tip');
+const dpr=window.devicePixelRatio||1,H=640;
+let W=cv.parentElement.clientWidth;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+const PAD={l:60,r:20,t:20,b:40};
+const CW=W-PAD.l-PAD.r,USABLE_H=H-PAD.t-PAD.b;
+const PRICE_H=Math.round(USABLE_H*0.74),VOL_GAP=10;
+const VOL_H=USABLE_H-PRICE_H-VOL_GAP,VOL_TOP=PAD.t+PRICE_H+VOL_GAP,CH=PRICE_H;
+const candles=DATA.candles,N=candles.length,candleW=(CW/N)*0.7,slot=CW/N;
+function tToMin(t){const[h,m,s]=t.split(':').map(Number);return h*60+m+(s||0)/60;}
+const candleMins=candles.map(c=>tToMin(c.t));
+const tfMin=candles.length>1?candleMins[1]-candleMins[0]:5;
+function tToX(t){
+  const m=tToMin(t);
+  for(let i=0;i<N;i++){const cm=candleMins[i];if(m>=cm&&m<cm+tfMin){const frac=(m-cm)/tfMin;return PAD.l+i*slot+slot/2+(frac-0.5)*slot;}}
+  for(let i=0;i<N-1;i++){
+    const cm=candleMins[i],cmNext=candleMins[i+1];
+    if(m>=cm+tfMin&&m<cmNext){
+      const xL=PAD.l+i*slot+slot/2+candleW/2;
+      const xR=PAD.l+(i+1)*slot+slot/2-candleW/2;
+      const frac=(m-(cm+tfMin))/(cmNext-(cm+tfMin));
+      return xL+frac*(xR-xL);
+    }
+  }
+  if(m<candleMins[0])return PAD.l+slot/2;
+  return PAD.l+(N-1)*slot+slot/2;
+}
+function ptsHaltGap(t){
+  const m=tToMin(t);
+  for(let i=0;i<N-1;i++){
+    const cm=candleMins[i],cmNext=candleMins[i+1];
+    if(m>=cm+tfMin&&m<cmNext){
+      return{xL:PAD.l+i*slot+slot/2+candleW/2,xR:PAD.l+(i+1)*slot+slot/2-candleW/2};
+    }
+  }
+  return null;
+}
+let pmin=Infinity,pmax=-Infinity;
+candles.forEach(c=>{pmin=Math.min(pmin,c.l);pmax=Math.max(pmax,c.h);});
+DATA.trades.forEach(t=>{pmin=Math.min(pmin,t.price);pmax=Math.max(pmax,t.price);});
+if(DATA.carryover_lines){DATA.carryover_lines.forEach(l=>{pmin=Math.min(pmin,l.price);pmax=Math.max(pmax,l.price);});}
+const padP=(pmax-pmin)*0.08;pmin-=padP;pmax+=padP;
+function pToY(p){return PAD.t+(1-(p-pmin)/(pmax-pmin))*CH;}
+let vmax=0;candles.forEach(c=>{if(c.v>vmax)vmax=c.v;});
+function vToY(v){return VOL_TOP+VOL_H-(v/(vmax||1))*VOL_H;}
+function drawAxes(){
+  ctx.font='11px -apple-system,sans-serif';
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(CH*i)/5,p=pmax-((pmax-pmin)*i)/5;
+    ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=COL.text;ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(p.toFixed(p<100?2:0),PAD.l-6,y);
+  }
+  const vlbl=vmax>=10000?(vmax/10000).toFixed(0)+'万':vmax.toLocaleString();
+  ctx.textAlign='right';ctx.textBaseline='top';ctx.fillStyle=COL.text;
+  ctx.fillText('Vol: '+vlbl,PAD.l-6,VOL_TOP+2);
+  const labelEvery=tfMin<=1?60:30;let lastM=-999;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=0;i<N;i++){
+    const m=candleMins[i];
+    if(m-lastM>=labelEvery||i===0){
+      const x=PAD.l+i*slot+slot/2,hh=Math.floor(m/60),mm=Math.floor(m%60);
+      ctx.fillStyle=COL.text;ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`,x,VOL_TOP+VOL_H+6);
+      ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,VOL_TOP+VOL_H);ctx.stroke();
+      lastM=m;
+    }
+  }
+}
+function drawVolume(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,bull=c.c>=c.o,y=vToY(c.v),h=VOL_TOP+VOL_H-y;
+    ctx.fillStyle=bull?'rgba(255,85,85,0.5)':'rgba(93,173,226,0.5)';ctx.fillRect(x-candleW/2,y,candleW,h);
+  });
+}
+function drawCandles(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,yo=pToY(c.o),yh=pToY(c.h),yl=pToY(c.l),yc=pToY(c.c),bull=c.c>=c.o;
+    ctx.strokeStyle=bull?COL.bullBrd:COL.bear;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();
+    const bt=Math.min(yo,yc),bb=Math.max(yo,yc),bh=Math.max(1,bb-bt);
+    if(bull){ctx.fillStyle=COL.bullBody;ctx.fillRect(x-candleW/2,bt,candleW,bh);ctx.strokeRect(x-candleW/2,bt,candleW,bh);}
+    else{ctx.fillStyle=COL.bear;ctx.fillRect(x-candleW/2,bt,candleW,bh);}
+  });
+}
+function triPath(x,y,size,dir){
+  ctx.beginPath();
+  if(dir==='up'){ctx.moveTo(x,y-size);ctx.lineTo(x-size*0.9,y+size*0.7);ctx.lineTo(x+size*0.9,y+size*0.7);}
+  else{ctx.moveTo(x,y+size);ctx.lineTo(x-size*0.9,y-size*0.7);ctx.lineTo(x+size*0.9,y-size*0.7);}
+  ctx.closePath();
+}
+const markerData=DATA.trades.map(t=>{
+  const x=tToX(t.t),y=pToY(t.price),dir=t.side==='buy'?'up':'down';
+  const color=t.kind==='open'?COL.yellow:COL.purple;
+  const size=Math.min(16,8+Math.sqrt(t.qty/100)*2.0);
+  return{...t,x,y,dir,color,size};
+});
+function drawCarryoverLines(){
+  if(!DATA.carryover_lines) return;
+  DATA.carryover_lines.forEach(function(line){
+    const y = pToY(line.price);
+    ctx.save();
+    ctx.strokeStyle = line.color;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(PAD.l, y);
+    ctx.lineTo(PAD.l + CW, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = line.color;
+    ctx.font = 'bold 11px -apple-system,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(line.label, PAD.l + CW - 6, y - 3);
+    ctx.restore();
+  });
+}
+function drawPtsHaltLines(){
+  markerData.forEach(m=>{
+    if(!m.pts||m.nomarker)return;
+    const gap=ptsHaltGap(m.t);
+    if(!gap)return;
+    ctx.save();
+    ctx.strokeStyle='#ffa657';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(gap.xL,m.y);ctx.lineTo(gap.xR,m.y);ctx.stroke();
+    ctx.restore();
+  });
+}
+function drawMarkers(hoverIdx){
+  markerData.forEach((m,i)=>{
+    if(m.nomarker)return;/* v3.1: nomarker=マーカー非描画・P&Lラベルのみ（現渡パターンC・B-04） */
+    const sz=i===hoverIdx?m.size*1.6:m.size;
+    ctx.fillStyle=m.color+'55';triPath(m.x,m.y,sz,m.dir);ctx.fill();
+    if(m.cash){
+      ctx.save();
+      ctx.strokeStyle='#4ec9b0';ctx.lineWidth=i===hoverIdx?2.6:2.0;ctx.lineJoin='round';
+      ctx.setLineDash([3,2]);ctx.stroke();
+      ctx.restore();
+    }else if(m.pts){
+      ctx.save();
+      ctx.strokeStyle='#ffa657';ctx.lineWidth=i===hoverIdx?2.6:2.0;ctx.lineJoin='round';
+      ctx.setLineDash([3,2]);ctx.stroke();
+      ctx.restore();
+    }else{
+      ctx.strokeStyle=m.color;ctx.lineWidth=i===hoverIdx?2.4:1.8;ctx.lineJoin='round';ctx.stroke();
+    }
+  });
+}
+function placeLabels(){
+  const closes=markerData.map((m,i)=>({m,i})).filter(x=>x.m.kind==='close'&&x.m.pnl!==null);
+  closes.sort((a,b)=>Math.abs(b.m.pnl)-Math.abs(a.m.pnl));
+  const placed=[];
+  closes.forEach(({m})=>{
+    const txt=(m.pnl>=0?'+':'')+m.pnl.toLocaleString();
+    ctx.font='bold 11px -apple-system,sans-serif';
+    const tw=ctx.measureText(txt).width+10,th=18;
+    let best=null,bestScore=Infinity;
+    for(let dy=-160;dy<=160;dy+=12){for(let dx=-120;dx<=120;dx+=14){
+      if(Math.abs(dx)<18&&Math.abs(dy)<18)continue;
+      const lx=m.x+dx,ly=m.y+dy;
+      if(lx-tw/2<PAD.l+2||lx+tw/2>PAD.l+CW-2)continue;
+      if(ly-th/2<PAD.t+2||ly+th/2>PAD.t+CH-2)continue;
+      let score=Math.hypot(dx,dy)*0.5;
+      for(let i=0;i<N;i++){
+        const cx=PAD.l+i*slot+slot/2;
+        if(Math.abs(cx-lx)<candleW/2+tw/2){const c=candles[i];if(ly+th/2>pToY(c.h)&&ly-th/2<pToY(c.l))score+=800;}
+      }
+      markerData.forEach(mm=>{if(Math.abs(mm.x-lx)<tw/2+12&&Math.abs(mm.y-ly)<th/2+12)score+=1500;});
+      placed.forEach(p=>{if(Math.abs(p.lx-lx)<(tw+p.tw)/2+6&&Math.abs(p.ly-ly)<th+4)score+=2500;});
+      if(m.pnl>=0&&dy>0)score+=30;if(m.pnl<0&&dy<0)score+=30;
+      if(score<bestScore){bestScore=score;best={lx,ly};}
+    }}
+    if(best)placed.push({...best,tw,th,txt,m});
+  });
+  placed.forEach(p=>{
+    ctx.strokeStyle=COL.leader;ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.m.x,p.m.y);
+    const dx=p.lx-p.m.x,dy=p.ly-p.m.y,adx=Math.abs(dx),ady=Math.abs(dy);
+    let ex=p.lx,ey=p.ly;
+    if(adx>0||ady>0){const tx=p.tw/2/(adx||0.001),ty=p.th/2/(ady||0.001),t=Math.min(tx,ty);ex=p.lx-dx*t;ey=p.ly-dy*t;}
+    ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+  });
+  placed.forEach(p=>{
+    const win=p.m.pnl>=0;
+    ctx.fillStyle=win?COL.win:COL.lose;ctx.fillRect(p.lx-p.tw/2,p.ly-p.th/2,p.tw,p.th);
+    ctx.fillStyle='#fff';ctx.font='bold 11px -apple-system,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.txt,p.lx,p.ly);
+  });
+}
+let hoverMarker=-1;
+function render(){ctx.clearRect(0,0,W,H);drawAxes();drawVolume();drawCandles();drawCarryoverLines();drawPtsHaltLines();placeLabels();drawMarkers(hoverMarker);}
+render();
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  let hit=-1;
+  for(let i=markerData.length-1;i>=0;i--){if(Math.hypot(mx-markerData[i].x,my-markerData[i].y)<markerData[i].size+4){hit=i;break;}}
+  if(hit!==hoverMarker){hoverMarker=hit;render();}
+  if(hit>=0){
+    const m=markerData[hit],kindJp=m.kind==='open'?'新規':'決済';
+    let html=`<b>${m.t.slice(0,5)} ${kindJp}</b><br>合計 ${m.qty}株 @ 平均${m.price.toLocaleString()}円`;
+    if(m.pnl!==null){const c=m.pnl>=0?COL.win:COL.lose;html+=`<br><span style="color:${c};font-weight:bold">損益: ${m.pnl>=0?'+':''}${m.pnl.toLocaleString()}円</span>`;}
+    tip.innerHTML=html;tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';return;
+  }
+  const ci=Math.floor((mx-PAD.l)/slot);
+  if(ci>=0&&ci<N&&mx>=PAD.l&&mx<=PAD.l+CW){
+    const c=candles[ci];
+    tip.innerHTML=`<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
+    tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';
+  }else tip.style.display='none';
+});
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hoverMarker=-1;render();});
+const wins=DATA.trades.filter(t=>t.pnl!==null&&t.pnl>0).length;
+const losses=DATA.trades.filter(t=>t.pnl!==null&&t.pnl<0).length;
+const evens=DATA.trades.filter(t=>t.pnl===0).length;
+const total=DATA.trades.filter(t=>t.pnl!==null).reduce((s,t)=>s+t.pnl,0);
+const wr=(wins+losses+evens)>0?(wins/(wins+losses+evens)*100).toFixed(1):'0.0';
+const totalCls=total>=0?'win':'lose',totalSign=total>=0?'+':'';
+const cardsEl=document.getElementById('cards');
+cardsEl.style.gridTemplateColumns='repeat(4, 1fr)';
+cardsEl.innerHTML=`<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div><div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>`;
+</script></body></html>
