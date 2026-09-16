@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>285A キオクシアホールディングス 5分足 2026/08/14</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;background:#000000;color:#e6edf3;padding:20px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#8b949e;margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:12px;font-size:12px;color:#9ba3ae}
+.legend span{display:flex;align-items:center;gap:6px}
+.cv-wrap{position:relative;width:100%}
+canvas{display:block;width:100%;cursor:default}
+#tip{position:absolute;display:none;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:12px;color:#e6edf3;pointer-events:none;z-index:10;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.6)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 18px}
+.card-label{font-size:12px;color:#8b949e;margin-bottom:6px}
+.card-value{font-size:22px;font-weight:600}
+.card-sub{font-size:11px;color:#8b949e;margin-top:2px}
+.card-value.win{color:#3fb950}
+.card-value.lose{color:#f85149}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>285A　キオクシアホールディングス 5分足　2026/08/14</h1>
+<div style="background:#3a2a10;border-left:4px solid #ffa657;padding:8px 12px;margin:6px 0;color:#ffce93;font-size:13px;border-radius:4px"><b>同日2区分（制度信用 SHORT ＋ 日計り信用 LONG）・当日最大の稼ぎ頭</b>：<b>Section 1</b> 制度信用SHORT 1,100株（09:09-13:33・11往復, <b>+179,980円</b>・利益10/損失1）／<b>Section 2</b> 日計り信用LONG 900株（10:19-13:08・9往復, <b>+76,300円</b>・利益8/損失1・手数料0円）。当日合計 <b>+256,280円</b>。SHORT は <b>09:43＠56,137 の建てを 09:45＠55,573 で戻した +56,231 が最大</b>で、09:57 +37,434・10:03 +26,136・09:24 +23,836 と続く。唯一の損失は 10:04 の -3,663。LONG は 10:19 +17,500・10:21 +17,200・10:28 +15,500 と刻み、損失は 10:45 の -1,000 のみ。<b>前場の下げをSHORTで取り、10:19 以降の戻りをLONGで取る</b>という両建てではない時間差の使い分けになっている。<b>制度信用のグロス差益と SBI報告値の差は貸株料1日分</b>で、建代金 × 年率1.10% ÷ 365 の整数部（163〜169円）と全11決済行で機械一致。<b>各決済行の損益は SBI実現損益詳細の建玉対応を採用</b>し、日計りLONG の 10:19・10:21 は同一分内順序を「新規 → 決済」へ整序している。<b>1分足は 09:09 が初足</b>（09:00-09:08 はローソク足なし・5分足の初足は 09:05）で <b>寄付＠55,510</b>。当日は 高値 56,280（09:42）・安値 53,020（10:20）・終値 53,740。SHORTとLONGはマーカー形状で区別できる（黄▼/紫▲＝SHORT・黄▲/紫▼＝LONG）。</div>
+<div class="sub">インタラクティブ売買記録チャート ・ 制度信用 SHORT 1,100株＋日計り信用 LONG 900株 ・ 当日純損益 +256,280円</div>
+<div class="legend">
+  <span><span style="width:10px;height:10px;border:1.5px solid #ff5555;background:transparent;display:inline-block"></span>陽線</span>
+  <span><span style="width:10px;height:10px;background:#5dade2;display:inline-block"></span>陰線</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #ffe600;display:inline-block"></span>新規売り（SHORT）</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #bf00ff;display:inline-block"></span>決済買い（SHORT）</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #ffe600;display:inline-block"></span>新規買い（LONG）</span>
+  <span><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid #bf00ff;display:inline-block"></span>決済売り（LONG）</span>
+</div>
+<div class="cards" id="cards"></div>
+<div class="cv-wrap"><canvas id="cc"></canvas><div id="tip"></div></div>
+</div>
+<script>
+const DATA={"candles": [{"t": "09:05:00", "o": 55510.0, "h": 56030.0, "l": 55080.0, "c": 55960.0, "v": 1911000}, {"t": "09:10:00", "o": 55950.0, "h": 55990.0, "l": 54870.0, "c": 55220.0, "v": 1874500}, {"t": "09:15:00", "o": 55240.0, "h": 55240.0, "l": 53880.0, "c": 54510.0, "v": 1970700}, {"t": "09:20:00", "o": 54530.0, "h": 55100.0, "l": 54260.0, "c": 54650.0, "v": 1541800}, {"t": "09:25:00", "o": 54660.0, "h": 55400.0, "l": 54460.0, "c": 55160.0, "v": 1416600}, {"t": "09:30:00", "o": 55170.0, "h": 55480.0, "l": 55130.0, "c": 55330.0, "v": 1350700}, {"t": "09:35:00", "o": 55340.0, "h": 55970.0, "l": 55200.0, "c": 55940.0, "v": 1233300}, {"t": "09:40:00", "o": 55930.0, "h": 56280.0, "l": 55650.0, "c": 55710.0, "v": 1555600}, {"t": "09:45:00", "o": 55710.0, "h": 55750.0, "l": 55330.0, "c": 55370.0, "v": 1064800}, {"t": "09:50:00", "o": 55370.0, "h": 55450.0, "l": 54930.0, "c": 55090.0, "v": 1221500}, {"t": "09:55:00", "o": 55090.0, "h": 55210.0, "l": 54830.0, "c": 55130.0, "v": 878000}, {"t": "10:00:00", "o": 55130.0, "h": 55140.0, "l": 54030.0, "c": 54260.0, "v": 1202700}, {"t": "10:05:00", "o": 54270.0, "h": 54550.0, "l": 53970.0, "c": 54320.0, "v": 1214200}, {"t": "10:10:00", "o": 54310.0, "h": 54340.0, "l": 53430.0, "c": 53580.0, "v": 1287900}, {"t": "10:15:00", "o": 53580.0, "h": 53630.0, "l": 53060.0, "c": 53480.0, "v": 1235400}, {"t": "10:20:00", "o": 53480.0, "h": 53990.0, "l": 53020.0, "c": 53720.0, "v": 1164600}, {"t": "10:25:00", "o": 53710.0, "h": 53980.0, "l": 53360.0, "c": 53940.0, "v": 876500}, {"t": "10:30:00", "o": 53940.0, "h": 53940.0, "l": 53090.0, "c": 53110.0, "v": 761400}, {"t": "10:35:00", "o": 53110.0, "h": 53530.0, "l": 53060.0, "c": 53410.0, "v": 607300}, {"t": "10:40:00", "o": 53400.0, "h": 53620.0, "l": 53100.0, "c": 53290.0, "v": 740200}, {"t": "10:45:00", "o": 53290.0, "h": 53450.0, "l": 53130.0, "c": 53370.0, "v": 569900}, {"t": "10:50:00", "o": 53370.0, "h": 53560.0, "l": 53210.0, "c": 53390.0, "v": 543100}, {"t": "10:55:00", "o": 53390.0, "h": 53650.0, "l": 53380.0, "c": 53610.0, "v": 521400}, {"t": "11:00:00", "o": 53630.0, "h": 53770.0, "l": 53460.0, "c": 53660.0, "v": 539000}, {"t": "11:05:00", "o": 53660.0, "h": 54000.0, "l": 53660.0, "c": 53910.0, "v": 621600}, {"t": "11:10:00", "o": 53890.0, "h": 53980.0, "l": 53580.0, "c": 53650.0, "v": 543900}, {"t": "11:15:00", "o": 53650.0, "h": 53820.0, "l": 53510.0, "c": 53520.0, "v": 352100}, {"t": "11:20:00", "o": 53520.0, "h": 53610.0, "l": 53410.0, "c": 53590.0, "v": 323900}, {"t": "11:25:00", "o": 53590.0, "h": 53890.0, "l": 53560.0, "c": 53860.0, "v": 374300}, {"t": "11:30:00", "o": 53870.0, "h": 53890.0, "l": 53870.0, "c": 53890.0, "v": 28300}, {"t": "12:30:00", "o": 53900.0, "h": 53980.0, "l": 53310.0, "c": 53520.0, "v": 864800}, {"t": "12:35:00", "o": 53530.0, "h": 53740.0, "l": 53390.0, "c": 53490.0, "v": 631200}, {"t": "12:40:00", "o": 53500.0, "h": 53800.0, "l": 53430.0, "c": 53730.0, "v": 415800}, {"t": "12:45:00", "o": 53730.0, "h": 53910.0, "l": 53670.0, "c": 53690.0, "v": 432200}, {"t": "12:50:00", "o": 53700.0, "h": 53850.0, "l": 53700.0, "c": 53850.0, "v": 298000}, {"t": "12:55:00", "o": 53850.0, "h": 53890.0, "l": 53550.0, "c": 53610.0, "v": 473800}, {"t": "13:00:00", "o": 53600.0, "h": 53600.0, "l": 53180.0, "c": 53330.0, "v": 669300}, {"t": "13:05:00", "o": 53340.0, "h": 53570.0, "l": 53310.0, "c": 53500.0, "v": 387700}, {"t": "13:10:00", "o": 53500.0, "h": 53580.0, "l": 53430.0, "c": 53570.0, "v": 341900}, {"t": "13:15:00", "o": 53560.0, "h": 53950.0, "l": 53540.0, "c": 53910.0, "v": 518400}, {"t": "13:20:00", "o": 53920.0, "h": 53920.0, "l": 53710.0, "c": 53870.0, "v": 352000}, {"t": "13:25:00", "o": 53870.0, "h": 54230.0, "l": 53820.0, "c": 54010.0, "v": 718800}, {"t": "13:30:00", "o": 54020.0, "h": 54220.0, "l": 53800.0, "c": 53810.0, "v": 570100}, {"t": "13:35:00", "o": 53800.0, "h": 53870.0, "l": 53610.0, "c": 53820.0, "v": 452200}, {"t": "13:40:00", "o": 53810.0, "h": 54050.0, "l": 53810.0, "c": 53940.0, "v": 407700}, {"t": "13:45:00", "o": 53940.0, "h": 54070.0, "l": 53850.0, "c": 54000.0, "v": 333900}, {"t": "13:50:00", "o": 53990.0, "h": 54000.0, "l": 53820.0, "c": 53930.0, "v": 244000}, {"t": "13:55:00", "o": 53940.0, "h": 54040.0, "l": 53850.0, "c": 54020.0, "v": 231300}, {"t": "14:00:00", "o": 54020.0, "h": 54120.0, "l": 53800.0, "c": 53840.0, "v": 518900}, {"t": "14:05:00", "o": 53840.0, "h": 53870.0, "l": 53420.0, "c": 53510.0, "v": 530600}, {"t": "14:10:00", "o": 53510.0, "h": 53780.0, "l": 53420.0, "c": 53680.0, "v": 471000}, {"t": "14:15:00", "o": 53680.0, "h": 53770.0, "l": 53580.0, "c": 53750.0, "v": 286000}, {"t": "14:20:00", "o": 53740.0, "h": 53750.0, "l": 53530.0, "c": 53620.0, "v": 274100}, {"t": "14:25:00", "o": 53620.0, "h": 53630.0, "l": 53450.0, "c": 53540.0, "v": 350000}, {"t": "14:30:00", "o": 53530.0, "h": 53680.0, "l": 53500.0, "c": 53670.0, "v": 285500}, {"t": "14:35:00", "o": 53670.0, "h": 53830.0, "l": 53640.0, "c": 53790.0, "v": 421800}, {"t": "14:40:00", "o": 53790.0, "h": 53890.0, "l": 53530.0, "c": 53850.0, "v": 581200}, {"t": "14:45:00", "o": 53860.0, "h": 54010.0, "l": 53820.0, "c": 53860.0, "v": 396200}, {"t": "14:50:00", "o": 53860.0, "h": 54050.0, "l": 53820.0, "c": 54030.0, "v": 341700}, {"t": "14:55:00", "o": 54030.0, "h": 54100.0, "l": 53880.0, "c": 53920.0, "v": 322000}, {"t": "15:00:00", "o": 53920.0, "h": 53990.0, "l": 53710.0, "c": 53750.0, "v": 425200}, {"t": "15:05:00", "o": 53750.0, "h": 53800.0, "l": 53600.0, "c": 53670.0, "v": 363500}, {"t": "15:10:00", "o": 53670.0, "h": 53920.0, "l": 53660.0, "c": 53880.0, "v": 377500}, {"t": "15:15:00", "o": 53870.0, "h": 53870.0, "l": 53710.0, "c": 53750.0, "v": 314000}, {"t": "15:20:00", "o": 53760.0, "h": 53760.0, "l": 53530.0, "c": 53660.0, "v": 484900}, {"t": "15:25:00", "o": 53670.0, "h": 53670.0, "l": 53670.0, "c": 53670.0, "v": 100}, {"t": "15:30:00", "o": 53740.0, "h": 53740.0, "l": 53740.0, "c": 53740.0, "v": 535300}], "trades": [{"t": "09:09:00", "side": "sell", "qty": 100, "price": 55920.0, "kind": "open", "pnl": null}, {"t": "09:10:00", "side": "buy", "qty": 200, "price": 55688.5, "kind": "close", "pnl": 8965}, {"t": "09:10:00", "side": "sell", "qty": 100, "price": 55550.0, "kind": "open", "pnl": null}, {"t": "09:11:00", "side": "sell", "qty": 100, "price": 55390.0, "kind": "open", "pnl": null}, {"t": "09:12:00", "side": "buy", "qty": 100, "price": 55370.0, "kind": "close", "pnl": 1834}, {"t": "09:15:00", "side": "sell", "qty": 100, "price": 55100.0, "kind": "open", "pnl": null}, {"t": "09:15:00", "side": "buy", "qty": 100, "price": 55026.0, "kind": "close", "pnl": 7234}, {"t": "09:18:00", "side": "sell", "qty": 100, "price": 54100.0, "kind": "open", "pnl": null}, {"t": "09:20:00", "side": "sell", "qty": 100, "price": 54610.0, "kind": "open", "pnl": null}, {"t": "09:24:00", "side": "buy", "qty": 100, "price": 54370.0, "kind": "close", "pnl": 23836}, {"t": "09:26:00", "side": "sell", "qty": 100, "price": 54743.0, "kind": "open", "pnl": null}, {"t": "09:33:00", "side": "sell", "qty": 100, "price": 55230.0, "kind": "open", "pnl": null}, {"t": "09:43:00", "side": "sell", "qty": 100, "price": 56137.0, "kind": "open", "pnl": null}, {"t": "09:45:00", "side": "buy", "qty": 100, "price": 55573.0, "kind": "close", "pnl": 56231}, {"t": "09:57:00", "side": "buy", "qty": 100, "price": 54854.0, "kind": "close", "pnl": 37434}, {"t": "10:03:00", "side": "buy", "qty": 100, "price": 54480.0, "kind": "close", "pnl": 26136}, {"t": "10:04:00", "side": "buy", "qty": 100, "price": 54135.0, "kind": "close", "pnl": -3663}, {"t": "10:07:00", "side": "sell", "qty": 100, "price": 54460.0, "kind": "open", "pnl": null}, {"t": "10:08:00", "side": "buy", "qty": 100, "price": 54360.0, "kind": "close", "pnl": 9836}, {"t": "10:19:00", "side": "buy", "qty": 100, "price": 53290.0, "kind": "open", "pnl": null}, {"t": "10:19:00", "side": "sell", "qty": 100, "price": 53465.0, "kind": "close", "pnl": 17500}, {"t": "10:21:00", "side": "buy", "qty": 100, "price": 53710.0, "kind": "open", "pnl": null}, {"t": "10:21:00", "side": "sell", "qty": 100, "price": 53882.0, "kind": "close", "pnl": 17200}, {"t": "10:22:00", "side": "buy", "qty": 100, "price": 53710.0, "kind": "open", "pnl": null}, {"t": "10:23:00", "side": "sell", "qty": 100, "price": 53780.0, "kind": "close", "pnl": 7000}, {"t": "10:25:00", "side": "buy", "qty": 100, "price": 53520.0, "kind": "open", "pnl": null}, {"t": "10:25:00", "side": "sell", "qty": 100, "price": 53562.0, "kind": "close", "pnl": 4200}, {"t": "10:28:00", "side": "buy", "qty": 100, "price": 53610.0, "kind": "open", "pnl": null}, {"t": "10:28:00", "side": "sell", "qty": 100, "price": 53765.0, "kind": "close", "pnl": 15500}, {"t": "10:35:00", "side": "buy", "qty": 100, "price": 53440.0, "kind": "open", "pnl": null}, {"t": "10:40:00", "side": "sell", "qty": 100, "price": 53493.0, "kind": "close", "pnl": 5300}, {"t": "10:42:00", "side": "buy", "qty": 100, "price": 53360.0, "kind": "open", "pnl": null}, {"t": "10:45:00", "side": "buy", "qty": 100, "price": 53200.0, "kind": "open", "pnl": null}, {"t": "10:45:00", "side": "sell", "qty": 100, "price": 53350.0, "kind": "close", "pnl": -1000}, {"t": "10:46:00", "side": "sell", "qty": 100, "price": 53205.0, "kind": "close", "pnl": 500}, {"t": "13:05:00", "side": "buy", "qty": 100, "price": 53430.0, "kind": "open", "pnl": null}, {"t": "13:08:00", "side": "sell", "qty": 100, "price": 53531.0, "kind": "close", "pnl": 10100}, {"t": "13:32:00", "side": "sell", "qty": 100, "price": 54100.0, "kind": "open", "pnl": null}, {"t": "13:33:00", "side": "buy", "qty": 100, "price": 53977.0, "kind": "close", "pnl": 12137}], "fee_total": 0};
+const COL={bullBody:'#000000',bullBrd:'#ff5555',bear:'#5dade2',axis:'#30363d',text:'#9ba3ae',grid:'rgba(255,255,255,0.07)',yellow:'#ffe600',purple:'#bf00ff',win:'#3fb950',lose:'#f85149',leader:'rgba(220,220,220,0.55)'};
+const cv=document.getElementById('cc'),tip=document.getElementById('tip');
+const dpr=window.devicePixelRatio||1,H=640;
+let W=cv.parentElement.clientWidth;
+cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+const PAD={l:60,r:20,t:20,b:40};
+const CW=W-PAD.l-PAD.r,USABLE_H=H-PAD.t-PAD.b;
+const PRICE_H=Math.round(USABLE_H*0.74),VOL_GAP=10;
+const VOL_H=USABLE_H-PRICE_H-VOL_GAP,VOL_TOP=PAD.t+PRICE_H+VOL_GAP,CH=PRICE_H;
+const candles=DATA.candles,N=candles.length,candleW=(CW/N)*0.7,slot=CW/N;
+function tToMin(t){const[h,m,s]=t.split(':').map(Number);return h*60+m+(s||0)/60;}
+const candleMins=candles.map(c=>tToMin(c.t));
+const tfMin=candles.length>1?candleMins[1]-candleMins[0]:5;
+function tToX(t){
+  const m=tToMin(t);
+  for(let i=0;i<N;i++){const cm=candleMins[i];if(m>=cm&&m<cm+tfMin){const frac=(m-cm)/tfMin;return PAD.l+i*slot+slot/2+(frac-0.5)*slot;}}
+  for(let i=0;i<N-1;i++){
+    const cm=candleMins[i],cmNext=candleMins[i+1];
+    if(m>=cm+tfMin&&m<cmNext){
+      const xL=PAD.l+i*slot+slot/2+candleW/2;
+      const xR=PAD.l+(i+1)*slot+slot/2-candleW/2;
+      const frac=(m-(cm+tfMin))/(cmNext-(cm+tfMin));
+      return xL+frac*(xR-xL);
+    }
+  }
+  if(m<candleMins[0])return PAD.l+slot/2;
+  return PAD.l+(N-1)*slot+slot/2;
+}
+function ptsHaltGap(t){
+  const m=tToMin(t);
+  for(let i=0;i<N-1;i++){
+    const cm=candleMins[i],cmNext=candleMins[i+1];
+    if(m>=cm+tfMin&&m<cmNext){
+      return{xL:PAD.l+i*slot+slot/2+candleW/2,xR:PAD.l+(i+1)*slot+slot/2-candleW/2};
+    }
+  }
+  return null;
+}
+let pmin=Infinity,pmax=-Infinity;
+candles.forEach(c=>{pmin=Math.min(pmin,c.l);pmax=Math.max(pmax,c.h);});
+DATA.trades.forEach(t=>{pmin=Math.min(pmin,t.price);pmax=Math.max(pmax,t.price);});
+if(DATA.carryover_lines){DATA.carryover_lines.forEach(l=>{pmin=Math.min(pmin,l.price);pmax=Math.max(pmax,l.price);});}
+const padP=(pmax-pmin)*0.08;pmin-=padP;pmax+=padP;
+function pToY(p){return PAD.t+(1-(p-pmin)/(pmax-pmin))*CH;}
+let vmax=0;candles.forEach(c=>{if(c.v>vmax)vmax=c.v;});
+function vToY(v){return VOL_TOP+VOL_H-(v/(vmax||1))*VOL_H;}
+function drawAxes(){
+  ctx.font='11px -apple-system,sans-serif';
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(CH*i)/5,p=pmax-((pmax-pmin)*i)/5;
+    ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+CW,y);ctx.stroke();
+    ctx.fillStyle=COL.text;ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(p.toFixed(p<100?2:0),PAD.l-6,y);
+  }
+  const vlbl=vmax>=10000?(vmax/10000).toFixed(0)+'万':vmax.toLocaleString();
+  ctx.textAlign='right';ctx.textBaseline='top';ctx.fillStyle=COL.text;
+  ctx.fillText('Vol: '+vlbl,PAD.l-6,VOL_TOP+2);
+  const labelEvery=tfMin<=1?60:30;let lastM=-999;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=0;i<N;i++){
+    const m=candleMins[i];
+    if(m-lastM>=labelEvery||i===0){
+      const x=PAD.l+i*slot+slot/2,hh=Math.floor(m/60),mm=Math.floor(m%60);
+      ctx.fillStyle=COL.text;ctx.fillText(`${hh}:${String(mm).padStart(2,'0')}`,x,VOL_TOP+VOL_H+6);
+      ctx.strokeStyle=COL.grid;ctx.beginPath();ctx.moveTo(x,PAD.t);ctx.lineTo(x,VOL_TOP+VOL_H);ctx.stroke();
+      lastM=m;
+    }
+  }
+}
+function drawVolume(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,bull=c.c>=c.o,y=vToY(c.v),h=VOL_TOP+VOL_H-y;
+    ctx.fillStyle=bull?'rgba(255,85,85,0.5)':'rgba(93,173,226,0.5)';ctx.fillRect(x-candleW/2,y,candleW,h);
+  });
+}
+function drawCandles(){
+  candles.forEach((c,i)=>{
+    const x=PAD.l+i*slot+slot/2,yo=pToY(c.o),yh=pToY(c.h),yl=pToY(c.l),yc=pToY(c.c),bull=c.c>=c.o;
+    ctx.strokeStyle=bull?COL.bullBrd:COL.bear;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();
+    const bt=Math.min(yo,yc),bb=Math.max(yo,yc),bh=Math.max(1,bb-bt);
+    if(bull){ctx.fillStyle=COL.bullBody;ctx.fillRect(x-candleW/2,bt,candleW,bh);ctx.strokeRect(x-candleW/2,bt,candleW,bh);}
+    else{ctx.fillStyle=COL.bear;ctx.fillRect(x-candleW/2,bt,candleW,bh);}
+  });
+}
+function triPath(x,y,size,dir){
+  ctx.beginPath();
+  if(dir==='up'){ctx.moveTo(x,y-size);ctx.lineTo(x-size*0.9,y+size*0.7);ctx.lineTo(x+size*0.9,y+size*0.7);}
+  else{ctx.moveTo(x,y+size);ctx.lineTo(x-size*0.9,y-size*0.7);ctx.lineTo(x+size*0.9,y-size*0.7);}
+  ctx.closePath();
+}
+const markerData=DATA.trades.map(t=>{
+  const x=tToX(t.t),y=pToY(t.price),dir=t.side==='buy'?'up':'down';
+  const color=t.kind==='open'?COL.yellow:COL.purple;
+  const size=Math.min(16,8+Math.sqrt(t.qty/100)*2.0);
+  return{...t,x,y,dir,color,size};
+});
+function drawCarryoverLines(){
+  if(!DATA.carryover_lines) return;
+  DATA.carryover_lines.forEach(function(line){
+    const y = pToY(line.price);
+    ctx.save();
+    ctx.strokeStyle = line.color;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(PAD.l, y);
+    ctx.lineTo(PAD.l + CW, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = line.color;
+    ctx.font = 'bold 11px -apple-system,sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(line.label, PAD.l + CW - 6, y - 3);
+    ctx.restore();
+  });
+}
+function drawPtsHaltLines(){
+  markerData.forEach(m=>{
+    if(!m.pts||m.nomarker)return;
+    const gap=ptsHaltGap(m.t);
+    if(!gap)return;
+    ctx.save();
+    ctx.strokeStyle='#ffa657';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(gap.xL,m.y);ctx.lineTo(gap.xR,m.y);ctx.stroke();
+    ctx.restore();
+  });
+}
+function drawMarkers(hoverIdx){
+  markerData.forEach((m,i)=>{
+    if(m.nomarker)return;/* v3.1: nomarker=マーカー非描画・P&Lラベルのみ（現渡パターンC・B-04） */
+    const sz=i===hoverIdx?m.size*1.6:m.size;
+    ctx.fillStyle=m.color+'55';triPath(m.x,m.y,sz,m.dir);ctx.fill();
+    if(m.cash){
+      ctx.save();
+      ctx.strokeStyle='#4ec9b0';ctx.lineWidth=i===hoverIdx?2.6:2.0;ctx.lineJoin='round';
+      ctx.setLineDash([3,2]);ctx.stroke();
+      ctx.restore();
+    }else if(m.pts){
+      ctx.save();
+      ctx.strokeStyle='#ffa657';ctx.lineWidth=i===hoverIdx?2.6:2.0;ctx.lineJoin='round';
+      ctx.setLineDash([3,2]);ctx.stroke();
+      ctx.restore();
+    }else{
+      ctx.strokeStyle=m.color;ctx.lineWidth=i===hoverIdx?2.4:1.8;ctx.lineJoin='round';ctx.stroke();
+    }
+  });
+}
+function placeLabels(){
+  const closes=markerData.map((m,i)=>({m,i})).filter(x=>x.m.kind==='close'&&x.m.pnl!==null);
+  closes.sort((a,b)=>Math.abs(b.m.pnl)-Math.abs(a.m.pnl));
+  const placed=[];
+  closes.forEach(({m})=>{
+    const txt=(m.pnl>=0?'+':'')+m.pnl.toLocaleString();
+    ctx.font='bold 11px -apple-system,sans-serif';
+    const tw=ctx.measureText(txt).width+10,th=18;
+    let best=null,bestScore=Infinity;
+    for(let dy=-160;dy<=160;dy+=12){for(let dx=-120;dx<=120;dx+=14){
+      if(Math.abs(dx)<18&&Math.abs(dy)<18)continue;
+      const lx=m.x+dx,ly=m.y+dy;
+      if(lx-tw/2<PAD.l+2||lx+tw/2>PAD.l+CW-2)continue;
+      if(ly-th/2<PAD.t+2||ly+th/2>PAD.t+CH-2)continue;
+      let score=Math.hypot(dx,dy)*0.5;
+      for(let i=0;i<N;i++){
+        const cx=PAD.l+i*slot+slot/2;
+        if(Math.abs(cx-lx)<candleW/2+tw/2){const c=candles[i];if(ly+th/2>pToY(c.h)&&ly-th/2<pToY(c.l))score+=800;}
+      }
+      markerData.forEach(mm=>{if(Math.abs(mm.x-lx)<tw/2+12&&Math.abs(mm.y-ly)<th/2+12)score+=1500;});
+      placed.forEach(p=>{if(Math.abs(p.lx-lx)<(tw+p.tw)/2+6&&Math.abs(p.ly-ly)<th+4)score+=2500;});
+      if(m.pnl>=0&&dy>0)score+=30;if(m.pnl<0&&dy<0)score+=30;
+      if(score<bestScore){bestScore=score;best={lx,ly};}
+    }}
+    if(best)placed.push({...best,tw,th,txt,m});
+  });
+  placed.forEach(p=>{
+    ctx.strokeStyle=COL.leader;ctx.setLineDash([3,3]);ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.m.x,p.m.y);
+    const dx=p.lx-p.m.x,dy=p.ly-p.m.y,adx=Math.abs(dx),ady=Math.abs(dy);
+    let ex=p.lx,ey=p.ly;
+    if(adx>0||ady>0){const tx=p.tw/2/(adx||0.001),ty=p.th/2/(ady||0.001),t=Math.min(tx,ty);ex=p.lx-dx*t;ey=p.ly-dy*t;}
+    ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+  });
+  placed.forEach(p=>{
+    const win=p.m.pnl>=0;
+    ctx.fillStyle=win?COL.win:COL.lose;ctx.fillRect(p.lx-p.tw/2,p.ly-p.th/2,p.tw,p.th);
+    ctx.fillStyle='#fff';ctx.font='bold 11px -apple-system,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.txt,p.lx,p.ly);
+  });
+}
+let hoverMarker=-1;
+function render(){ctx.clearRect(0,0,W,H);drawAxes();drawVolume();drawCandles();drawCarryoverLines();drawPtsHaltLines();placeLabels();drawMarkers(hoverMarker);}
+render();
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  let hit=-1;
+  for(let i=markerData.length-1;i>=0;i--){if(Math.hypot(mx-markerData[i].x,my-markerData[i].y)<markerData[i].size+4){hit=i;break;}}
+  if(hit!==hoverMarker){hoverMarker=hit;render();}
+  if(hit>=0){
+    const m=markerData[hit],kindJp=m.kind==='open'?'新規':'決済';
+    let html=`<b>${m.t.slice(0,5)} ${kindJp}</b><br>合計 ${m.qty}株 @ 平均${m.price.toLocaleString()}円`;
+    if(m.pnl!==null){const c=m.pnl>=0?COL.win:COL.lose;html+=`<br><span style="color:${c};font-weight:bold">損益: ${m.pnl>=0?'+':''}${m.pnl.toLocaleString()}円</span>`;}
+    tip.innerHTML=html;tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';return;
+  }
+  const ci=Math.floor((mx-PAD.l)/slot);
+  if(ci>=0&&ci<N&&mx>=PAD.l&&mx<=PAD.l+CW){
+    const c=candles[ci];
+    tip.innerHTML=`<b>${c.t}</b><br>始値: ${c.o.toLocaleString()}<br>高値: ${c.h.toLocaleString()}<br>安値: ${c.l.toLocaleString()}<br>終値: ${c.c.toLocaleString()}<br>出来高: ${c.v.toLocaleString()}`;
+    tip.style.display='block';
+    const tw=tip.offsetWidth,th=tip.offsetHeight;
+    let tx=mx+14,ty=my-th-8;if(tx+tw>W)tx=mx-tw-14;if(ty<0)ty=my+14;
+    tip.style.left=tx+'px';tip.style.top=ty+'px';
+  }else tip.style.display='none';
+});
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hoverMarker=-1;render();});
+const wins=DATA.trades.filter(t=>t.pnl!==null&&t.pnl>0).length;
+const losses=DATA.trades.filter(t=>t.pnl!==null&&t.pnl<0).length;
+const evens=DATA.trades.filter(t=>t.pnl===0).length;
+const total=DATA.trades.filter(t=>t.pnl!==null).reduce((s,t)=>s+t.pnl,0);
+const wr=(wins+losses+evens)>0?(wins/(wins+losses+evens)*100).toFixed(1):'0.0';
+const totalCls=total>=0?'win':'lose',totalSign=total>=0?'+':'';
+const cardsEl=document.getElementById('cards');
+cardsEl.style.gridTemplateColumns='repeat(4, 1fr)';
+cardsEl.innerHTML=`<div class="card"><div class="card-label">純損益</div><div class="card-value ${totalCls}">${totalSign}${total.toLocaleString()}円</div><div class="card-sub">手数料控除後</div></div><div class="card"><div class="card-label">勝敗</div><div class="card-value">${wins}勝${losses}敗${evens>0?' '+evens+'分':''}</div></div><div class="card"><div class="card-label">勝率</div><div class="card-value">${wr}%</div></div><div class="card"><div class="card-label">総手数料</div><div class="card-value lose">-${DATA.fee_total.toLocaleString()}円</div><div class="card-sub">貸株料</div></div>`;
+</script></body></html>
